@@ -358,7 +358,7 @@ const Forms = () => {
             New Report
           </button> */}
           <button
-            onClick={() => navigate('/reports/running_report/1')}
+            onClick={() => navigate('/reports/running_report/1',{state:{reportType:reportType}})}
             className="inline-flex items-center justify-center rounded-md bg-primary py-2 mx-2 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
           >
             Running Report

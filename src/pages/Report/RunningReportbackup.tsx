@@ -1,15 +1,17 @@
-import { useState,useEffect } from "react";
-import {LIST_FORM_SECTIONS_API,LIST_SECTION_PARAMS_API} from "../../Api/api.tsx";
+import { useState, useEffect } from "react";
+import { LIST_FORM_SECTIONS_API, LIST_SECTION_PARAMS_API } from "../../Api/api.tsx";
 
 const RunningReport = () => {
-  const [selectedSection, setSelectedSection] = useState<any>({ section: 'Basic Details', subsection: "Report Details" });
+  const [selectedSection, setSelectedSection] = useState<any>({ section: 'Report Details', section_id: 1 });
   const [expandedSection, setExpandedSection] = useState<any>(null);
+  const [sectionparams,setSectionparams] = useState<any>([]);
   const [isLoaded, setLoaded] = useState(false);
-  const [sections,setSections] = useState([]);
+  const [sections, setSections] = useState([]);
 
   useEffect(() => {
     setLoaded(true);
     listSections();
+    listSectionParams(selectedSection.section_id);
   }, []);
 
   // Function to fetch sections
@@ -42,8 +44,41 @@ const RunningReport = () => {
     }
   };
 
+  const listSectionParams = async (e: any) => {
+    const params = new URLSearchParams({
+      form_id: "1",
+      format_id: "1",
+      section_id: e
+    });
+
+console.log("listSectionParams",params);
+
+    try {
+      const response = await fetch(`${LIST_SECTION_PARAMS_API}?${params.toString()}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      });
+
+      const data = await response.json();
+console.log("data",data);
+      if (data.Status === 0) {
+        setLoaded(false);
+      } else if (data.Status === 1) {
+        console.log("params",data.info);
+        setSectionparams(data.info || []);
+      }
+    } catch (error) {
+      console.error("Error fetching sections:", error);
+      setLoaded(false);
+    }
+  };
+
   // Map sections into viewable data
-  const viewSections = sections.map((item:any) => ({
+  const viewSections = sections.map((item: any) => ({
+    section_id: item.section_id,
     title: item.section_name,
     icon: "🏠",
   }));
@@ -102,9 +137,10 @@ const RunningReport = () => {
   //   // },
   // ];
 
-  const handleSectionClick = (section: any, subsection = null) => {
-    setSelectedSection({ section, subsection });
-    console.log("selected section ->>>", selectedSection, section, subsection);
+  const handleSectionClick = (section: any, section_id = null) => {
+    setSelectedSection({ section, section_id });
+    listSectionParams(section_id);
+    console.log("selected section ->>>", selectedSection, section, section_id);
   };
 
   const toggleSection = (title: any) => {
@@ -2189,7 +2225,7 @@ const RunningReport = () => {
                     // section.subsections.length
                     //   ? toggleSection(section.title)
                     //   : 
-                      handleSectionClick(section.title)
+                    handleSectionClick(section.title,section.section_id)
                   }
                 >
                   <span className={`icon ${isActive ? 'active-section' : ''}`}>
