@@ -142,12 +142,13 @@ const PreviewReport = () => {
   const Datas = location.state;
   const data = Datas.data;
   const observations = Datas.observations;
+  var datatype = Datas.pagetype;
 
-  // const handleBackButton = () => {
-  //   console.log("back button pressed!");
-  //   // Pass params back to the previous screen
-  //   navigate('/reports/running_report/1', { state: { Datas: data,observations:observations } });
-  // };
+  const handleBackButton = () => {
+    console.log("back button pressed!");
+    // Pass params back to the previous screen
+    navigate('/reports/running_report/1', { state: { reportType: datatype, Datas: data, observations: observations } });
+  };
 
   useEffect(() => {
 
@@ -205,81 +206,63 @@ const PreviewReport = () => {
     <>
       <div style={{ height: 40 }}></div>
       <DownloadButton onClick={generatePDF}><FaDownload />PDF</DownloadButton>
-      {/* <button className="add-btn mx-2" onClick={handleBackButton}>
+      <button className="add-btn mx-2" onClick={handleBackButton}>
         Back
-      </button> */}
-      <div>
+      </button>
+      {datatype === "IPQC" ?
+        <div>
+          {/* content */}
+          <Container id="report">
 
-        <>
-          {/* Header */}
-          {/* <div id="header" className="pdf-header" style={{ display: 'none' }}>
-        <HeaderRow>
-          <LogoContainer>
-            <img src={pdflogo} alt="PDF Logo" style={{ padding: 5,margin:5 }} />
-          </LogoContainer>
-          <TitleContainer>
-            <strong>In Process Inspection Daily Report</strong>
-          </TitleContainer>
-          <ReportDetails>
-            <div>Report Date: {moment().format('DD-MM-YYYY')}</div>
-            <div>Report No: IPQC-0003</div>
-          </ReportDetails>
-        </HeaderRow>
-      </div> */}
-        </>
+            {/* page 1 start */}
+            <div className="content" style={{ height: isClick ? '151vh' : "" }}>
+              {/* header */}
+              <HeaderRow id="header" className="pdf-header">
+                <LogoContainer>
+                  <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
+                </LogoContainer>
+                <TitleContainer>
+                  <strong className={isClick ? 'pdf-span' : ""}>In Process Inspection Daily Report</strong>
+                </TitleContainer>
+                <ReportDetails>
+                  <div>Report Date: {moment().format('DD-MM-YYYY')}</div>
+                  <div>Report No: IPQC-0001</div>
+                </ReportDetails>
+              </HeaderRow>
 
-        {/* content */}
-        <Container id="report">
+              {/* Report Details */}
+              <div className="avoid-break" id="reportDetails">
+                <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Report Details –</p>
+                <Table>
+                  <tbody>
+                    <tr>
+                      <HeaderCell style={{ width: '25%' }}><span><strong>OA No</strong></span></HeaderCell>
+                      <TableCell style={{ width: '25%' }}><span>{data.oaNo}</span></TableCell>
+                      <HeaderCell style={{ width: '25%' }}><span><strong>Date</strong></span></HeaderCell>
+                      <TableCell style={{ width: '25%' }}><span>{data.date}</span></TableCell>
+                    </tr>
+                    <tr>
+                      <HeaderCell><span><strong>Manufacturer</strong></span></HeaderCell>
+                      <TableCell><span>{data.manufacturer}</span></TableCell>
+                      <HeaderCell><span><strong>Shift</strong></span></HeaderCell>
+                      <TableCell><span>{data.shift}</span></TableCell>
+                    </tr>
+                    <tr>
+                      <HeaderCell><span><strong>Place of Inspection</strong></span></HeaderCell>
+                      <TableCell><span>{data.placeOfInspection}</span></TableCell>
+                      <HeaderCell><span><strong>Customer name</strong></span></HeaderCell>
+                      <TableCell><span>{data.customerName}</span></TableCell>
+                    </tr>
+                    <tr>
+                      <HeaderCell><span><strong>Report created by</strong></span></HeaderCell>
+                      <TableCell><span>{data.reportCreatedBy}</span></TableCell>
+                    </tr>
+                  </tbody>
+                </Table>
+              </div>
 
-          {/* page 1 start */}
-          <div className="content" style={{ height: isClick ? '151vh' : "" }}>
-            {/* header */}
-            <HeaderRow id="header" className="pdf-header">
-              <LogoContainer>
-                <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
-              </LogoContainer>
-              <TitleContainer>
-                <strong className={isClick ? 'pdf-span' : ""}>In Process Inspection Daily Report</strong>
-              </TitleContainer>
-              <ReportDetails>
-                <div>Report Date: {moment().format('DD-MM-YYYY')}</div>
-                <div>Report No: IPQC-0001</div>
-              </ReportDetails>
-            </HeaderRow>
-
-            {/* Report Details */}
-            <div className="avoid-break" id="reportDetails">
-              <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Report Details –</p>
-              <Table>
-                <tbody>
-                  <tr>
-                    <HeaderCell style={{ width: '25%' }}><span><strong>OA No</strong></span></HeaderCell>
-                    <TableCell style={{ width: '25%' }}><span>{data.oaNo}</span></TableCell>
-                    <HeaderCell style={{ width: '25%' }}><span><strong>Date</strong></span></HeaderCell>
-                    <TableCell style={{ width: '25%' }}><span>{data.date}</span></TableCell>
-                  </tr>
-                  <tr>
-                    <HeaderCell><span><strong>Manufacturer</strong></span></HeaderCell>
-                    <TableCell><span>{data.manufacturer}</span></TableCell>
-                    <HeaderCell><span><strong>Shift</strong></span></HeaderCell>
-                    <TableCell><span>{data.shift}</span></TableCell>
-                  </tr>
-                  <tr>
-                    <HeaderCell><span><strong>Place of Inspection</strong></span></HeaderCell>
-                    <TableCell><span>{data.placeOfInspection}</span></TableCell>
-                    <HeaderCell><span><strong>Customer name</strong></span></HeaderCell>
-                    <TableCell><span>{data.customerName}</span></TableCell>
-                  </tr>
-                  <tr>
-                    <HeaderCell><span><strong>Report created by</strong></span></HeaderCell>
-                    <TableCell><span>{data.reportCreatedBy}</span></TableCell>
-                  </tr>
-                </tbody>
-              </Table>
-            </div>
-
-            {/* Production Details */}
-            {/* <div className="avoid-break" id="productionDetails">
+              {/* Production Details */}
+              {/* <div className="avoid-break" id="productionDetails">
               <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Production Details -</p>
               <Table>
               <tbody style={{ margin: 0, padding: 0 }}>
@@ -311,45 +294,45 @@ const PreviewReport = () => {
               </Table>
             </div> */}
 
-            {/* Production Stage Wise */}
-            <div className="avoid-break" id="productionStageWise">
-              <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Production Stage Wise -</p>
-              <Table>
-                <tbody style={{ margin: 0, padding: 0 }}>
-                  <tr>
-                    <HeaderCell style={{ width: "50%" }}><span><strong>Product</strong></span></HeaderCell>
-                    <TableCell><span>{data.product}</span></TableCell>
-                  </tr>
-                  <tr>
-                    <HeaderCell><span><strong>Total Layup</strong></span></HeaderCell>
-                    <TableCell><span>{data.total_layup}</span></TableCell>
-                  </tr>
-                  <tr>
-                    <HeaderCell><span><strong>Total VQC Fail</strong></span></HeaderCell>
-                    <TableCell><span>{data.total_vqc_fail}</span></TableCell>
-                  </tr>
-                  <tr>
-                    <HeaderCell><span><strong>Total after lamination EL fail</strong></span></HeaderCell>
-                    <TableCell><span>{data.total_lamination_el_fail}</span></TableCell>
-                  </tr>
-                  <tr>
-                    <HeaderCell><span><strong>Total FQC Fail</strong></span></HeaderCell>
-                    <TableCell><span>{data.total_fqc_fail}</span></TableCell>
-                  </tr>
-                  <tr>
-                    <HeaderCell><span><strong>Total low Wp</strong></span></HeaderCell>
-                    <TableCell><span>{data.total_low_wp}</span></TableCell>
-                  </tr>
-                  <tr>
-                    <HeaderCell><span><strong>Other reject/fail</strong></span></HeaderCell>
-                    <TableCell><span>{data.other_reject}</span></TableCell>
-                  </tr>
-                </tbody>
-              </Table>
-            </div>
+              {/* Production Stage Wise */}
+              <div className="avoid-break" id="productionStageWise">
+                <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Production Stage Wise -</p>
+                <Table>
+                  <tbody style={{ margin: 0, padding: 0 }}>
+                    <tr>
+                      <HeaderCell style={{ width: "50%" }}><span><strong>Product</strong></span></HeaderCell>
+                      <TableCell><span>{data.product}</span></TableCell>
+                    </tr>
+                    <tr>
+                      <HeaderCell><span><strong>Total Layup</strong></span></HeaderCell>
+                      <TableCell><span>{data.total_layup}</span></TableCell>
+                    </tr>
+                    <tr>
+                      <HeaderCell><span><strong>Total VQC Fail</strong></span></HeaderCell>
+                      <TableCell><span>{data.total_vqc_fail}</span></TableCell>
+                    </tr>
+                    <tr>
+                      <HeaderCell><span><strong>Total after lamination EL fail</strong></span></HeaderCell>
+                      <TableCell><span>{data.total_lamination_el_fail}</span></TableCell>
+                    </tr>
+                    <tr>
+                      <HeaderCell><span><strong>Total FQC Fail</strong></span></HeaderCell>
+                      <TableCell><span>{data.total_fqc_fail}</span></TableCell>
+                    </tr>
+                    <tr>
+                      <HeaderCell><span><strong>Total low Wp</strong></span></HeaderCell>
+                      <TableCell><span>{data.total_low_wp}</span></TableCell>
+                    </tr>
+                    <tr>
+                      <HeaderCell><span><strong>Other reject/fail</strong></span></HeaderCell>
+                      <TableCell><span>{data.other_reject}</span></TableCell>
+                    </tr>
+                  </tbody>
+                </Table>
+              </div>
 
-            {/* Dispatch Details */}
-            {/* <div className="avoid-break" id="dispatchDetails">
+              {/* Dispatch Details */}
+              {/* <div className="avoid-break" id="dispatchDetails">
               <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Dispatch Details – <em>“Not done for this lot”</em></p>
               <Table>
                 <tbody>
@@ -376,266 +359,107 @@ const PreviewReport = () => {
                 </tbody>
               </Table>
             </div> */}
-          </div>
+            </div>
 
-          {/* Footer */}
-          {isClick ? <div id="footer" className='footer' style={{ width: '100%' }}>
-            <Table>
-              <tbody>
-                <tr style={{ margin: 0, padding: 0 }}>
-                  <TableCell style={{ width: "50%" }}><span className='pdf-span'>Format No: JSR/SI</span></TableCell>
-                  <TableCell><span className='pdf-span'>Rev Date and No: 00</span></TableCell>
-                </tr>
-                <tr>
-                  <TableCell><span className='pdf-span'>Compiled By: Sanket Thakkar</span></TableCell>
-                  <TableCell><span className='pdf-span'>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
-                </tr>
-              </tbody>
-            </Table>
-          </div> : ""}
-
-          {/* page 1 end */}
-
-          {/* page 2 start */}
-          {/* <div className="page-break"></div> */}
-
-          {/* header */}
-          <div className="content" style={{ height: isClick ? '151vh' : "" }}>
-            {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
-              <LogoContainer>
-                <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
-              </LogoContainer>
-              <TitleContainer>
-                <strong className='pdf-span'>In Process Inspection Daily Report</strong>
-              </TitleContainer>
-              <ReportDetails>
-                <div className='pdf-span'>Report Date: {moment().format('DD-MM-YYYY')}</div>
-                <div className='pdf-span'>Report No: IPQC-0003</div>
-              </ReportDetails>
-            </HeaderRow> : ""}
-
-            {/* Major Observations of the Day */}
-            <div className="avoid-break" id="majorObservations">
-              <Title className={isClick ? "pdf-span" : ""}>Major Observations of the Day –</Title>
+            {/* Footer */}
+            {isClick ? <div id="footer" className='footer' style={{ width: '100%' }}>
               <Table>
-                <tbody style={{ margin: 0, padding: 0 }}>
+                <tbody>
                   <tr style={{ margin: 0, padding: 0 }}>
-                    <HeaderCell><span>
-                      <strong>Sr No</strong>
-                    </span></HeaderCell>
-                    <HeaderCell colSpan={2}>
-                      <span>
-                        <strong>Observations / Deficiency Details</strong>
+                    <TableCell style={{ width: "50%" }}><span className='pdf-span'>Format No: JSR/SI</span></TableCell>
+                    <TableCell><span className='pdf-span'>Rev Date and No: 00</span></TableCell>
+                  </tr>
+                  <tr>
+                    <TableCell><span className='pdf-span'>Compiled By: Sanket Thakkar</span></TableCell>
+                    <TableCell><span className='pdf-span'>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
+                  </tr>
+                </tbody>
+              </Table>
+            </div> : ""}
+
+            {/* page 1 end */}
+
+            {/* page 2 start */}
+            {/* <div className="page-break"></div> */}
+
+            {/* header */}
+            <div className="content" style={{ height: isClick ? '151vh' : "" }}>
+              {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
+                <LogoContainer>
+                  <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
+                </LogoContainer>
+                <TitleContainer>
+                  <strong className='pdf-span'>In Process Inspection Daily Report</strong>
+                </TitleContainer>
+                <ReportDetails>
+                  <div className='pdf-span'>Report Date: {moment().format('DD-MM-YYYY')}</div>
+                  <div className='pdf-span'>Report No: IPQC-0003</div>
+                </ReportDetails>
+              </HeaderRow> : ""}
+
+              {/* Major Observations of the Day */}
+              <div className="avoid-break" id="majorObservations">
+                <Title className={isClick ? "pdf-span" : ""}>Major Observations of the Day –</Title>
+                <Table>
+                  <tbody style={{ margin: 0, padding: 0 }}>
+                    <tr style={{ margin: 0, padding: 0 }}>
+                      <HeaderCell><span>
+                        <strong>Sr No</strong>
                       </span></HeaderCell>
-                  </tr>
+                      <HeaderCell colSpan={2}>
+                        <span>
+                          <strong>Observations / Deficiency Details</strong>
+                        </span></HeaderCell>
+                    </tr>
 
-                  {observations.map((observation: any, index: any) => (
-                    <>
-                      <tr>
-                        <TableCell rowSpan={2}>
-                          <span>
-                            <strong>{index + 1}</strong>
-                          </span></TableCell>
-                        <TableCell colSpan={2}>
-                          <span>
-                            {observation.description}
-                          </span></TableCell>
-                      </tr>
-                      <tr>
-                        {observation.images.map((image: any, idx: any) => (
-                          <TableCell>
-                            <img src={image} alt="PDF Sub" style={{ padding: 5,height:300 }} />
-                          </TableCell>
-                        ))}
-                      </tr>
-                    </>
-                  ))}
-                </tbody>
-              </Table>
-            </div>
-          </div>
-
-          {/* footer */}
-          {isClick ? <div id="footer" style={{ width: '100%' }}>
-            <Table>
-              <tbody>
-                <tr style={{ margin: 0, padding: 0 }}>
-                  <TableCell style={{ width: "50%" }}><span className='pdf-span'>Format No: JSR/SI</span></TableCell>
-                  <TableCell><span className='pdf-span'>Rev Date and No: 00</span></TableCell>
-                </tr>
-                <tr>
-                  <TableCell><span className='pdf-span'>Compiled By: Sanket Thakkar</span></TableCell>
-                  <TableCell><span className='pdf-span'>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
-                </tr>
-              </tbody>
-            </Table>
-          </div> : ""}
-          {/* page 2 end */}
-
-          {/* page 3 start */}
-          <div className="page-break"></div>
-
-          {/* header */}
-          <div className="content" style={{ height: isClick ? '151vh' : "" }}>
-            {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
-              <LogoContainer>
-                <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
-              </LogoContainer>
-              <TitleContainer>
-                <strong className='pdf-span'>In Process Inspection Daily Report</strong>
-              </TitleContainer>
-              <ReportDetails>
-                <div className='pdf-span'>Report Date: {moment().format('DD-MM-YYYY')}</div>
-                <div className='pdf-span'>Report No: IPQC-0003</div>
-              </ReportDetails>
-            </HeaderRow> : ""}
-
-            {/* Process – Film Cutting */}
-            <div className="avoid-break" id="productionDetails">
-              <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', fontSize: 18 }}>In Process Inspection Report –</p>
-              <br />
-              <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Film Cutting</p>
-              <Table>
-                <tbody style={{ margin: 0, padding: 0 }}>
-                  <tr>
-                    <HeaderCell><span><strong>Parameters</strong></span></HeaderCell>
-                    <TableCell><span><strong>Round 1</strong></span></TableCell>
-                    <TableCell><span><strong>Round 2</strong></span></TableCell>
-                  </tr>
-                  <tr>
-                    <HeaderCell><span><strong>EVA Cutting length (in mm)</strong></span></HeaderCell>
-                    <TableCell><span>{data.eva_cutting_length.round1}</span></TableCell>
-                    <TableCell><span>{data.eva_cutting_length.round2}</span></TableCell>
-                  </tr>
-                  <tr>
-                    <HeaderCell><span><strong>EVA thickness (in mm)</strong></span></HeaderCell>
-                    <TableCell><span>{data.backsheet_cutting_length.round1}</span></TableCell>
-                    <TableCell><span>{data.backsheet_cutting_length.round2}</span></TableCell>
-                  </tr>
-                  <tr>
-                    <HeaderCell><span><strong>Raw material used records</strong></span></HeaderCell>
-                    <TableCell><span>{data.raw_material_used_records.round1}</span></TableCell>
-                    <TableCell><span>{data.raw_material_used_records.round2}</span></TableCell>
-                  </tr>
-                </tbody>
-
-              </Table>
-            </div>
-
-            <div className="avoid-break">
-              {/* Process – Tabber & Stringer */}
-              <div className="avoid-break" id="productionDetails">
-                <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Tabber & Stringer</p>
-                <Table>
-                  <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
-                    <tr>
-                      <th style={{ border: '1px solid black', padding: '5px' }}><strong>Parameters</strong></th>
-                      <th style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}><strong>Round 1</strong></th>
-                      <th style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}><strong>Round 2</strong></th>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Machine No</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.machine_no.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.machine_no.round2}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Soldering Temperature - A (°C)</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.soldering_temp_a.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.soldering_temp_a.round2}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Soldering Temperature - B (°C)</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.soldering_temp_b.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.soldering_temp_b.round2}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Peel Strength - Front (N)</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.peel_strength_front.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.peel_strength_front.round2}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Peel Strength - Back (N)</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.peel_strength_back.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.peel_strength_back.round2}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>All Machine Peel Strength</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.all_machine_peel_strength.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.all_machine_peel_strength.round2}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Raw Material Track Records</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.raw_material_track_records.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.raw_material_track_records.round2}</span></td>
-                    </tr>
+                    {observations.map((observation: any, index: any) => (
+                      <>
+                        <tr>
+                          <TableCell rowSpan={2}>
+                            <span>
+                              <strong>{index + 1}</strong>
+                            </span></TableCell>
+                          <TableCell colSpan={2}>
+                            <span>
+                              {observation.description}
+                            </span></TableCell>
+                        </tr>
+                        <tr>
+                          {observation.images.map((image: any, idx: any) => (
+                            <TableCell>
+                              <img src={image} alt="PDF Sub" style={{ padding: 5, height: 300 }} />
+                            </TableCell>
+                          ))}
+                        </tr>
+                      </>
+                    ))}
                   </tbody>
                 </Table>
               </div>
             </div>
 
-            {/* Process – Layup */}
-            <div className="avoid-break" id="productionDetails">
-              <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Layup</p>
+            {/* footer */}
+            {isClick ? <div id="footer" style={{ width: '100%' }}>
               <Table>
-                <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
-                  <tr>
-                    <th style={{ border: '1px solid black', padding: '5px' }}><strong>Parameters</strong></th>
-                    <th style={{ border: '1px solid black', padding: '5px' }}><strong>Round 1</strong></th>
-                    <th style={{ border: '1px solid black', padding: '5px' }}><strong>Round 2</strong></th>
+                <tbody>
+                  <tr style={{ margin: 0, padding: 0 }}>
+                    <TableCell style={{ width: "50%" }}><span className='pdf-span'>Format No: JSR/SI</span></TableCell>
+                    <TableCell><span className='pdf-span'>Rev Date and No: 00</span></TableCell>
                   </tr>
                   <tr>
-                    <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Workstation No</strong></span></td>
-                    <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.work_station_no.round1}</span></td>
-                    <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.work_station_no.round2}</span></td>
-                  </tr>
-                  <tr>
-                    <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Running Module Serial No.</strong></span></td>
-                    <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.running_module_serial_no.round1}</span></td>
-                    <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.running_module_serial_no.round2}</span></td>
-                  </tr>
-                  <tr>
-                    <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Soldering Station Temperature (°C)</strong></span></td>
-                    <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.soldering_station_temp.round1}</span></td>
-                    <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.soldering_station_temp.round2}</span></td>
-                  </tr>
-                  <tr>
-                    <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Soldering Station Calibration</strong></span></td>
-                    <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.soldering_station_calibration.round1}</span></td>
-                    <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.soldering_station_calibration.round2}</span></td>
-                  </tr>
-                  <tr>
-                    <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>WIP (including Pre-Lam EL Fail & OK)</strong></span></td>
-                    <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.wip.round1}</span></td>
-                    <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.wip.round2}</span></td>
+                    <TableCell><span className='pdf-span'>Compiled By: Sanket Thakkar</span></TableCell>
+                    <TableCell><span className='pdf-span'>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
                   </tr>
                 </tbody>
               </Table>
-            </div>
-          </div>
+            </div> : ""}
+            {/* page 2 end */}
 
-          {/* footer */}
-          {isClick ? <div id="footer" style={{ width: '100%' }}>
-            <Table>
-              <tbody>
-                <tr style={{ margin: 0, padding: 0 }}>
-                  <TableCell style={{ width: "50%" }}><span className='pdf-span'>Format No: JSR/SI</span></TableCell>
-                  <TableCell><span className='pdf-span'>Rev Date and No: 00</span></TableCell>
-                </tr>
-                <tr>
-                  <TableCell><span className='pdf-span'>Compiled By: Sanket Thakkar</span></TableCell>
-                  <TableCell><span className='pdf-span'>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
-                </tr>
-              </tbody>
-            </Table>
-          </div> : ""}
-          {/* page 3 end */}
+            {/* page 3 start */}
+            <div className="page-break"></div>
 
-          {/* page 4 start */}
-          <div className="page-break"></div>
-
-          {/* header */}
-          <div className="content" style={{ height: isClick ? '151vh' : "" }}>
-            <div className="content">
+            {/* header */}
+            <div className="content" style={{ height: isClick ? '151vh' : "" }}>
               {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
                 <LogoContainer>
                   <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
@@ -649,107 +473,92 @@ const PreviewReport = () => {
                 </ReportDetails>
               </HeaderRow> : ""}
 
-              {/* Process – Lamination */}
+              {/* Process – Film Cutting */}
               <div className="avoid-break" id="productionDetails">
-                <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Lamination</p>
+                <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', fontSize: 18 }}>In Process Inspection Report –</p>
+                <br />
+                <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Film Cutting</p>
                 <Table>
-                  <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
+                  <tbody style={{ margin: 0, padding: 0 }}>
                     <tr>
-                      <th style={{ border: '1px solid black', padding: '5px' }}><strong>Parameters</strong></th>
-                      <th style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}><strong>Round 1</strong></th>
-                      <th style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}><strong>Round 2</strong></th>
+                      <HeaderCell><span><strong>Parameters</strong></span></HeaderCell>
+                      <TableCell><span><strong>Round 1</strong></span></TableCell>
+                      <TableCell><span><strong>Round 2</strong></span></TableCell>
                     </tr>
                     <tr>
-                      <th style={{ border: '1px solid black', padding: '5px' }}>Workstation no</th>
-                      <th style={{ border: '1px solid black', padding: '5px' }}>{data.lamination_work_station_no.round1}</th>
-                      <th style={{ border: '1px solid black', padding: '5px' }}>{data.lamination_work_station_no.round2}</th>
+                      <HeaderCell><span><strong>EVA Cutting length (in mm)</strong></span></HeaderCell>
+                      <TableCell><span>{data.eva_cutting_length.round1}</span></TableCell>
+                      <TableCell><span>{data.eva_cutting_length.round2}</span></TableCell>
                     </tr>
                     <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Stage 1 cycle time (in Sec)</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.stage1_cycle_time.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.stage1_cycle_time.round2}</span></td>
+                      <HeaderCell><span><strong>EVA thickness (in mm)</strong></span></HeaderCell>
+                      <TableCell><span>{data.backsheet_cutting_length.round1}</span></TableCell>
+                      <TableCell><span>{data.backsheet_cutting_length.round2}</span></TableCell>
                     </tr>
                     <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Stage 2 cycle time (in Sec)</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.stage2_cycle_time.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.stage2_cycle_time.round2}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Temperature Stage 1 (°C)</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.temperature_stage1.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.temperature_stage1.round2}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Temperature Stage 2 (°C)</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.temperature_stage2.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.temperature_stage2.round2}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Pressure Stage 1</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.pressure_stage1.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.pressure_stage1.round2}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Pressure Stage 2</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.pressure_stage2.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.pressure_stage2.round2}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Last Gel Content Checked on Same Recipe</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.last_gel_content_checked.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.last_gel_content_checked.round2}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Gel Content (%)</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.gel_content.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.gel_content.round2}</span></td>
+                      <HeaderCell><span><strong>Raw material used records</strong></span></HeaderCell>
+                      <TableCell><span>{data.raw_material_used_records.round1}</span></TableCell>
+                      <TableCell><span>{data.raw_material_used_records.round2}</span></TableCell>
                     </tr>
                   </tbody>
+
                 </Table>
               </div>
 
-            </div>
-          </div>
+              <div className="avoid-break">
+                {/* Process – Tabber & Stringer */}
+                <div className="avoid-break" id="productionDetails">
+                  <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Tabber & Stringer</p>
+                  <Table>
+                    <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
+                      <tr>
+                        <th style={{ border: '1px solid black', padding: '5px' }}><strong>Parameters</strong></th>
+                        <th style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}><strong>Round 1</strong></th>
+                        <th style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}><strong>Round 2</strong></th>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Machine No</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.machine_no.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.machine_no.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Soldering Temperature - A (°C)</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.soldering_temp_a.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.soldering_temp_a.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Soldering Temperature - B (°C)</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.soldering_temp_b.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.soldering_temp_b.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Peel Strength - Front (N)</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.peel_strength_front.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.peel_strength_front.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Peel Strength - Back (N)</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.peel_strength_back.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.peel_strength_back.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>All Machine Peel Strength</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.all_machine_peel_strength.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.all_machine_peel_strength.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Raw Material Track Records</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.raw_material_track_records.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.raw_material_track_records.round2}</span></td>
+                      </tr>
+                    </tbody>
+                  </Table>
+                </div>
+              </div>
 
-          {/* footer */}
-          <div id="footer" className='footer'>
-            <Table>
-              <tbody>
-                <tr style={{ margin: 0, padding: 0 }}>
-                  <TableCell style={{ width: "50%" }}><span>Format No: JSR/SI</span></TableCell>
-                  <TableCell><span>Rev Date and No: 00</span></TableCell>
-                </tr>
-                <tr>
-                  <TableCell><span>Compiled By: Sanket Thakkar</span></TableCell>
-                  <TableCell><span>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
-                </tr>
-              </tbody>
-            </Table>
-          </div>
-          {/* page 4 end */}
-
-          {/* page 5 start */}
-          <div className="page-break"></div>
-
-          {/* header */}
-          <div className="content" style={{ height: isClick ? '151vh' : "" }}>
-            <div className="content">
-              {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
-                <LogoContainer>
-                  <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
-                </LogoContainer>
-                <TitleContainer>
-                  <strong className='pdf-span'>In Process Inspection Daily Report</strong>
-                </TitleContainer>
-                <ReportDetails>
-                  <div className='pdf-span'>Report Date: {moment().format('DD-MM-YYYY')}</div>
-                  <div className='pdf-span'>Report No: IPQC-0003</div>
-                </ReportDetails>
-              </HeaderRow> : ""}
-
-              {/* Process – Framing */}
+              {/* Process – Layup */}
               <div className="avoid-break" id="productionDetails">
-                <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Framing</p>
+                <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Layup</p>
                 <Table>
                   <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
                     <tr>
@@ -759,260 +568,434 @@ const PreviewReport = () => {
                     </tr>
                     <tr>
                       <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Workstation No</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.framing_work_station_no.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.framing_work_station_no.round2}</span></td>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.work_station_no.round1}</span></td>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.work_station_no.round2}</span></td>
                     </tr>
                     <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Module Width after Framing (in mm)</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.module_width_after_framing.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.module_width_after_framing.round2}</span></td>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Running Module Serial No.</strong></span></td>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.running_module_serial_no.round1}</span></td>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.running_module_serial_no.round2}</span></td>
                     </tr>
                     <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Module Length after Framing (in mm)</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.module_length_after_framing.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.module_length_after_framing.round2}</span></td>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Soldering Station Temperature (°C)</strong></span></td>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.soldering_station_temp.round1}</span></td>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.soldering_station_temp.round2}</span></td>
                     </tr>
                     <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Frame Size (HS in mm)</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.frame_size_hs.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.frame_size_hs.round2}</span></td>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Soldering Station Calibration</strong></span></td>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.soldering_station_calibration.round1}</span></td>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.soldering_station_calibration.round2}</span></td>
                     </tr>
                     <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>X Pitch (in mm)</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.x_pitch.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.x_pitch.round2}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Y Pitch (in mm)</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.y_pitch.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.y_pitch.round2}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>RTV Consumption in Long Side Frame</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.rtv_consumption_long_side.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.rtv_consumption_long_side.round2}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>RTV Consumption in Short Side Frame</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.rtv_consumption_short_side.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.rtv_consumption_short_side.round2}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>RTV Back Feeling</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.rtv_back_filling.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.rtv_back_filling.round2}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Potting Material Mixing Ratio</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.potting_material_mixing_ratio.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.potting_material_mixing_ratio.round2}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>JB Fixing Process</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.jb_fixing_process.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.jb_fixing_process.round2}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>JB Terminal Connections</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.jb_terminal_connections.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.jb_terminal_connections.round2}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Raw Material Consumption Records</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.raw_material_consumption_records.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.raw_material_consumption_records.round2}</span></td>
-                    </tr>
-                  </tbody>
-
-                </Table>
-              </div>
-            </div>
-          </div>
-
-          {/* footer */}
-          <div id="footer" className='footer'>
-            <Table>
-              <tbody>
-                <tr style={{ margin: 0, padding: 0 }}>
-                  <TableCell style={{ width: "50%" }}><span>Format No: JSR/SI</span></TableCell>
-                  <TableCell><span>Rev Date and No: 00</span></TableCell>
-                </tr>
-                <tr>
-                  <TableCell><span>Compiled By: Sanket Thakkar</span></TableCell>
-                  <TableCell><span>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
-                </tr>
-              </tbody>
-            </Table>
-          </div>
-          {/* page 5 end */}
-
-          {/* page 6 start */}
-          <div className="page-break"></div>
-
-          {/* header */}
-          <div className="content" style={{ height: isClick ? '151vh' : "" }}>
-            <div className="content">
-              {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
-                <LogoContainer>
-                  <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
-                </LogoContainer>
-                <TitleContainer>
-                  <strong className='pdf-span'>In Process Inspection Daily Report</strong>
-                </TitleContainer>
-                <ReportDetails>
-                  <div className='pdf-span'>Report Date: {moment().format('DD-MM-YYYY')}</div>
-                  <div className='pdf-span'>Report No: IPQC-0003</div>
-                </ReportDetails>
-              </HeaderRow> : ""}
-
-              {/* Process – Flasher Testing */}
-              <div className="avoid-break" id="productionDetails">
-                <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Flasher Testing</p>
-                <Table>
-                  <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
-                    <tr>
-                      <th style={{ border: '1px solid black', padding: '5px' }}><strong>Parameters</strong></th>
-                      <th style={{ border: '1px solid black', padding: '5px' }}><strong>Round 1</strong></th>
-                      <th style={{ border: '1px solid black', padding: '5px' }}><strong>Round 2</strong></th>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Calibration Time</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.calibration_time.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.calibration_time.round2}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Calibration By</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.calibration_by.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.calibration_by.round2}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Reference Module Sr No</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.reference_module_sr_no.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.reference_module_sr_no.round2}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Difference in Wp Measured</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_wp_measured.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_wp_measured.round2}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Difference in Isc Measured</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_isc_measured.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_isc_measured.round2}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Difference in Imp Measured</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_imp_measured.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_imp_measured.round2}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Difference in Vmp Measured</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_vmp_measured.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_vmp_measured.round2}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Difference in Voc Measured</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_voc_measured.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_voc_measured.round2}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Flasher Records</strong></span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.flasher_records.round1}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.flasher_records.round2}</span></td>
-                    </tr>
-                  </tbody>
-
-                </Table>
-              </div>
-
-              {/* Random Sample Check */}
-              <div className="avoid-break" id="productionDetails">
-                <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Random Sample Check</p>
-                <Table>
-                  <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
-                    <tr>
-                      <th style={{ border: '1px solid black', padding: '5px' }}><strong>Sr No</strong></th>
-                      <th style={{ border: '1px solid black', padding: '5px' }}><strong>Test</strong></th>
-                      <th style={{ border: '1px solid black', padding: '5px' }}><strong>Module Sr. No.</strong></th>
-                      <th style={{ border: '1px solid black', padding: '5px' }}><strong>Results</strong></th>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>1</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>Flash test</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[0].module_sr_no}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[0].result}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>2</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>Insulation Test</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[1].module_sr_no}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[1].result}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>3</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>High Voltage Test</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[2].module_sr_no}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[2].result}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>4</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>Electroluminescence Test</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[3].module_sr_no}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[3].result}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>5</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>Soldering Peel Test</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[4].module_sr_no}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[4].result}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>6</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>Final Visual Inspection</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[5].module_sr_no}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[5].result}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>7</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>Laminate visual inspection</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[6].module_sr_no}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[6].result}</span></td>
-                    </tr>
-                    <tr>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>8</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>Ground continuity test</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[7].module_sr_no}</span></td>
-                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[7].result}</span></td>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>WIP (including Pre-Lam EL Fail & OK)</strong></span></td>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.wip.round1}</span></td>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.wip.round2}</span></td>
                     </tr>
                   </tbody>
                 </Table>
               </div>
             </div>
-          </div>
 
-          {/* footer */}
-          <div id="footer" className='footer'>
-            <Table>
-              <tbody>
-                <tr style={{ margin: 0, padding: 0 }}>
-                  <TableCell style={{ width: "50%" }}><span>Format No: JSR/SI</span></TableCell>
-                  <TableCell><span>Rev Date and No: 00</span></TableCell>
-                </tr>
-                <tr>
-                  <TableCell><span>Compiled By: Sanket Thakkar</span></TableCell>
-                  <TableCell><span>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
-                </tr>
-              </tbody>
-            </Table>
-          </div>
-          {/* page 6 end */}
+            {/* footer */}
+            {isClick ? <div id="footer" style={{ width: '100%' }}>
+              <Table>
+                <tbody>
+                  <tr style={{ margin: 0, padding: 0 }}>
+                    <TableCell style={{ width: "50%" }}><span className='pdf-span'>Format No: JSR/SI</span></TableCell>
+                    <TableCell><span className='pdf-span'>Rev Date and No: 00</span></TableCell>
+                  </tr>
+                  <tr>
+                    <TableCell><span className='pdf-span'>Compiled By: Sanket Thakkar</span></TableCell>
+                    <TableCell><span className='pdf-span'>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
+                  </tr>
+                </tbody>
+              </Table>
+            </div> : ""}
+            {/* page 3 end */}
 
-          {/* page 7 start */}
-          {/* <div className="page-break"></div> */}
+            {/* page 4 start */}
+            <div className="page-break"></div>
 
-          {/* header */}
-          {/* <div className="content" style={{ height: isClick ? '151vh' : "" }}> */}
-          {/* <div className="content">
+            {/* header */}
+            <div className="content" style={{ height: isClick ? '151vh' : "" }}>
+              <div className="content">
+                {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
+                  <LogoContainer>
+                    <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
+                  </LogoContainer>
+                  <TitleContainer>
+                    <strong className='pdf-span'>In Process Inspection Daily Report</strong>
+                  </TitleContainer>
+                  <ReportDetails>
+                    <div className='pdf-span'>Report Date: {moment().format('DD-MM-YYYY')}</div>
+                    <div className='pdf-span'>Report No: IPQC-0003</div>
+                  </ReportDetails>
+                </HeaderRow> : ""}
+
+                {/* Process – Lamination */}
+                <div className="avoid-break" id="productionDetails">
+                  <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Lamination</p>
+                  <Table>
+                    <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
+                      <tr>
+                        <th style={{ border: '1px solid black', padding: '5px' }}><strong>Parameters</strong></th>
+                        <th style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}><strong>Round 1</strong></th>
+                        <th style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}><strong>Round 2</strong></th>
+                      </tr>
+                      <tr>
+                        <th style={{ border: '1px solid black', padding: '5px' }}>Workstation no</th>
+                        <th style={{ border: '1px solid black', padding: '5px' }}>{data.lamination_work_station_no.round1}</th>
+                        <th style={{ border: '1px solid black', padding: '5px' }}>{data.lamination_work_station_no.round2}</th>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Stage 1 cycle time (in Sec)</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.stage1_cycle_time.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.stage1_cycle_time.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Stage 2 cycle time (in Sec)</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.stage2_cycle_time.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.stage2_cycle_time.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Temperature Stage 1 (°C)</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.temperature_stage1.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.temperature_stage1.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Temperature Stage 2 (°C)</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.temperature_stage2.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.temperature_stage2.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Pressure Stage 1</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.pressure_stage1.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.pressure_stage1.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Pressure Stage 2</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.pressure_stage2.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.pressure_stage2.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Last Gel Content Checked on Same Recipe</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.last_gel_content_checked.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.last_gel_content_checked.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Gel Content (%)</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.gel_content.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.gel_content.round2}</span></td>
+                      </tr>
+                    </tbody>
+                  </Table>
+                </div>
+
+              </div>
+            </div>
+
+            {/* footer */}
+            <div id="footer" className='footer'>
+              <Table>
+                <tbody>
+                  <tr style={{ margin: 0, padding: 0 }}>
+                    <TableCell style={{ width: "50%" }}><span>Format No: JSR/SI</span></TableCell>
+                    <TableCell><span>Rev Date and No: 00</span></TableCell>
+                  </tr>
+                  <tr>
+                    <TableCell><span>Compiled By: Sanket Thakkar</span></TableCell>
+                    <TableCell><span>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
+                  </tr>
+                </tbody>
+              </Table>
+            </div>
+            {/* page 4 end */}
+
+            {/* page 5 start */}
+            <div className="page-break"></div>
+
+            {/* header */}
+            <div className="content" style={{ height: isClick ? '151vh' : "" }}>
+              <div className="content">
+                {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
+                  <LogoContainer>
+                    <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
+                  </LogoContainer>
+                  <TitleContainer>
+                    <strong className='pdf-span'>In Process Inspection Daily Report</strong>
+                  </TitleContainer>
+                  <ReportDetails>
+                    <div className='pdf-span'>Report Date: {moment().format('DD-MM-YYYY')}</div>
+                    <div className='pdf-span'>Report No: IPQC-0003</div>
+                  </ReportDetails>
+                </HeaderRow> : ""}
+
+                {/* Process – Framing */}
+                <div className="avoid-break" id="productionDetails">
+                  <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Framing</p>
+                  <Table>
+                    <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
+                      <tr>
+                        <th style={{ border: '1px solid black', padding: '5px' }}><strong>Parameters</strong></th>
+                        <th style={{ border: '1px solid black', padding: '5px' }}><strong>Round 1</strong></th>
+                        <th style={{ border: '1px solid black', padding: '5px' }}><strong>Round 2</strong></th>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Workstation No</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.framing_work_station_no.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.framing_work_station_no.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Module Width after Framing (in mm)</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.module_width_after_framing.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.module_width_after_framing.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Module Length after Framing (in mm)</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.module_length_after_framing.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.module_length_after_framing.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Frame Size (HS in mm)</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.frame_size_hs.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.frame_size_hs.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>X Pitch (in mm)</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.x_pitch.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.x_pitch.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Y Pitch (in mm)</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.y_pitch.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.y_pitch.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>RTV Consumption in Long Side Frame</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.rtv_consumption_long_side.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.rtv_consumption_long_side.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>RTV Consumption in Short Side Frame</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.rtv_consumption_short_side.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.rtv_consumption_short_side.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>RTV Back Feeling</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.rtv_back_filling.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.rtv_back_filling.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Potting Material Mixing Ratio</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.potting_material_mixing_ratio.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.potting_material_mixing_ratio.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>JB Fixing Process</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.jb_fixing_process.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.jb_fixing_process.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>JB Terminal Connections</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.jb_terminal_connections.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.jb_terminal_connections.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Raw Material Consumption Records</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.raw_material_consumption_records.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.raw_material_consumption_records.round2}</span></td>
+                      </tr>
+                    </tbody>
+
+                  </Table>
+                </div>
+              </div>
+            </div>
+
+            {/* footer */}
+            <div id="footer" className='footer'>
+              <Table>
+                <tbody>
+                  <tr style={{ margin: 0, padding: 0 }}>
+                    <TableCell style={{ width: "50%" }}><span>Format No: JSR/SI</span></TableCell>
+                    <TableCell><span>Rev Date and No: 00</span></TableCell>
+                  </tr>
+                  <tr>
+                    <TableCell><span>Compiled By: Sanket Thakkar</span></TableCell>
+                    <TableCell><span>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
+                  </tr>
+                </tbody>
+              </Table>
+            </div>
+            {/* page 5 end */}
+
+            {/* page 6 start */}
+            <div className="page-break"></div>
+
+            {/* header */}
+            <div className="content" style={{ height: isClick ? '151vh' : "" }}>
+              <div className="content">
+                {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
+                  <LogoContainer>
+                    <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
+                  </LogoContainer>
+                  <TitleContainer>
+                    <strong className='pdf-span'>In Process Inspection Daily Report</strong>
+                  </TitleContainer>
+                  <ReportDetails>
+                    <div className='pdf-span'>Report Date: {moment().format('DD-MM-YYYY')}</div>
+                    <div className='pdf-span'>Report No: IPQC-0003</div>
+                  </ReportDetails>
+                </HeaderRow> : ""}
+
+                {/* Process – Flasher Testing */}
+                <div className="avoid-break" id="productionDetails">
+                  <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Flasher Testing</p>
+                  <Table>
+                    <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
+                      <tr>
+                        <th style={{ border: '1px solid black', padding: '5px' }}><strong>Parameters</strong></th>
+                        <th style={{ border: '1px solid black', padding: '5px' }}><strong>Round 1</strong></th>
+                        <th style={{ border: '1px solid black', padding: '5px' }}><strong>Round 2</strong></th>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Calibration Time</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.calibration_time.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.calibration_time.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Calibration By</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.calibration_by.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.calibration_by.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Reference Module Sr No</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.reference_module_sr_no.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.reference_module_sr_no.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Difference in Wp Measured</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_wp_measured.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_wp_measured.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Difference in Isc Measured</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_isc_measured.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_isc_measured.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Difference in Imp Measured</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_imp_measured.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_imp_measured.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Difference in Vmp Measured</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_vmp_measured.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_vmp_measured.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Difference in Voc Measured</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_voc_measured.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_voc_measured.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Flasher Records</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.flasher_records.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.flasher_records.round2}</span></td>
+                      </tr>
+                    </tbody>
+
+                  </Table>
+                </div>
+
+                {/* Random Sample Check */}
+                <div className="avoid-break" id="productionDetails">
+                  <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Random Sample Check</p>
+                  <Table>
+                    <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
+                      <tr>
+                        <th style={{ border: '1px solid black', padding: '5px' }}><strong>Sr No</strong></th>
+                        <th style={{ border: '1px solid black', padding: '5px' }}><strong>Test</strong></th>
+                        <th style={{ border: '1px solid black', padding: '5px' }}><strong>Module Sr. No.</strong></th>
+                        <th style={{ border: '1px solid black', padding: '5px' }}><strong>Results</strong></th>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>1</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>Flash test</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[0].module_sr_no}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[0].result}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>2</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>Insulation Test</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[1].module_sr_no}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[1].result}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>3</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>High Voltage Test</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[2].module_sr_no}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[2].result}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>4</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>Electroluminescence Test</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[3].module_sr_no}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[3].result}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>5</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>Soldering Peel Test</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[4].module_sr_no}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[4].result}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>6</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>Final Visual Inspection</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[5].module_sr_no}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[5].result}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>7</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>Laminate visual inspection</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[6].module_sr_no}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[6].result}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>8</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>Ground continuity test</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[7].module_sr_no}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[7].result}</span></td>
+                      </tr>
+                    </tbody>
+                  </Table>
+                </div>
+              </div>
+            </div>
+
+            {/* footer */}
+            <div id="footer" className='footer'>
+              <Table>
+                <tbody>
+                  <tr style={{ margin: 0, padding: 0 }}>
+                    <TableCell style={{ width: "50%" }}><span>Format No: JSR/SI</span></TableCell>
+                    <TableCell><span>Rev Date and No: 00</span></TableCell>
+                  </tr>
+                  <tr>
+                    <TableCell><span>Compiled By: Sanket Thakkar</span></TableCell>
+                    <TableCell><span>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
+                  </tr>
+                </tbody>
+              </Table>
+            </div>
+            {/* page 6 end */}
+
+            {/* page 7 start */}
+            {/* <div className="page-break"></div> */}
+
+            {/* header */}
+            {/* <div className="content" style={{ height: isClick ? '151vh' : "" }}> */}
+            {/* <div className="content">
               {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
                 <LogoContainer>
                   <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
@@ -1058,10 +1041,10 @@ const PreviewReport = () => {
                 </Table>
               </div>
             </div> */}
-          {/* </div> */}
+            {/* </div> */}
 
-          {/* footer */}
-          {/* <div id="footer" className='footer'>
+            {/* footer */}
+            {/* <div id="footer" className='footer'>
             <Table>
               <tbody>
                 <tr style={{ margin: 0, padding: 0 }}>
@@ -1075,9 +1058,433 @@ const PreviewReport = () => {
               </tbody>
             </Table>
           </div> */}
-          {/* page 7 end */}
-        </Container>
-      </div>
+            {/* page 7 end */}
+          </Container>
+        </div>
+        :
+        <>
+          {/* content */}
+          <Container id="report">
+
+            {/* page 1 start */}
+            <div className="content" style={{ height: isClick ? '151vh' : "" }}>
+              {/* header */}
+              <HeaderRow id="header" className="pdf-header">
+                <LogoContainer>
+                  <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
+                </LogoContainer>
+                <TitleContainer>
+                  <strong className={isClick ? 'pdf-span' : ""}>In Process Inspection Daily Report</strong>
+                </TitleContainer>
+                <ReportDetails>
+                  <div>Report Date: {moment().format('DD-MM-YYYY')}</div>
+                  <div>Report No: {datatype}-0001</div>
+                </ReportDetails>
+              </HeaderRow>
+
+              {/* Report Details */}
+              <div className="avoid-break" id="reportDetails">
+                <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Report Details –</p>
+                <Table>
+                  <tbody>
+                    <tr>
+                      <HeaderCell style={{ width: '25%' }}><span><strong>OA No</strong></span></HeaderCell>
+                      <TableCell style={{ width: '25%' }}><span>{data.oaNo}</span></TableCell>
+                      <HeaderCell style={{ width: '25%' }}><span><strong>Date</strong></span></HeaderCell>
+                      <TableCell style={{ width: '25%' }}><span>{data.date}</span></TableCell>
+                    </tr>
+                    <tr>
+                      <HeaderCell><span><strong>Manufacturer</strong></span></HeaderCell>
+                      <TableCell><span>{data.manufacturer}</span></TableCell>
+                      <HeaderCell><span><strong>Shift</strong></span></HeaderCell>
+                      <TableCell><span>{data.shift}</span></TableCell>
+                    </tr>
+                    <tr>
+                      <HeaderCell><span><strong>Place of Inspection</strong></span></HeaderCell>
+                      <TableCell><span>{data.placeOfInspection}</span></TableCell>
+                      <HeaderCell><span><strong>Customer name</strong></span></HeaderCell>
+                      <TableCell><span>{data.customerName}</span></TableCell>
+                    </tr>
+                    <tr>
+                      <HeaderCell><span><strong>Report created by</strong></span></HeaderCell>
+                      <TableCell><span>{data.reportCreatedBy}</span></TableCell>
+                    </tr>
+                  </tbody>
+                </Table>
+              </div>
+
+              {/* OTHER DETAILS */}
+              <div className="avoid-break" id="productionDetails">
+                <Table>
+                  <tbody style={{ margin: 0, padding: 0 }}>
+                    {/* Header Row */}
+                    <tr>
+                      <HeaderCell style={{ width: '80px' }}><span><strong>Sr. No.</strong></span></HeaderCell>
+                      <HeaderCell style={{ width: '150px' }}><span><strong>Component</strong></span></HeaderCell>
+                      <HeaderCell><span><strong>Description Field</strong></span></HeaderCell>
+                      <HeaderCell><span><strong>Value</strong></span></HeaderCell>
+                    </tr>
+
+                    {/* Solar Cell Data */}
+                    <tr>
+                      <TableCell rowSpan="6"><span>1</span></TableCell>
+                      <TableCell rowSpan="6"><span>Solar Cell</span></TableCell>
+                      <TableCell><span>10BB Cells</span></TableCell>
+                      <TableCell><span>{data.solar_cell.bb_cells}</span></TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell><span>Eff %</span></TableCell>
+                      <TableCell><span>{data.solar_cell.efficiency}</span></TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell><span>Size</span></TableCell>
+                      <TableCell><span>{data.solar_cell.size}</span></TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell><span>Product Name</span></TableCell>
+                      <TableCell><span>{data.solar_cell.product_name}</span></TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell><span>Batch of Manufacturer</span></TableCell>
+                      <TableCell><span>{data.solar_cell.batch}</span></TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell><span>Company Make</span></TableCell>
+                      <TableCell><span>{data.solar_cell.company_make}</span></TableCell>
+                    </tr>
+
+                    {/* Cell Connector Data */}
+                    <tr>
+                      <TableCell rowSpan="3"><span>2</span></TableCell>
+                      <TableCell rowSpan="3"><span>Cell Connector (Ribbon)</span></TableCell>
+                      <TableCell><span>Make</span></TableCell>
+                      <TableCell><span>{data.cell_connector.make}</span></TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell><span>Diameter</span></TableCell>
+                      <TableCell><span>{data.cell_connector.diameter}</span></TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell><span>Batch of Manufacturer</span></TableCell>
+                      <TableCell><span>{data.cell_connector.batch}</span></TableCell>
+                    </tr>
+
+                    {/* Soldering Flux Data */}
+                    <tr>
+                      <TableCell rowSpan="4"><span>3</span></TableCell>
+                      <TableCell rowSpan="4"><span>Soldering Flux</span></TableCell>
+                      <TableCell><span>Make</span></TableCell>
+                      <TableCell><span>{data.soldering_flux.make}</span></TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell><span>Model</span></TableCell>
+                      <TableCell><span>{data.soldering_flux.model}</span></TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell><span>Batch of Manufacturer</span></TableCell>
+                      <TableCell><span>{data.soldering_flux.batch}</span></TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell><span>Date of Manufacturing</span></TableCell>
+                      <TableCell><span>{data.soldering_flux.manufacturing_date}</span></TableCell>
+                    </tr>
+
+                    {/* Glass Section */}
+                    <tr>
+                      <TableCell rowSpan="5">4</TableCell>
+                      <TableCell rowSpan="5">Glass</TableCell>
+                      <TableCell>Make</TableCell>
+                      <TableCell>{data.glass.make}</TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell>Dimension</TableCell>
+                      <TableCell>{data.glass.dimension}</TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell>AR Coated Glass</TableCell>
+                      <TableCell>{data.glass.ar_coated}</TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell>Batch of Manufacturer</TableCell>
+                      <TableCell>{data.glass.batch}</TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell>Manufacturing Date</TableCell>
+                      <TableCell>{data.glass.manufacturing_date}</TableCell>
+                    </tr>
+
+
+                    {/* EVA Section */}
+                    <tr>
+                      <TableCell rowSpan="4">5</TableCell>
+                      <TableCell rowSpan="4">EVA (Front or Back)</TableCell>
+                      <TableCell>Make</TableCell>
+                      <TableCell>{data.eva.make}</TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell>Model</TableCell>
+                      <TableCell>{data.eva.model}</TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell>Batch of Manufacturer</TableCell>
+                      <TableCell>{data.eva.batch}</TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell>Manufacturing Date</TableCell>
+                      <TableCell>{data.eva.manufacturing_date}</TableCell>
+                    </tr>
+
+                     {/* String Connector */}
+                     <tr>
+                      <TableCell rowSpan="3">6</TableCell>
+                      <TableCell rowSpan="3">String Connector (Busbar)</TableCell>
+                      <TableCell>Make</TableCell>
+                      <TableCell>{data.string_connector.make}</TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell>Dimension</TableCell>
+                      <TableCell>{data.string_connector.dimension}</TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell>Batch of Manufacturer</TableCell>
+                      <TableCell>{data.string_connector.batch}</TableCell>
+                    </tr>
+                  </tbody>
+                </Table>
+              </div>
+
+            </div>
+
+            {/* Footer */}
+            {isClick ? <div id="footer" className='footer' style={{ width: '100%' }}>
+              <Table>
+                <tbody>
+                  <tr style={{ margin: 0, padding: 0 }}>
+                    <TableCell style={{ width: "50%" }}><span className='pdf-span'>Format No: JSR/SI</span></TableCell>
+                    <TableCell><span className='pdf-span'>Rev Date and No: 00</span></TableCell>
+                  </tr>
+                  <tr>
+                    <TableCell><span className='pdf-span'>Compiled By: Sanket Thakkar</span></TableCell>
+                    <TableCell><span className='pdf-span'>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
+                  </tr>
+                </tbody>
+              </Table>
+            </div> : ""}
+
+            {/* page 1 end */}
+
+            {/* page 2 start */}
+            {/* <div className="page-break"></div> */}
+
+            {/* header */}
+            <div className="content" style={{ height: isClick ? '151vh' : "" }}>
+              {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
+                <LogoContainer>
+                  <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
+                </LogoContainer>
+                <TitleContainer>
+                  <strong className='pdf-span'>In Process Inspection Daily Report</strong>
+                </TitleContainer>
+                <ReportDetails>
+                  <div className='pdf-span'>Report Date: {moment().format('DD-MM-YYYY')}</div>
+                  <div className='pdf-span'>Report No: {datatype}-0003</div>
+                </ReportDetails>
+              </HeaderRow> : ""}
+
+              {/* OTHER DETAILS */}
+              <div className="avoid-break" id="productionDetails">
+                <Table>
+                  <tbody style={{ margin: 0, padding: 0 }}>
+                    {/* Back Sheet */}
+                    <tr>
+                      <TableCell rowSpan="4" style={{ width: '80px' }}>7</TableCell>
+                      <TableCell rowSpan="4" style={{ width: '150px' }}>Back Sheet</TableCell>
+                      <TableCell>Make</TableCell>
+                      <TableCell style={{ minWidth: '53px' }}>{data.back_sheet.make}</TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell>Model</TableCell>
+                      <TableCell>{data.back_sheet.model}</TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell>Batch of Manufacturer</TableCell>
+                      <TableCell>{data.back_sheet.batch}</TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell>Manufacturing Date</TableCell>
+                      <TableCell>{data.back_sheet.manufacturing_date}</TableCell>
+                    </tr>
+
+                    {/* Frame */}
+                    <tr>
+                      <TableCell rowSpan="6">8</TableCell>
+                      <TableCell rowSpan="6">Frame</TableCell>
+                      <TableCell>Make</TableCell>
+                      <TableCell>{data.frame.make}</TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell>Dimension of Long Side</TableCell>
+                      <TableCell>{data.frame.long_side_dimension}</TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell>Dimension of Short Side</TableCell>
+                      <TableCell>{data.frame.short_side_dimension}</TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell>Punching Location</TableCell>
+                      <TableCell>{data.frame.punching_location}</TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell>Model</TableCell>
+                      <TableCell>{data.frame.model}</TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell>Batch of Manufacturer</TableCell>
+                      <TableCell>{data.frame.batch}</TableCell>
+                    </tr>
+
+                    {/* Junction Box */}
+                    <tr>
+                      <TableCell rowSpan="2">9</TableCell>
+                      <TableCell rowSpan="2">Junction Box</TableCell>
+                      <TableCell>Company Make</TableCell>
+                      <TableCell>{data.junction_box.company_make}</TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell>Batch of Manufacturer</TableCell>
+                      <TableCell>{data.junction_box.batch}</TableCell>
+                    </tr>
+
+                    {/* Connector */}
+                    <tr>
+                      <TableCell>10</TableCell>
+                      <TableCell>Connector</TableCell>
+                      <TableCell>Type</TableCell>
+                      <TableCell>{data.connector.type}</TableCell>
+                    </tr>
+
+                    {/* Potting for JB */}
+                    <tr>
+                      <TableCell rowSpan="4">11</TableCell>
+                      <TableCell rowSpan="4">Potting for JB</TableCell>
+                      <TableCell>Make</TableCell>
+                      <TableCell>{data.potting_for_jb.make}</TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell>Model</TableCell>
+                      <TableCell>{data.potting_for_jb.model}</TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell>Batch of Manufacturer</TableCell>
+                      <TableCell>{data.potting_for_jb.batch}</TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell>Manufacturing Date</TableCell>
+                      <TableCell>{data.potting_for_jb.manufacturing_date}</TableCell>
+                    </tr>
+
+                    {/* Adhesive for Junction Box */}
+                    <tr>
+                      <TableCell rowSpan="4">12</TableCell>
+                      <TableCell rowSpan="4">Adhesive for Junction Box</TableCell>
+                      <TableCell>Make</TableCell>
+                      <TableCell>{data.adhesive_for_jb.make}</TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell>Model</TableCell>
+                      <TableCell>{data.adhesive_for_jb.model}</TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell>Batch of Manufacturer</TableCell>
+                      <TableCell>{data.adhesive_for_jb.batch}</TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell>Manufacturing Date</TableCell>
+                      <TableCell>{data.adhesive_for_jb.manufacturing_date}</TableCell>
+                    </tr>
+
+                    {/* Insulation Layer Sealant */}
+                    <tr>
+                      <TableCell rowSpan="2">13</TableCell>
+                      <TableCell rowSpan="2">Insulation Layer Sealant</TableCell>
+                      <TableCell>Make</TableCell>
+                      <TableCell>{data.insulation_layer_sealant.make}</TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell>Model</TableCell>
+                      <TableCell>{data.insulation_layer_sealant.model}</TableCell>
+                    </tr>
+
+                    {/* Bypass Diode */}
+                    <tr>
+                      <TableCell rowSpan="2">14</TableCell>
+                      <TableCell rowSpan="2">Bypass Diode</TableCell>
+                      <TableCell>Make</TableCell>
+                      <TableCell>{data.bypass_diode.make}</TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell>Model</TableCell>
+                      <TableCell>{data.bypass_diode.model}</TableCell>
+                    </tr>
+
+                    {/* Fixing Tape */}
+                    <tr>
+                      <TableCell rowSpan="2">15</TableCell>
+                      <TableCell rowSpan="2">Fixing Tape</TableCell>
+                      <TableCell>Make</TableCell>
+                      <TableCell>{data.fixing_tape.make}</TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell>Model</TableCell>
+                      <TableCell>{data.fixing_tape.model}</TableCell>
+                    </tr>
+
+                    {/* Cable */}
+                    <tr>
+                      <TableCell>16</TableCell>
+                      <TableCell>Cable</TableCell>
+                      <TableCell>Make & Dimension</TableCell>
+                      <TableCell>{data.cable.make_dimension}</TableCell>
+                    </tr>
+
+                    {/* RFID */}
+                    <tr>
+                      <TableCell rowSpan={2}>17</TableCell>
+                      <TableCell rowSpan={2}>RFID</TableCell>
+                      <TableCell>Company Make</TableCell>
+                      <TableCell>{data.rfid.company_make}</TableCell>
+                    </tr>
+                    <tr>
+                      <TableCell>Model No</TableCell>
+                      <TableCell>{data.rfid.model_no}</TableCell>
+                    </tr>
+
+                  </tbody>
+                </Table>
+              </div>
+
+
+            </div>
+
+            {/* footer */}
+            {isClick ? <div id="footer" style={{ width: '100%' }}>
+              <Table>
+                <tbody>
+                  <tr style={{ margin: 0, padding: 0 }}>
+                    <TableCell style={{ width: "50%" }}><span className='pdf-span'>Format No: JSR/SI</span></TableCell>
+                    <TableCell><span className='pdf-span'>Rev Date and No: 00</span></TableCell>
+                  </tr>
+                  <tr>
+                    <TableCell><span className='pdf-span'>Compiled By: Sanket Thakkar</span></TableCell>
+                    <TableCell><span className='pdf-span'>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
+                  </tr>
+                </tbody>
+              </Table>
+            </div> : ""}
+            {/* page 2 end */}
+          </Container>
+        </>
+      }
     </>
   );
 };

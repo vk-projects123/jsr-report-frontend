@@ -4,7 +4,7 @@ import { LIST_FORM_SECTIONS_API, LIST_SECTION_PARAMS_API } from "../../Api/api.t
 const RunningReport = () => {
   const [selectedSection, setSelectedSection] = useState<any>({ section: 'Report Details', section_id: 1 });
   const [expandedSection, setExpandedSection] = useState<any>(null);
-  const [sectionparams,setSectionparams] = useState<any>([]);
+  const [sectionparams, setSectionparams] = useState<any>([]);
   const [isLoaded, setLoaded] = useState(false);
   const [sections, setSections] = useState([]);
 
@@ -51,7 +51,7 @@ const RunningReport = () => {
       section_id: e
     });
 
-console.log("listSectionParams",params);
+    console.log("listSectionParams", params);
 
     try {
       const response = await fetch(`${LIST_SECTION_PARAMS_API}?${params.toString()}`, {
@@ -63,11 +63,11 @@ console.log("listSectionParams",params);
       });
 
       const data = await response.json();
-console.log("data",data);
+      console.log("data", data);
       if (data.Status === 0) {
         setLoaded(false);
       } else if (data.Status === 1) {
-        console.log("params",data.info);
+        console.log("params", data.info);
         setSectionparams(data.info || []);
       }
     } catch (error) {
@@ -2225,7 +2225,7 @@ console.log("data",data);
                     // section.subsections.length
                     //   ? toggleSection(section.title)
                     //   : 
-                    handleSectionClick(section.title,section.section_id)
+                    handleSectionClick(section.title, section.section_id)
                   }
                 >
                   <span className={`icon ${isActive ? 'active-section' : ''}`}>

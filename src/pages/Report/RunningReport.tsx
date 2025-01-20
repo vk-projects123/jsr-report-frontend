@@ -93,8 +93,93 @@ const RunningReport = () => {
         icon: "🏠",
         subsections: [],
       },
+      // {
+      //   title: "Material Details",
+      //   icon: "🏠",
+      //   subsections: [],
+      // },
       {
-        title: "Material Details",
+        title: "Solar Cell",
+        icon: "🏠",
+        subsections: [],
+      },
+      {
+        title: "Cell Connector",
+        icon: "🏠",
+        subsections: [],
+      },
+      {
+        title: "Soldering Flux",
+        icon: "🏠",
+        subsections: [],
+      },
+      {
+        title: "Glass",
+        icon: "🏠",
+        subsections: [],
+      },
+      {
+        title: "EVA",
+        icon: "🏠",
+        subsections: [],
+      },
+      {
+        title: "String Connector",
+        icon: "🏠",
+        subsections: [],
+      },
+      {
+        title: "Back Sheet",
+        icon: "🏠",
+        subsections: [],
+      },
+      {
+        title: "Frame",
+        icon: "🏠",
+        subsections: [],
+      },
+      {
+        title: "Junction Box",
+        icon: "🏠",
+        subsections: [],
+      },
+      {
+        title: "Connector",
+        icon: "🏠",
+        subsections: [],
+      },
+      {
+        title: "Potting for JB",
+        icon: "🏠",
+        subsections: [],
+      },
+      {
+        title: "Adhesive for Junction Box",
+        icon: "🏠",
+        subsections: [],
+      },
+      {
+        title: "Insulation Layer Sealant",
+        icon: "🏠",
+        subsections: [],
+      },
+      {
+        title: "By Pass Diode",
+        icon: "🏠",
+        subsections: [],
+      },
+      {
+        title: "Fixing Tape",
+        icon: "🏠",
+        subsections: [],
+      },
+      {
+        title: "Cable",
+        icon: "🏠",
+        subsections: [],
+      },
+      {
+        title: "RFID",
         icon: "🏠",
         subsections: [],
       },
@@ -200,95 +285,95 @@ const RunningReport = () => {
       { sr_no: 7, test: "Laminate visual inspection", module_sr_no: "", result: "" },
       { sr_no: 8, test: "Ground continuity test", module_sr_no: "", result: "" },
     ],
-      solar_cell: {
-        bb_cells: "",
-        efficiency: "",
-        size: "",
-        product_name: "",
-        batch: "",
-        company_make: "",
-      },
-      cell_connector: {
-        make: "",
-        diameter: "",
-        batch: "",
-      },
-      soldering_flux: {
-        make: "",
-        model: "",
-        batch: "",
-        manufacturing_date: "",
-      },
-      glass: {
-        make: "",
-        dimension: "",
-        ar_coated: "",
-        batch: "",
-        manufacturing_date: "",
-      },
-      eva: {
-        make: "",
-        model: "",
-        batch: "",
-        manufacturing_date: "",
-      },
-      string_connector: {
-        make: "",
-        dimension: "",
-        batch: "",
-      },
-      back_sheet: {
-        make: "",
-        model: "",
-        batch: "",
-        manufacturing_date: "",
-      },
-      frame: {
-        make: "",
-        long_side_dimension: "",
-        short_side_dimension: "",
-        punching_location: "",
-        model: "",
-        batch: "",
-      },
-      junction_box: {
-        company_make: "",
-        batch: "",
-      },
-      connector: {
-        type: "",
-      },
-      potting_for_jb: {
-        make: "",
-        model: "",
-        batch: "",
-        manufacturing_date: "",
-      },
-      adhesive_for_jb: {
-        make: "",
-        model: "",
-        batch: "",
-        manufacturing_date: "",
-      },
-      insulation_layer_sealant: {
-        make: "",
-        model: "",
-      },
-      bypass_diode: {
-        make: "",
-        model: "",
-      },
-      fixing_tape: {
-        make: "",
-        model: "",
-      },
-      cable: {
-        make_dimension: "",
-      },
-      rfid: {
-        company_make: "",
-        model_no: "",
-      }
+    solar_cell: {
+      bb_cells: "",
+      efficiency: "",
+      size: "",
+      product_name: "",
+      batch: "",
+      company_make: "",
+    },
+    cell_connector: {
+      make: "",
+      diameter: "",
+      batch: "",
+    },
+    soldering_flux: {
+      make: "",
+      model: "",
+      batch: "",
+      manufacturing_date: "",
+    },
+    glass: {
+      make: "",
+      dimension: "",
+      ar_coated: "",
+      batch: "",
+      manufacturing_date: "",
+    },
+    eva: {
+      make: "",
+      model: "",
+      batch: "",
+      manufacturing_date: "",
+    },
+    string_connector: {
+      make: "",
+      dimension: "",
+      batch: "",
+    },
+    back_sheet: {
+      make: "",
+      model: "",
+      batch: "",
+      manufacturing_date: "",
+    },
+    frame: {
+      make: "",
+      long_side_dimension: "",
+      short_side_dimension: "",
+      punching_location: "",
+      model: "",
+      batch: "",
+    },
+    junction_box: {
+      company_make: "",
+      batch: "",
+    },
+    connector: {
+      type: "",
+    },
+    potting_for_jb: {
+      make: "",
+      model: "",
+      batch: "",
+      manufacturing_date: "",
+    },
+    adhesive_for_jb: {
+      make: "",
+      model: "",
+      batch: "",
+      manufacturing_date: "",
+    },
+    insulation_layer_sealant: {
+      make: "",
+      model: "",
+    },
+    bypass_diode: {
+      make: "",
+      model: "",
+    },
+    fixing_tape: {
+      make: "",
+      model: "",
+    },
+    cable: {
+      make_dimension: "",
+    },
+    rfid: {
+      company_make: "",
+      model_no: "",
+    }
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -418,7 +503,6 @@ const RunningReport = () => {
       )
     );
   };
-
 
   //layup section
   const [layupotherdetails, setLayupOtherdetails] = useState<any>([]);
@@ -597,7 +681,7 @@ const RunningReport = () => {
                     + Add Observation
                   </button>
                 )}
-                <button className="add-btn mx-2" onClick={() => navigate('/reports/preview_report', { state: { data: formData, observations: observations } })}>
+                <button className="add-btn mx-2" onClick={() => navigate('/reports/preview_report', { state: { pagetype:data.reportType,data: formData, observations: observations } })}>
                   Preview
                 </button>
                 <button className="add-btn mx-2" onClick={() => { }}>
@@ -2102,22 +2186,6 @@ const RunningReport = () => {
                                         </td>
                                       ))}
                                     </tr>
-
-                                    {/* Observations */}
-                                    <tr>
-                                      <td>Observations</td>
-                                      {["round1", "round2", "round3", "round4"].map((round) => (
-                                        <td key={round}>
-                                          <input
-                                            type="text"
-                                            placeholder="Observations"
-                                            className="input-field"
-                                            value={formData.observations[round]}
-                                            onChange={(e) => handleNestedChange(e, "observations", round)}
-                                          />
-                                        </td>
-                                      ))}
-                                    </tr>
                                   </tbody>
                                 </table>
                                 <div className="observation-container" style={{ width: '100%' }}>
@@ -2299,9 +2367,9 @@ const RunningReport = () => {
                     + Add Observation
                   </button>
                 )}
-                {/* <button className="add-btn mx-2" onClick={() => navigate('/reports/preview_report', { state: {data:formData,observations:observations} })}>
+                <button className="add-btn mx-2" onClick={() => navigate('/reports/preview_report', { state: {pagetype:data.reportType,data:formData,observations:observations} })}>
                   Preview
-                </button> */}
+                </button>
                 <button className="add-btn mx-2" onClick={() => { }}>
                   Save
                 </button>
@@ -2467,811 +2535,1076 @@ const RunningReport = () => {
                   </div>
                 </div>
               </form>
-              : selectedSection.section === "Material Details" ?
-              <div className="table-container">
-              <table className="production-table">
-                <thead>
-                  <tr>
-                    <th>Sr. No.</th>
-                    <th>Component</th>
-                    <th>Description Field</th>
-                    <th>Value</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {/* Solar Cell */}
-                  <tr>
-                    <td rowSpan="6">1</td>
-                    <td rowSpan="6">Solar Cell</td>
-                    <td>10BB Cells</td>
-                    <td>
-                      <input
-                      className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                      style={{ margin: 0 }}
-                        type="text"
-                        placeholder="10BB Cells"
-                        value={formData.solar_cell.bb_cells}
-                        onChange={(e) => handleNestedChange(e, "solar_cell", "bb_cells")}
-                      />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Eff %</td>
-                    <td>
-                      <input
-                      className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                      style={{ margin: 0 }}
-                        type="text"
-                        placeholder="22.90%"
-                        value={formData.solar_cell.efficiency}
-                        onChange={(e) => handleNestedChange(e, "solar_cell", "efficiency")}
-                      />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Size</td>
-                    <td>
-                      <input
-                      className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                      style={{ margin: 0 }}
-                        type="text"
-                        placeholder="182*182"
-                        value={formData.solar_cell.size}
-                        onChange={(e) => handleNestedChange(e, "solar_cell", "size")}
-                      />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Product Name</td>
-                    <td>
-                      <input
-                      className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                      style={{ margin: 0 }}
-                        type="text"
-                        placeholder="M182ABPERCBP"
-                        value={formData.solar_cell.product_name}
-                        onChange={(e) =>
-                          handleNestedChange(e, "solar_cell", "product_name")
-                        }
-                      />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Batch of manufacturer</td>
-                    <td>
-                      <input
-                      className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                      style={{ margin: 0 }}
-                        type="text"
-                        placeholder="CM2407166529DAWD1924"
-                        value={formData.solar_cell.batch}
-                        onChange={(e) => handleNestedChange(e, "solar_cell", "batch")}
-                      />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Company Make</td>
-                    <td>
-                      <input
-                      className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                      style={{ margin: 0 }}
-                        type="text"
-                        placeholder="Aidu Energy"
-                        value={formData.solar_cell.company_make}
-                        onChange={(e) =>
-                          handleNestedChange(e, "solar_cell", "company_make")
-                        }
-                      />
-                    </td>
-                  </tr>
-        
-                  <tr>
-            <td rowSpan="3">2</td>
-            <td rowSpan="3">Cell Connector (Ribbon)</td>
-            <td>Make</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.cell_connector.make}
-                onChange={(e) => handleNestedChange(e, "cell_connector", "make")}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Diameter</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.cell_connector.diameter}
-                onChange={(e) =>
-                  handleNestedChange(e, "cell_connector", "diameter")
-                }
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Batch of Manufacturer</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.cell_connector.batch}
-                onChange={(e) => handleNestedChange(e, "cell_connector", "batch")}
-              />
-            </td>
-          </tr>
-
-                  {/* Soldering Flux */}
-                  <tr>
-                    <td rowSpan="4">3</td>
-                    <td rowSpan="4">Soldering Flux</td>
-                    <td>Make</td>
-                    <td>
-                      <input
-                      className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                      style={{ margin: 0 }}
-                        type="text"
-                        placeholder="Reality Chemicals"
-                        value={formData.soldering_flux.make}
-                        onChange={(e) => handleNestedChange(e, "soldering_flux", "make")}
-                      />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Model</td>
-                    <td>
-                      <input
-                      className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                      style={{ margin: 0 }}
-                        type="text"
-                        placeholder="RC-PV"
-                        value={formData.soldering_flux.model}
-                        onChange={(e) => handleNestedChange(e, "soldering_flux", "model")}
-                      />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Batch of manufacturer</td>
-                    <td>
-                      <input
-                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                        style={{ margin: 0 }}
-                        type="text"
-                        placeholder="RCPV 44M/23"
-                        value={formData.soldering_flux.batch}
-                        onChange={(e) => handleNestedChange(e, "soldering_flux", "batch")}
-                      />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Date of Manufacturing</td>
-                    <td>
-                      <input
-                      className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                      style={{ margin: 0 }}
-                        type="text"
-                        placeholder="23-08-2024"
-                        value={formData.soldering_flux.manufacturing_date}
-                        onChange={(e) =>
-                          handleNestedChange(e, "soldering_flux", "manufacturing_date")
-                        }
-                      />
-                    </td>
-                  </tr>
-        
-                  {/* Glass */}
-                  <tr>
-                    <td rowSpan="5">4</td>
-                    <td rowSpan="5">Glass</td>
-                    <td>Make</td>
-                    <td>
-                      <input
-                      className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                      style={{ margin: 0 }}
-                        type="text"
-                        placeholder="Gujarat Borosil LTD."
-                        value={formData.glass.make}
-                        onChange={(e) => handleNestedChange(e, "glass", "make")}
-                      />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Dimension</td>
-                    <td>
-                      <input
-                      className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                      style={{ margin: 0 }}
-                        type="text"
-                        placeholder="2272*1128*3.2"
-                        value={formData.glass.dimension}
-                        onChange={(e) => handleNestedChange(e, "glass", "dimension")}
-                      />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>AR Coated Glass</td>
-                    <td>
-                      <input
-                      className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                      style={{ margin: 0 }}
-                        type="text"
-                        placeholder="Yes"
-                        value={formData.glass.ar_coated}
-                        onChange={(e) => handleNestedChange(e, "glass", "ar_coated")}
-                      />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Batch of Manufacturer</td>
-                    <td>
-                      <input
-                      className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                      style={{ margin: 0 }}
-                        type="text"
-                        placeholder="6XF02051X1"
-                        value={formData.glass.batch}
-                        onChange={(e) => handleNestedChange(e, "glass", "batch")}
-                      />
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Manufacturing Date</td>
-                    <td>
-                      <input
-                      className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                      style={{ margin: 0 }}
-                        type="text"
-                        placeholder="Not Mentioned"
-                        value={formData.glass.manufacturing_date}
-                        onChange={(e) =>
-                          handleNestedChange(e, "glass", "manufacturing_date")
-                        }
-                      />
-                    </td>
-                  </tr>
-        
- {/* EVA */}
- <tr>
-            <td rowSpan="4">5</td>
-            <td rowSpan="4">EVA (Front or Back)</td>
-            <td>Make</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.eva.make}
-                onChange={(e) => handleNestedChange(e, "eva", "make")}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Model</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.eva.model}
-                onChange={(e) => handleNestedChange(e, "eva", "model")}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Batch of Manufacturer</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.eva.batch}
-                onChange={(e) => handleNestedChange(e, "eva", "batch")}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Manufacturing Date</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.eva.manufacturing_date}
-                onChange={(e) =>
-                  handleNestedChange(e, "eva", "manufacturing_date")
-                }
-              />
-            </td>
-          </tr>
-
-          {/* String Connector */}
-          <tr>
-            <td rowSpan="3">6</td>
-            <td rowSpan="3">String Connector (Busbar)</td>
-            <td>Make</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.string_connector.make}
-                onChange={(e) =>
-                  handleNestedChange(e, "string_connector", "make")
-                }
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Dimension</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.string_connector.dimension}
-                onChange={(e) =>
-                  handleNestedChange(e, "string_connector", "dimension")
-                }
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Batch of Manufacturer</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.string_connector.batch}
-                onChange={(e) =>
-                  handleNestedChange(e, "string_connector", "batch")
-                }
-              />
-            </td>
-          </tr>
-
-          {/* Back Sheet */}
-          <tr>
-            <td rowSpan="4">7</td>
-            <td rowSpan="4">Back Sheet</td>
-            <td>Make</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.back_sheet.make}
-                onChange={(e) => handleNestedChange(e, "back_sheet", "make")}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Model</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.back_sheet.model}
-                onChange={(e) => handleNestedChange(e, "back_sheet", "model")}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Batch of Manufacturer</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.back_sheet.batch}
-                onChange={(e) => handleNestedChange(e, "back_sheet", "batch")}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Manufacturing Date</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.back_sheet.manufacturing_date}
-                onChange={(e) =>
-                  handleNestedChange(e, "back_sheet", "manufacturing_date")
-                }
-              />
-            </td>
-          </tr>
-
-          {/* Frame */}
-          <tr>
-            <td rowSpan="6">8</td>
-            <td rowSpan="6">Frame</td>
-            <td>Make</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.frame.make}
-                onChange={(e) => handleNestedChange(e, "frame", "make")}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Dimension of Long Side</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.frame.long_side_dimension}
-                onChange={(e) =>
-                  handleNestedChange(e, "frame", "long_side_dimension")
-                }
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Dimension of Short Side</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.frame.short_side_dimension}
-                onChange={(e) =>
-                  handleNestedChange(e, "frame", "short_side_dimension")
-                }
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Punching Location</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.frame.punching_location}
-                onChange={(e) =>
-                  handleNestedChange(e, "frame", "punching_location")
-                }
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Model</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.frame.model}
-                onChange={(e) => handleNestedChange(e, "frame", "model")}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Batch of Manufacturer</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.frame.batch}
-                onChange={(e) => handleNestedChange(e, "frame", "batch")}
-              />
-            </td>
-          </tr>
-
-          {/* Junction Box */}
-          <tr>
-            <td rowSpan="2">9</td>
-            <td rowSpan="2">Junction Box</td>
-            <td>Company Make</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.junction_box.company_make}
-                onChange={(e) =>
-                  handleNestedChange(e, "junction_box", "company_make")
-                }
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Batch of Manufacturer</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.junction_box.batch}
-                onChange={(e) => handleNestedChange(e, "junction_box", "batch")}
-              />
-            </td>
-          </tr>
-
-          {/* Connector */}
-          <tr>
-            <td>10</td>
-            <td>Connector</td>
-            <td>Type</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.connector.type}
-                onChange={(e) => handleNestedChange(e, "connector", "type")}
-              />
-            </td>
-          </tr>
-
-          {/* Potting for JB */}
-          <tr>
-            <td rowSpan="4">11</td>
-            <td rowSpan="4">Potting for JB</td>
-            <td>Make</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.potting_for_jb.make}
-                onChange={(e) =>
-                  handleNestedChange(e, "potting_for_jb", "make")
-                }
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Model</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.potting_for_jb.model}
-                onChange={(e) =>
-                  handleNestedChange(e, "potting_for_jb", "model")
-                }
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Batch of Manufacturer</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.potting_for_jb.batch}
-                onChange={(e) =>
-                  handleNestedChange(e, "potting_for_jb", "batch")
-                }
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Manufacturing Date</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.potting_for_jb.manufacturing_date}
-                onChange={(e) =>
-                  handleNestedChange(e, "potting_for_jb", "manufacturing_date")
-                }
-              />
-            </td>
-          </tr>
-
-          {/* Adhesive for Junction Box */}
-          <tr>
-            <td rowSpan="4">12</td>
-            <td rowSpan="4">Adhesive for Junction Box</td>
-            <td>Make</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.adhesive_for_jb.make}
-                onChange={(e) =>
-                  handleNestedChange(e, "adhesive_for_jb", "make")
-                }
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Model</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.adhesive_for_jb.model}
-                onChange={(e) =>
-                  handleNestedChange(e, "adhesive_for_jb", "model")
-                }
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Batch of Manufacturer</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.adhesive_for_jb.batch}
-                onChange={(e) =>
-                  handleNestedChange(e, "adhesive_for_jb", "batch")
-                }
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Manufacturing Date</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.adhesive_for_jb.manufacturing_date}
-                onChange={(e) =>
-                  handleNestedChange(e, "adhesive_for_jb", "manufacturing_date")
-                }
-              />
-            </td>
-          </tr>
-{/* Insulation Layer Sealant */}
-<tr>
-            <td rowSpan="2">13</td>
-            <td rowSpan="2">Insulation Layer Sealant</td>
-            <td>Make</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.insulation_layer_sealant.make}
-                onChange={(e) =>
-                  handleNestedChange(e, "insulation_layer_sealant", "make")
-                }
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Model</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.insulation_layer_sealant.model}
-                onChange={(e) =>
-                  handleNestedChange(e, "insulation_layer_sealant", "model")
-                }
-              />
-            </td>
-          </tr>
-
-          {/* Bypass Diode */}
-          <tr>
-            <td rowSpan="2">14</td>
-            <td rowSpan="2">Bypass Diode</td>
-            <td>Make</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.bypass_diode.make}
-                onChange={(e) => handleNestedChange(e, "bypass_diode", "make")}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Model</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.bypass_diode.model}
-                onChange={(e) => handleNestedChange(e, "bypass_diode", "model")}
-              />
-            </td>
-          </tr>
-
-          {/* Fixing Tape */}
-          <tr>
-            <td rowSpan="2">15</td>
-            <td rowSpan="2">Fixing Tape</td>
-            <td>Make</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.fixing_tape.make}
-                onChange={(e) => handleNestedChange(e, "fixing_tape", "make")}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Model</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.fixing_tape.model}
-                onChange={(e) => handleNestedChange(e, "fixing_tape", "model")}
-              />
-            </td>
-          </tr>
-
-          {/* Cable */}
-          <tr>
-            <td>16</td>
-            <td>Cable</td>
-            <td>Make & Dimension</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.cable.make_dimension}
-                onChange={(e) => handleNestedChange(e, "cable", "make_dimension")}
-              />
-            </td>
-          </tr>
-
-          {/* RFID */}
-          <tr>
-            <td rowSpan="2">17</td>
-            <td rowSpan="2">RFID</td>
-            <td>Company Make</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.rfid.company_make}
-                onChange={(e) => handleNestedChange(e, "rfid", "company_make")}
-              />
-            </td>
-          </tr>
-          <tr>
-            <td>Model No</td>
-            <td>
-              <input
-              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-              style={{ margin: 0 }}
-                type="text"
-                value={formData.rfid.model_no}
-                onChange={(e) => handleNestedChange(e, "rfid", "model_no")}
-              />
-            </td>
-          </tr>
-        
-                </tbody>
-              </table>
-            </div>
-                : <></>}
+              : selectedSection.section === "Solar Cell" ?
+                <div className="table-container">
+                  <table className="production-table">
+                    <thead>
+                      <tr>
+                        <th>Sr. No.</th>
+                        <th>Component</th>
+                        <th>Description Field</th>
+                        <th>Value</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {/* Solar Cell */}
+                      <tr>
+                        <td rowSpan="6">1</td>
+                        <td rowSpan="6">Solar Cell</td>
+                        <td>10BB Cells</td>
+                        <td>
+                          <input
+                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                            style={{ margin: 0 }}
+                            type="text"
+                            placeholder="10BB Cells"
+                            value={formData.solar_cell.bb_cells}
+                            onChange={(e) => handleNestedChange(e, "solar_cell", "bb_cells")}
+                          />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Eff %</td>
+                        <td>
+                          <input
+                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                            style={{ margin: 0 }}
+                            type="text"
+                            placeholder="22.90%"
+                            value={formData.solar_cell.efficiency}
+                            onChange={(e) => handleNestedChange(e, "solar_cell", "efficiency")}
+                          />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Size</td>
+                        <td>
+                          <input
+                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                            style={{ margin: 0 }}
+                            type="text"
+                            placeholder="182*182"
+                            value={formData.solar_cell.size}
+                            onChange={(e) => handleNestedChange(e, "solar_cell", "size")}
+                          />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Product Name</td>
+                        <td>
+                          <input
+                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                            style={{ margin: 0 }}
+                            type="text"
+                            placeholder="M182ABPERCBP"
+                            value={formData.solar_cell.product_name}
+                            onChange={(e) =>
+                              handleNestedChange(e, "solar_cell", "product_name")
+                            }
+                          />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Batch of manufacturer</td>
+                        <td>
+                          <input
+                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                            style={{ margin: 0 }}
+                            type="text"
+                            placeholder="CM2407166529DAWD1924"
+                            value={formData.solar_cell.batch}
+                            onChange={(e) => handleNestedChange(e, "solar_cell", "batch")}
+                          />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>Company Make</td>
+                        <td>
+                          <input
+                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                            style={{ margin: 0 }}
+                            type="text"
+                            placeholder="Aidu Energy"
+                            value={formData.solar_cell.company_make}
+                            onChange={(e) =>
+                              handleNestedChange(e, "solar_cell", "company_make")
+                            }
+                          />
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                : selectedSection.section === "Cell Connector" ?
+                  <div className="table-container">
+                    <table className="production-table">
+                      <thead>
+                        <tr>
+                          <th>Sr. No.</th>
+                          <th>Component</th>
+                          <th>Description Field</th>
+                          <th>Value</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {/* Cell Connector */}
+                        <tr>
+                          <td rowSpan="3">2</td>
+                          <td rowSpan="3">Cell Connector (Ribbon)</td>
+                          <td>Make</td>
+                          <td>
+                            <input
+                              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                              style={{ margin: 0 }}
+                              placeholder="Cell Connector (Ribbon)"
+                              type="text"
+                              value={formData.cell_connector.make}
+                              onChange={(e) => handleNestedChange(e, "cell_connector", "make")}
+                            />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Diameter</td>
+                          <td>
+                            <input
+                              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                              style={{ margin: 0 }}
+                              placeholder="Diameter"
+                              type="text"
+                              value={formData.cell_connector.diameter}
+                              onChange={(e) =>
+                                handleNestedChange(e, "cell_connector", "diameter")
+                              }
+                            />
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>Batch of Manufacturer</td>
+                          <td>
+                            <input
+                              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                              style={{ margin: 0 }}
+                              placeholder="Batch of Manufacturer"
+                              type="text"
+                              value={formData.cell_connector.batch}
+                              onChange={(e) => handleNestedChange(e, "cell_connector", "batch")}
+                            />
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  : selectedSection.section === "Soldering Flux" ?
+                    <div className="table-container">
+                      <table className="production-table">
+                        <thead>
+                          <tr>
+                            <th>Sr. No.</th>
+                            <th>Component</th>
+                            <th>Description Field</th>
+                            <th>Value</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {/* Soldering Flux */}
+                          <tr>
+                            <td rowSpan="4">3</td>
+                            <td rowSpan="4">Soldering Flux</td>
+                            <td>Make</td>
+                            <td>
+                              <input
+                                className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                style={{ margin: 0 }}
+                                type="text"
+                                placeholder="Reality Chemicals"
+                                value={formData.soldering_flux.make}
+                                onChange={(e) => handleNestedChange(e, "soldering_flux", "make")}
+                              />
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>Model</td>
+                            <td>
+                              <input
+                                className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                style={{ margin: 0 }}
+                                type="text"
+                                placeholder="RC-PV"
+                                value={formData.soldering_flux.model}
+                                onChange={(e) => handleNestedChange(e, "soldering_flux", "model")}
+                              />
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>Batch of manufacturer</td>
+                            <td>
+                              <input
+                                className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                style={{ margin: 0 }}
+                                type="text"
+                                placeholder="RCPV 44M/23"
+                                value={formData.soldering_flux.batch}
+                                onChange={(e) => handleNestedChange(e, "soldering_flux", "batch")}
+                              />
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>Date of Manufacturing</td>
+                            <td>
+                              <input
+                                className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                style={{ margin: 0 }}
+                                type="text"
+                                placeholder="23-08-2024"
+                                value={formData.soldering_flux.manufacturing_date}
+                                onChange={(e) =>
+                                  handleNestedChange(e, "soldering_flux", "manufacturing_date")
+                                }
+                              />
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    : selectedSection.section === "Glass" ?
+                      <div className="table-container">
+                        <table className="production-table">
+                          <thead>
+                            <tr>
+                              <th>Sr. No.</th>
+                              <th>Component</th>
+                              <th>Description Field</th>
+                              <th>Value</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {/* Glass */}
+                            <tr>
+                              <td rowSpan="5">4</td>
+                              <td rowSpan="5">Glass</td>
+                              <td>Make</td>
+                              <td>
+                                <input
+                                  className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                  style={{ margin: 0 }}
+                                  type="text"
+                                  placeholder="Gujarat Borosil LTD."
+                                  value={formData.glass.make}
+                                  onChange={(e) => handleNestedChange(e, "glass", "make")}
+                                />
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>Dimension</td>
+                              <td>
+                                <input
+                                  className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                  style={{ margin: 0 }}
+                                  type="text"
+                                  placeholder="2272*1128*3.2"
+                                  value={formData.glass.dimension}
+                                  onChange={(e) => handleNestedChange(e, "glass", "dimension")}
+                                />
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>AR Coated Glass</td>
+                              <td>
+                                <input
+                                  className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                  style={{ margin: 0 }}
+                                  type="text"
+                                  placeholder="Yes"
+                                  value={formData.glass.ar_coated}
+                                  onChange={(e) => handleNestedChange(e, "glass", "ar_coated")}
+                                />
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>Batch of Manufacturer</td>
+                              <td>
+                                <input
+                                  className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                  style={{ margin: 0 }}
+                                  type="text"
+                                  placeholder="6XF02051X1"
+                                  value={formData.glass.batch}
+                                  onChange={(e) => handleNestedChange(e, "glass", "batch")}
+                                />
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>Manufacturing Date</td>
+                              <td>
+                                <input
+                                  className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                  style={{ margin: 0 }}
+                                  type="text"
+                                  placeholder="Not Mentioned"
+                                  value={formData.glass.manufacturing_date}
+                                  onChange={(e) =>
+                                    handleNestedChange(e, "glass", "manufacturing_date")
+                                  }
+                                />
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      : selectedSection.section === "EVA" ?
+                        <div className="table-container">
+                          <table className="production-table">
+                            <thead>
+                              <tr>
+                                <th>Sr. No.</th>
+                                <th>Component</th>
+                                <th>Description Field</th>
+                                <th>Value</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {/* EVA */}
+                              <tr>
+                                <td rowSpan="4">5</td>
+                                <td rowSpan="4">EVA (Front or Back)</td>
+                                <td>Make</td>
+                                <td>
+                                  <input
+                                    className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                    style={{ margin: 0 }}
+                                    placeholder="EVA (Front or Back)"
+                                    type="text"
+                                    value={formData.eva.make}
+                                    onChange={(e) => handleNestedChange(e, "eva", "make")}
+                                  />
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Model</td>
+                                <td>
+                                  <input
+                                    className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                    style={{ margin: 0 }}
+                                    placeholder="Model"
+                                    type="text"
+                                    value={formData.eva.model}
+                                    onChange={(e) => handleNestedChange(e, "eva", "model")}
+                                  />
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Batch of Manufacturer</td>
+                                <td>
+                                  <input
+                                    className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                    style={{ margin: 0 }}
+                                    placeholder="Batch of Manufacturer"
+                                    type="text"
+                                    value={formData.eva.batch}
+                                    onChange={(e) => handleNestedChange(e, "eva", "batch")}
+                                  />
+                                </td>
+                              </tr>
+                              <tr>
+                                <td>Manufacturing Date</td>
+                                <td>
+                                  <input
+                                    className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                    style={{ margin: 0 }}
+                                    placeholder="Manufacturing Date"
+                                    type="text"
+                                    value={formData.eva.manufacturing_date}
+                                    onChange={(e) =>
+                                      handleNestedChange(e, "eva", "manufacturing_date")
+                                    }
+                                  />
+                                </td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                        : selectedSection.section === "String Connector" ?
+                          <div className="table-container">
+                            <table className="production-table">
+                              <thead>
+                                <tr>
+                                  <th>Sr. No.</th>
+                                  <th>Component</th>
+                                  <th>Description Field</th>
+                                  <th>Value</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {/* String Connector */}
+                                <tr>
+                                  <td rowSpan="3">6</td>
+                                  <td rowSpan="3">String Connector (Busbar)</td>
+                                  <td>Make</td>
+                                  <td>
+                                    <input
+                                      className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                      style={{ margin: 0 }}
+                                      placeholder="Make"
+                                      type="text"
+                                      value={formData.string_connector.make}
+                                      onChange={(e) =>
+                                        handleNestedChange(e, "string_connector", "make")
+                                      }
+                                    />
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>Dimension</td>
+                                  <td>
+                                    <input
+                                      className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                      style={{ margin: 0 }}
+                                      placeholder="Dimension"
+                                      type="text"
+                                      value={formData.string_connector.dimension}
+                                      onChange={(e) =>
+                                        handleNestedChange(e, "string_connector", "dimension")
+                                      }
+                                    />
+                                  </td>
+                                </tr>
+                                <tr>
+                                  <td>Batch of Manufacturer</td>
+                                  <td>
+                                    <input
+                                      className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                      style={{ margin: 0 }}
+                                      placeholder="Batch of Manufacturer"
+                                      type="text"
+                                      value={formData.string_connector.batch}
+                                      onChange={(e) =>
+                                        handleNestedChange(e, "string_connector", "batch")
+                                      }
+                                    />
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </div>
+                          : selectedSection.section === "Back Sheet" ?
+                            <div className="table-container">
+                              <table className="production-table">
+                                <thead>
+                                  <tr>
+                                    <th>Sr. No.</th>
+                                    <th>Component</th>
+                                    <th>Description Field</th>
+                                    <th>Value</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {/* Back Sheet */}
+                                  <tr>
+                                    <td rowSpan="4">7</td>
+                                    <td rowSpan="4">Back Sheet</td>
+                                    <td>Make</td>
+                                    <td>
+                                      <input
+                                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                        style={{ margin: 0 }}
+                                        placeholder="Make"
+                                        type="text"
+                                        value={formData.back_sheet.make}
+                                        onChange={(e) => handleNestedChange(e, "back_sheet", "make")}
+                                      />
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td>Model</td>
+                                    <td>
+                                      <input
+                                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                        style={{ margin: 0 }}
+                                        placeholder="Model"
+                                        type="text"
+                                        value={formData.back_sheet.model}
+                                        onChange={(e) => handleNestedChange(e, "back_sheet", "model")}
+                                      />
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td>Batch of Manufacturer</td>
+                                    <td>
+                                      <input
+                                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                        style={{ margin: 0 }}
+                                        placeholder="Batch of Manufacturer"
+                                        type="text"
+                                        value={formData.back_sheet.batch}
+                                        onChange={(e) => handleNestedChange(e, "back_sheet", "batch")}
+                                      />
+                                    </td>
+                                  </tr>
+                                  <tr>
+                                    <td>Manufacturing Date</td>
+                                    <td>
+                                      <input
+                                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                        style={{ margin: 0 }}
+                                        placeholder="Manufacturing Date"
+                                        type="text"
+                                        value={formData.back_sheet.manufacturing_date}
+                                        onChange={(e) =>
+                                          handleNestedChange(e, "back_sheet", "manufacturing_date")
+                                        }
+                                      />
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </div>
+                            : selectedSection.section === "Frame" ?
+                              <div className="table-container">
+                                <table className="production-table">
+                                  <thead>
+                                    <tr>
+                                      <th>Sr. No.</th>
+                                      <th>Component</th>
+                                      <th>Description Field</th>
+                                      <th>Value</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {/* Frame */}
+                                    <tr>
+                                      <td rowSpan="6">8</td>
+                                      <td rowSpan="6">Frame</td>
+                                      <td>Make</td>
+                                      <td>
+                                        <input
+                                          className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                          style={{ margin: 0 }}
+                                          placeholder="Make"
+                                          type="text"
+                                          value={formData.frame.make}
+                                          onChange={(e) => handleNestedChange(e, "frame", "make")}
+                                        />
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td>Dimension of Long Side</td>
+                                      <td>
+                                        <input
+                                          className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                          style={{ margin: 0 }}
+                                          placeholder="Dimension of Long Side"
+                                          type="text"
+                                          value={formData.frame.long_side_dimension}
+                                          onChange={(e) =>
+                                            handleNestedChange(e, "frame", "long_side_dimension")
+                                          }
+                                        />
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td>Dimension of Short Side</td>
+                                      <td>
+                                        <input
+                                          className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                          style={{ margin: 0 }}
+                                          placeholder="Dimension of Short Side"
+                                          type="text"
+                                          value={formData.frame.short_side_dimension}
+                                          onChange={(e) =>
+                                            handleNestedChange(e, "frame", "short_side_dimension")
+                                          }
+                                        />
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td>Punching Location</td>
+                                      <td>
+                                        <input
+                                          className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                          style={{ margin: 0 }}
+                                          placeholder="Punching Location"
+                                          type="text"
+                                          value={formData.frame.punching_location}
+                                          onChange={(e) =>
+                                            handleNestedChange(e, "frame", "punching_location")
+                                          }
+                                        />
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td>Model</td>
+                                      <td>
+                                        <input
+                                          className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                          style={{ margin: 0 }}
+                                          placeholder="Model"
+                                          type="text"
+                                          value={formData.frame.model}
+                                          onChange={(e) => handleNestedChange(e, "frame", "model")}
+                                        />
+                                      </td>
+                                    </tr>
+                                    <tr>
+                                      <td>Batch of Manufacturer</td>
+                                      <td>
+                                        <input
+                                          className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                          style={{ margin: 0 }}
+                                          placeholder="Batch of Manufacturer"
+                                          type="text"
+                                          value={formData.frame.batch}
+                                          onChange={(e) => handleNestedChange(e, "frame", "batch")}
+                                        />
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </table>
+                              </div>
+                              : selectedSection.section === "Junction Box" ?
+                                <div className="table-container">
+                                  <table className="production-table">
+                                    <thead>
+                                      <tr>
+                                        <th>Sr. No.</th>
+                                        <th>Component</th>
+                                        <th>Description Field</th>
+                                        <th>Value</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {/* Junction Box */}
+                                      <tr>
+                                        <td rowSpan="2">9</td>
+                                        <td rowSpan="2">Junction Box</td>
+                                        <td>Company Make</td>
+                                        <td>
+                                          <input
+                                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                            style={{ margin: 0 }}
+                                            placeholder="Company Make"
+                                            type="text"
+                                            value={formData.junction_box.company_make}
+                                            onChange={(e) =>
+                                              handleNestedChange(e, "junction_box", "company_make")
+                                            }
+                                          />
+                                        </td>
+                                      </tr>
+                                      <tr>
+                                        <td>Batch of Manufacturer</td>
+                                        <td>
+                                          <input
+                                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                            style={{ margin: 0 }}
+                                            placeholder="Batch of Manufacturer"
+                                            type="text"
+                                            value={formData.junction_box.batch}
+                                            onChange={(e) => handleNestedChange(e, "junction_box", "batch")}
+                                          />
+                                        </td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
+                                : selectedSection.section === "Connector" ?
+                                  <div className="table-container">
+                                    <table className="production-table">
+                                      <thead>
+                                        <tr>
+                                          <th>Sr. No.</th>
+                                          <th>Component</th>
+                                          <th>Description Field</th>
+                                          <th>Value</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        {/* Connector */}
+                                        <tr>
+                                          <td>10</td>
+                                          <td>Connector</td>
+                                          <td>Type</td>
+                                          <td>
+                                            <input
+                                              className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                              style={{ margin: 0 }}
+                                              placeholder="Type"
+                                              type="text"
+                                              value={formData.connector.type}
+                                              onChange={(e) => handleNestedChange(e, "connector", "type")}
+                                            />
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                  : selectedSection.section === "Potting for JB" ?
+                                    <div className="table-container">
+                                      <table className="production-table">
+                                        <thead>
+                                          <tr>
+                                            <th>Sr. No.</th>
+                                            <th>Component</th>
+                                            <th>Description Field</th>
+                                            <th>Value</th>
+                                          </tr>
+                                        </thead>
+                                        <tbody>
+                                          {/* Potting for JB */}
+                                          <tr>
+                                            <td rowSpan="4">11</td>
+                                            <td rowSpan="4">Potting for JB</td>
+                                            <td>Make</td>
+                                            <td>
+                                              <input
+                                                className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                                style={{ margin: 0 }}
+                                                placeholder="Make"
+                                                type="text"
+                                                value={formData.potting_for_jb.make}
+                                                onChange={(e) =>
+                                                  handleNestedChange(e, "potting_for_jb", "make")
+                                                }
+                                              />
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td>Model</td>
+                                            <td>
+                                              <input
+                                                className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                                style={{ margin: 0 }}
+                                                placeholder="Model"
+                                                type="text"
+                                                value={formData.potting_for_jb.model}
+                                                onChange={(e) =>
+                                                  handleNestedChange(e, "potting_for_jb", "model")
+                                                }
+                                              />
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td>Batch of Manufacturer</td>
+                                            <td>
+                                              <input
+                                                className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                                style={{ margin: 0 }}
+                                                placeholder="Batch of Manufacturer"
+                                                type="text"
+                                                value={formData.potting_for_jb.batch}
+                                                onChange={(e) =>
+                                                  handleNestedChange(e, "potting_for_jb", "batch")
+                                                }
+                                              />
+                                            </td>
+                                          </tr>
+                                          <tr>
+                                            <td>Manufacturing Date</td>
+                                            <td>
+                                              <input
+                                                className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                                style={{ margin: 0 }}
+                                                placeholder="Manufacturing Date"
+                                                type="text"
+                                                value={formData.potting_for_jb.manufacturing_date}
+                                                onChange={(e) =>
+                                                  handleNestedChange(e, "potting_for_jb", "manufacturing_date")
+                                                }
+                                              />
+                                            </td>
+                                          </tr>
+                                        </tbody>
+                                      </table>
+                                    </div>
+                                    : selectedSection.section === "Adhesive for Junction Box" ?
+                                      <div className="table-container">
+                                        <table className="production-table">
+                                          <thead>
+                                            <tr>
+                                              <th>Sr. No.</th>
+                                              <th>Component</th>
+                                              <th>Description Field</th>
+                                              <th>Value</th>
+                                            </tr>
+                                          </thead>
+                                          <tbody>
+                                            {/* Adhesive for Junction Box */}
+                                            <tr>
+                                              <td rowSpan="4">12</td>
+                                              <td rowSpan="4">Adhesive for Junction Box</td>
+                                              <td>Make</td>
+                                              <td>
+                                                <input
+                                                  className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                                  style={{ margin: 0 }}
+                                                  placeholder="Make"
+                                                  type="text"
+                                                  value={formData.adhesive_for_jb.make}
+                                                  onChange={(e) =>
+                                                    handleNestedChange(e, "adhesive_for_jb", "make")
+                                                  }
+                                                />
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td>Model</td>
+                                              <td>
+                                                <input
+                                                  className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                                  style={{ margin: 0 }}
+                                                  placeholder="Model"
+                                                  type="text"
+                                                  value={formData.adhesive_for_jb.model}
+                                                  onChange={(e) =>
+                                                    handleNestedChange(e, "adhesive_for_jb", "model")
+                                                  }
+                                                />
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td>Batch of Manufacturer</td>
+                                              <td>
+                                                <input
+                                                  className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                                  style={{ margin: 0 }}
+                                                  placeholder="Batch of Manufacturer"
+                                                  type="text"
+                                                  value={formData.adhesive_for_jb.batch}
+                                                  onChange={(e) =>
+                                                    handleNestedChange(e, "adhesive_for_jb", "batch")
+                                                  }
+                                                />
+                                              </td>
+                                            </tr>
+                                            <tr>
+                                              <td>Manufacturing Date</td>
+                                              <td>
+                                                <input
+                                                  className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                                  style={{ margin: 0 }}
+                                                  placeholder="Manufacturing Date"
+                                                  type="text"
+                                                  value={formData.adhesive_for_jb.manufacturing_date}
+                                                  onChange={(e) =>
+                                                    handleNestedChange(e, "adhesive_for_jb", "manufacturing_date")
+                                                  }
+                                                />
+                                              </td>
+                                            </tr>
+                                          </tbody>
+                                        </table>
+                                      </div>
+                                      : selectedSection.section === "Insulation Layer Sealant" ?
+                                        <div className="table-container">
+                                          <table className="production-table">
+                                            <thead>
+                                              <tr>
+                                                <th>Sr. No.</th>
+                                                <th>Component</th>
+                                                <th>Description Field</th>
+                                                <th>Value</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                              {/* Insulation Layer Sealant */}
+                                              <tr>
+                                                <td rowSpan="2">13</td>
+                                                <td rowSpan="2">Insulation Layer Sealant</td>
+                                                <td>Make</td>
+                                                <td>
+                                                  <input
+                                                    className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                                    style={{ margin: 0 }}
+                                                    placeholder="Make"
+                                                    type="text"
+                                                    value={formData.insulation_layer_sealant.make}
+                                                    onChange={(e) =>
+                                                      handleNestedChange(e, "insulation_layer_sealant", "make")
+                                                    }
+                                                  />
+                                                </td>
+                                              </tr>
+                                              <tr>
+                                                <td>Model</td>
+                                                <td>
+                                                  <input
+                                                    className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                                    style={{ margin: 0 }}
+                                                    placeholder="Model"
+                                                    type="text"
+                                                    value={formData.insulation_layer_sealant.model}
+                                                    onChange={(e) =>
+                                                      handleNestedChange(e, "insulation_layer_sealant", "model")
+                                                    }
+                                                  />
+                                                </td>
+                                              </tr>
+                                            </tbody>
+                                          </table>
+                                        </div>
+                                        : selectedSection.section === "By Pass Diode" ?
+                                          <div className="table-container">
+                                            <table className="production-table">
+                                              <thead>
+                                                <tr>
+                                                  <th>Sr. No.</th>
+                                                  <th>Component</th>
+                                                  <th>Description Field</th>
+                                                  <th>Value</th>
+                                                </tr>
+                                              </thead>
+                                              <tbody>
+                                                {/* Bypass Diode */}
+                                                <tr>
+                                                  <td rowSpan="2">14</td>
+                                                  <td rowSpan="2">Bypass Diode</td>
+                                                  <td>Make</td>
+                                                  <td>
+                                                    <input
+                                                      className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                                      style={{ margin: 0 }}
+                                                      placeholder="Make"
+                                                      type="text"
+                                                      value={formData.bypass_diode.make}
+                                                      onChange={(e) => handleNestedChange(e, "bypass_diode", "make")}
+                                                    />
+                                                  </td>
+                                                </tr>
+                                                <tr>
+                                                  <td>Model</td>
+                                                  <td>
+                                                    <input
+                                                      className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                                      style={{ margin: 0 }}
+                                                      placeholder="Model"
+                                                      type="text"
+                                                      value={formData.bypass_diode.model}
+                                                      onChange={(e) => handleNestedChange(e, "bypass_diode", "model")}
+                                                    />
+                                                  </td>
+                                                </tr>
+                                              </tbody>
+                                            </table>
+                                          </div>
+                                          : selectedSection.section === "Fixing Tape" ?
+                                            <div className="table-container">
+                                              <table className="production-table">
+                                                <thead>
+                                                  <tr>
+                                                    <th>Sr. No.</th>
+                                                    <th>Component</th>
+                                                    <th>Description Field</th>
+                                                    <th>Value</th>
+                                                  </tr>
+                                                </thead>
+                                                <tbody>
+                                                  {/* Fixing Tape */}
+                                                  <tr>
+                                                    <td rowSpan="2">15</td>
+                                                    <td rowSpan="2">Fixing Tape</td>
+                                                    <td>Make</td>
+                                                    <td>
+                                                      <input
+                                                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                                        style={{ margin: 0 }}
+                                                        placeholder="Make"
+                                                        type="text"
+                                                        value={formData.fixing_tape.make}
+                                                        onChange={(e) => handleNestedChange(e, "fixing_tape", "make")}
+                                                      />
+                                                    </td>
+                                                  </tr>
+                                                  <tr>
+                                                    <td>Model</td>
+                                                    <td>
+                                                      <input
+                                                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                                        style={{ margin: 0 }}
+                                                        placeholder="Model"
+                                                        type="text"
+                                                        value={formData.fixing_tape.model}
+                                                        onChange={(e) => handleNestedChange(e, "fixing_tape", "model")}
+                                                      />
+                                                    </td>
+                                                  </tr>
+                                                </tbody>
+                                              </table>
+                                            </div>
+                                            : selectedSection.section === "Cable" ?
+                                              <div className="table-container">
+                                                <table className="production-table">
+                                                  <thead>
+                                                    <tr>
+                                                      <th>Sr. No.</th>
+                                                      <th>Component</th>
+                                                      <th>Description Field</th>
+                                                      <th>Value</th>
+                                                    </tr>
+                                                  </thead>
+                                                  <tbody>
+                                                    {/* Cable */}
+                                                    <tr>
+                                                      <td>16</td>
+                                                      <td>Cable</td>
+                                                      <td>Make & Dimension</td>
+                                                      <td>
+                                                        <input
+                                                          className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                                          style={{ margin: 0 }}
+                                                          placeholder="Make & Dimension"
+                                                          type="text"
+                                                          value={formData.cable.make_dimension}
+                                                          onChange={(e) => handleNestedChange(e, "cable", "make_dimension")}
+                                                        />
+                                                      </td>
+                                                    </tr>
+                                                  </tbody>
+                                                </table>
+                                              </div>
+                                              : selectedSection.section === "RFID" ?
+                                                <div className="table-container">
+                                                  <table className="production-table">
+                                                    <thead>
+                                                      <tr>
+                                                        <th>Sr. No.</th>
+                                                        <th>Component</th>
+                                                        <th>Description Field</th>
+                                                        <th>Value</th>
+                                                      </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                      {/* RFID */}
+                                                      <tr>
+                                                        <td rowSpan="2">17</td>
+                                                        <td rowSpan="2">RFID</td>
+                                                        <td>Company Make</td>
+                                                        <td>
+                                                          <input
+                                                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                                            style={{ margin: 0 }}
+                                                            placeholder="Company Make"
+                                                            type="text"
+                                                            value={formData.rfid.company_make}
+                                                            onChange={(e) => handleNestedChange(e, "rfid", "company_make")}
+                                                          />
+                                                        </td>
+                                                      </tr>
+                                                      <tr>
+                                                        <td>Model No</td>
+                                                        <td>
+                                                          <input
+                                                            className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                                            style={{ margin: 0 }}
+                                                            placeholder="Model No"
+                                                            type="text"
+                                                            value={formData.rfid.model_no}
+                                                            onChange={(e) => handleNestedChange(e, "rfid", "model_no")}
+                                                          />
+                                                        </td>
+                                                      </tr>
+                                                    </tbody>
+                                                  </table>
+                                                </div>
+                                                : <></>}
           </div>
           : (
             <p>Please select a section or subsection to view the form.</p>
@@ -3281,19 +3614,14 @@ const RunningReport = () => {
       {/* Right Container (20%) for Section List */}
       <div className="right-container">
         <h2>Sections</h2>
-        <div className="sections">
+        <div className="sections"  style={{ height: '70vh' }}>
           {sections.map((section: any, index: any) => {
             const isActive = selectedSection?.section === section.title;
             return (
               <div key={index} className="section">
                 <div
                   className={`section-header ${isActive ? 'active-section' : ''}`}
-                  onClick={() =>
-                    // section.subsections.length
-                    //   ? toggleSection(section.title)
-                    //   : 
-                    handleSectionClick(section.title)
-                  }
+                  onClick={() =>handleSectionClick(section.title)}
                 >
                   <span className={`icon ${isActive ? 'active-section' : ''}`}>
                     {section.icon}
@@ -3301,27 +3629,7 @@ const RunningReport = () => {
                   <span className={`title ${isActive ? 'active-section' : ''}`}>
                     {section.title}
                   </span>
-                  {/* {section.subsections.length > 0 && (
-                    <span className="toggle">
-                      {expandedSection === section.title ? "-" : "+"}
-                    </span>
-                  )} */}
                 </div>
-                {/* Subsections */}
-                {/* {section.subsections.length > 0 &&
-                  expandedSection === section.title && (
-                    <div className="subsections">
-                      {section.subsections.map((sub: any, idx) => (
-                        <div
-                          key={idx}
-                          className="subsection"
-                          onClick={() => handleSectionClick(section.title, sub)}
-                        >
-                          {sub}
-                        </div>
-                      ))}
-                    </div>
-                  )} */}
               </div>
             );
           })}
