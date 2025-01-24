@@ -376,7 +376,9 @@ const RunningReport = () => {
     rfid: {
       company_make: "",
       model_no: "",
-    }
+    },
+    remarks:"",
+    verification_done_by:""
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -3644,6 +3646,7 @@ const RunningReport = () => {
                                                 </table>
                                               </div>
                                               : selectedSection.section === "RFID" ?
+                                              <>
                                                 <div className="table-container">
                                                   <table className="production-table">
                                                     <thead>
@@ -3687,6 +3690,40 @@ const RunningReport = () => {
                                                     </tbody>
                                                   </table>
                                                 </div>
+                                                <br/>
+                                                <table className="production-table">
+                                                  <thead>
+                                                    <tr>
+                                                      <th>Remarks</th>
+                                                      <th>Verification done by</th>
+                                                    </tr>
+                                                  </thead>
+                                                  <tbody>
+                                                      <tr>
+                                                        <td style={{width:'50%'}}>
+                                                          <input
+                                                            type="text"
+                                                            name="remarks"
+                                                            placeholder="Remarks"
+                                                            className="input-field"
+                                                            value={formData.remarks}
+                                                            onChange={handleChange}
+                                                          />
+                                                        </td>
+                                                        <td>
+                                                          <input
+                                                            type="text"
+                                                            name="verification_done_by"
+                                                            placeholder="Verification Done By"
+                                                            className="input-field"
+                                                            value={formData.verification_done_by}
+                                                            onChange={handleChange}
+                                                          />
+                                                        </td>
+                                                      </tr>
+                                                  </tbody>
+                                                </table>
+                                                </>
                                                 : <></>}
           </div>
           : (
