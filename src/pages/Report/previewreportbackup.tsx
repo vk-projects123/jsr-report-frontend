@@ -216,7 +216,7 @@ const PreviewReport = () => {
           <Container id="report">
 
             {/* page 1 start */}
-            <div className="content" style={{ height: isClick ? '157vh' : "" }}>
+            <div className="content" style={{ height: isClick ? '151vh' : "" }}>
               {/* header */}
               <HeaderRow id="header" className="pdf-header">
                 <LogoContainer>
@@ -226,8 +226,8 @@ const PreviewReport = () => {
                   <strong className={isClick ? 'pdf-span' : ""}>In Process Inspection Daily Report</strong>
                 </TitleContainer>
                 <ReportDetails>
-                  <div>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                  <div>Report No:  {data.reportNo}</div>
+                  <div>Report Date: {moment().format('DD-MM-YYYY')}</div>
+                  <div>Report No: IPQC-0001</div>
                 </ReportDetails>
               </HeaderRow>
 
@@ -240,7 +240,7 @@ const PreviewReport = () => {
                       <HeaderCell style={{ width: '25%' }}><span><strong>OA No</strong></span></HeaderCell>
                       <TableCell style={{ width: '25%' }}><span>{data.oaNo}</span></TableCell>
                       <HeaderCell style={{ width: '25%' }}><span><strong>Date</strong></span></HeaderCell>
-                      <TableCell style={{ width: '25%' }}><span>{moment(data.date).format('DD-MM-YYYY')}</span></TableCell>
+                      <TableCell style={{ width: '25%' }}><span>{data.date}</span></TableCell>
                     </tr>
                     <tr>
                       <HeaderCell><span><strong>Manufacturer</strong></span></HeaderCell>
@@ -363,20 +363,16 @@ const PreviewReport = () => {
             </div>
 
             {/* Footer */}
-            {isClick ? <div id="footer" style={{ width: '100%' }}>
-              <Table style={{ width: '100%' }}>
+            {isClick ? <div id="footer" className='footer' style={{ width: '100%' }}>
+              <Table>
                 <tbody>
                   <tr style={{ margin: 0, padding: 0 }}>
-                    {/* Ensure all cells have equal width */}
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Format No: JSR/SI</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Rev Date and No: 00</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                    </TableCell>
+                    <TableCell style={{ width: "50%" }}><span className='pdf-span'>Format No: JSR/SI</span></TableCell>
+                    <TableCell><span className='pdf-span'>Rev Date and No: 00</span></TableCell>
+                  </tr>
+                  <tr>
+                    <TableCell><span className='pdf-span'>Compiled By: Sanket Thakkar</span></TableCell>
+                    <TableCell><span className='pdf-span'>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
                   </tr>
                 </tbody>
               </Table>
@@ -388,7 +384,7 @@ const PreviewReport = () => {
             {/* <div className="page-break"></div> */}
 
             {/* header */}
-            <div className="content" style={{ height: isClick ? '157vh' : "" }}>
+            <div className="content" style={{ height: isClick ? '151vh' : "" }}>
               {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
                 <LogoContainer>
                   <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
@@ -397,8 +393,8 @@ const PreviewReport = () => {
                   <strong className='pdf-span'>In Process Inspection Daily Report</strong>
                 </TitleContainer>
                 <ReportDetails>
-                  <div className='pdf-span'>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                  <div className='pdf-span'>Report No:  {data.reportNo}</div>
+                  <div className='pdf-span'>Report Date: {moment().format('DD-MM-YYYY')}</div>
+                  <div className='pdf-span'>Report No: IPQC-0003</div>
                 </ReportDetails>
               </HeaderRow> : ""}
 
@@ -445,19 +441,15 @@ const PreviewReport = () => {
 
             {/* footer */}
             {isClick ? <div id="footer" style={{ width: '100%' }}>
-              <Table style={{ width: '100%' }}>
+              <Table>
                 <tbody>
                   <tr style={{ margin: 0, padding: 0 }}>
-                    {/* Ensure all cells have equal width */}
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Format No: JSR/SI</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Rev Date and No: 00</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                    </TableCell>
+                    <TableCell style={{ width: "50%" }}><span className='pdf-span'>Format No: JSR/SI</span></TableCell>
+                    <TableCell><span className='pdf-span'>Rev Date and No: 00</span></TableCell>
+                  </tr>
+                  <tr>
+                    <TableCell><span className='pdf-span'>Compiled By: Sanket Thakkar</span></TableCell>
+                    <TableCell><span className='pdf-span'>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
                   </tr>
                 </tbody>
               </Table>
@@ -468,7 +460,7 @@ const PreviewReport = () => {
             <div className="page-break"></div>
 
             {/* header */}
-            <div className="content" style={{ height: isClick ? '157vh' : "" }}>
+            <div className="content" style={{ height: isClick ? '151vh' : "" }}>
               {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
                 <LogoContainer>
                   <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
@@ -477,8 +469,8 @@ const PreviewReport = () => {
                   <strong className='pdf-span'>In Process Inspection Daily Report</strong>
                 </TitleContainer>
                 <ReportDetails>
-                  <div className='pdf-span'>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                  <div className='pdf-span'>Report No:  {data.reportNo}</div>
+                  <div className='pdf-span'>Report Date: {moment().format('DD-MM-YYYY')}</div>
+                  <div className='pdf-span'>Report No: IPQC-0003</div>
                 </ReportDetails>
               </HeaderRow> : ""}
 
@@ -511,7 +503,7 @@ const PreviewReport = () => {
 
                     {/* Backsheet Cutting Length Row */}
                     <tr>
-                      <HeaderCell><span><strong>Backsheet Cutting length (in mm)</strong></span></HeaderCell>
+                      <HeaderCell><span><strong>EVA thickness (in mm)</strong></span></HeaderCell>
                       {Object.keys(data.backsheet_cutting_length)
                         .filter(round => data.backsheet_cutting_length[round]) // Only include rounds with data
                         .map((round, index) => (
@@ -533,108 +525,108 @@ const PreviewReport = () => {
               </div>
 
 
-              {/* Process – Tabber & Stringer */}
+                {/* Process – Tabber & Stringer */}
               <div className="avoid-break">
                 <div className="avoid-break" id="productionDetails">
                   <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Tabber & Stringer</p>
                   <Table>
                     <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
-                      {/* Header Row */}
                       <tr>
                         <th style={{ border: '1px solid black', padding: '5px' }}><strong>Parameters</strong></th>
-                        {Object.keys(data.machine_no)
-                          .filter(round => data.machine_no[round]) // Only include rounds with data
-                          .map((round, index) => (
-                            <th key={index} style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}>
-                              <strong>{`Round ${index + 1}`}</strong>
-                            </th>
-                          ))}
+                        <th style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}><strong>Round 1</strong></th>
+                        <th style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}><strong>Round 2</strong></th>
                       </tr>
-
-                      {/* Dynamic Rows */}
-                      {[
-                        { label: "Machine No", key: "machine_no" },
-                        { label: "Soldering Temperature - A (°C)", key: "soldering_temp_a" },
-                        { label: "Soldering Temperature - B (°C)", key: "soldering_temp_b" },
-                        { label: "Peel Strength - Front (N)", key: "peel_strength_front" },
-                        { label: "Peel Strength - Back (N)", key: "peel_strength_back" },
-                        { label: "All Machine Peel Strength", key: "all_machine_peel_strength" },
-                        { label: "Raw Material Track Records", key: "raw_material_track_records" }
-                      ].map((row, rowIndex) => (
-                        <tr key={rowIndex}>
-                          <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>{row.label}</strong></span></td>
-                          {Object.keys(data[row.key])
-                            .filter(round => data[row.key][round]) // Only include rounds with data
-                            .map((round, index) => (
-                              <td key={index} style={{ border: '1px solid black', padding: '5px' }}>
-                                <span>{data[row.key][round]}</span>
-                              </td>
-                            ))}
-                        </tr>
-                      ))}
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Machine No</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.machine_no.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.machine_no.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Soldering Temperature - A (°C)</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.soldering_temp_a.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.soldering_temp_a.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Soldering Temperature - B (°C)</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.soldering_temp_b.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.soldering_temp_b.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Peel Strength - Front (N)</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.peel_strength_front.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.peel_strength_front.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Peel Strength - Back (N)</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.peel_strength_back.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.peel_strength_back.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>All Machine Peel Strength</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.all_machine_peel_strength.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.all_machine_peel_strength.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Raw Material Track Records</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.raw_material_track_records.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.raw_material_track_records.round2}</span></td>
+                      </tr>
                     </tbody>
                   </Table>
                 </div>
               </div>
-
 
               {/* Process – Layup */}
               <div className="avoid-break" id="productionDetails">
                 <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Layup</p>
                 <Table>
                   <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
-                    {/* Header Row */}
                     <tr>
                       <th style={{ border: '1px solid black', padding: '5px' }}><strong>Parameters</strong></th>
-                      {Object.keys(data.work_station_no)
-                        .filter(round => data.work_station_no[round]) // Only include rounds with data
-                        .map((round, index) => (
-                          <th key={index} style={{ border: '1px solid black', padding: '5px' }}>
-                            <strong>{`Round ${index + 1}`}</strong>
-                          </th>
-                        ))}
+                      <th style={{ border: '1px solid black', padding: '5px' }}><strong>Round 1</strong></th>
+                      <th style={{ border: '1px solid black', padding: '5px' }}><strong>Round 2</strong></th>
                     </tr>
-
-                    {/* Dynamic Rows */}
-                    {[
-                      { label: "Workstation No", key: "work_station_no" },
-                      { label: "Running Module Serial No.", key: "running_module_serial_no" },
-                      { label: "Soldering Station Temperature (°C)", key: "soldering_station_temp" },
-                      { label: "Soldering Station Calibration", key: "soldering_station_calibration" },
-                      { label: "WIP (including Pre-Lam EL Fail & OK)", key: "wip" }
-                    ].map((row, rowIndex) => (
-                      <tr key={rowIndex}>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>{row.label}</strong></span></td>
-                        {Object.keys(data[row.key])
-                          .filter(round => data[row.key][round]) // Only include rounds with data
-                          .map((round, index) => (
-                            <td key={index} style={{ border: '1px solid black', padding: '5px' }}>
-                              <span>{data[row.key][round]}</span>
-                            </td>
-                          ))}
-                      </tr>
-                    ))}
+                    <tr>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Workstation No</strong></span></td>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.work_station_no.round1}</span></td>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.work_station_no.round2}</span></td>
+                    </tr>
+                    <tr>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Running Module Serial No.</strong></span></td>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.running_module_serial_no.round1}</span></td>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.running_module_serial_no.round2}</span></td>
+                    </tr>
+                    <tr>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Soldering Station Temperature (°C)</strong></span></td>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.soldering_station_temp.round1}</span></td>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.soldering_station_temp.round2}</span></td>
+                    </tr>
+                    <tr>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Soldering Station Calibration</strong></span></td>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.soldering_station_calibration.round1}</span></td>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.soldering_station_calibration.round2}</span></td>
+                    </tr>
+                    <tr>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>WIP (including Pre-Lam EL Fail & OK)</strong></span></td>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.wip.round1}</span></td>
+                      <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.wip.round2}</span></td>
+                    </tr>
                   </tbody>
                 </Table>
               </div>
-
             </div>
 
             {/* footer */}
             {isClick ? <div id="footer" style={{ width: '100%' }}>
-              <Table style={{ width: '100%' }}>
+              <Table>
                 <tbody>
                   <tr style={{ margin: 0, padding: 0 }}>
-                    {/* Ensure all cells have equal width */}
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Format No: JSR/SI</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Rev Date and No: 00</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                    </TableCell>
+                    <TableCell style={{ width: "50%" }}><span className='pdf-span'>Format No: JSR/SI</span></TableCell>
+                    <TableCell><span className='pdf-span'>Rev Date and No: 00</span></TableCell>
+                  </tr>
+                  <tr>
+                    <TableCell><span className='pdf-span'>Compiled By: Sanket Thakkar</span></TableCell>
+                    <TableCell><span className='pdf-span'>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
                   </tr>
                 </tbody>
               </Table>
@@ -647,7 +639,7 @@ const PreviewReport = () => {
             {otherobservations.filmCutting.length > 0 ?
               <>
                 {/* header */}
-                <div className="content" style={{ height: isClick ? '157vh' : "" }}>
+                <div className="content" style={{ height: isClick ? '151vh' : "" }}>
                   {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
                     <LogoContainer>
                       <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
@@ -656,8 +648,8 @@ const PreviewReport = () => {
                       <strong className='pdf-span'>In Process Inspection Daily Report</strong>
                     </TitleContainer>
                     <ReportDetails>
-                      <div className='pdf-span'>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                      <div className='pdf-span'>Report No:  {data.reportNo}</div>
+                      <div className='pdf-span'>Report Date: {moment().format('DD-MM-YYYY')}</div>
+                      <div className='pdf-span'>Report No: IPQC-0003</div>
                     </ReportDetails>
                   </HeaderRow> : ""}
 
@@ -704,19 +696,15 @@ const PreviewReport = () => {
 
                 {/* footer */}
                 {isClick ? <div id="footer" style={{ width: '100%' }}>
-                  <Table style={{ width: '100%' }}>
+                  <Table>
                     <tbody>
                       <tr style={{ margin: 0, padding: 0 }}>
-                        {/* Ensure all cells have equal width */}
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Format No: JSR/SI</span>
-                        </TableCell>
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Rev Date and No: 00</span>
-                        </TableCell>
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                        </TableCell>
+                        <TableCell style={{ width: "50%" }}><span className='pdf-span'>Format No: JSR/SI</span></TableCell>
+                        <TableCell><span className='pdf-span'>Rev Date and No: 00</span></TableCell>
+                      </tr>
+                      <tr>
+                        <TableCell><span className='pdf-span'>Compiled By: Sanket Thakkar</span></TableCell>
+                        <TableCell><span className='pdf-span'>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
                       </tr>
                     </tbody>
                   </Table>
@@ -729,7 +717,7 @@ const PreviewReport = () => {
             {otherobservations.tabber.length > 0 ?
               <>
                 {/* header */}
-                <div className="content" style={{ height: isClick ? '157vh' : "" }}>
+                <div className="content" style={{ height: isClick ? '151vh' : "" }}>
                   {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
                     <LogoContainer>
                       <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
@@ -738,8 +726,8 @@ const PreviewReport = () => {
                       <strong className='pdf-span'>In Process Inspection Daily Report</strong>
                     </TitleContainer>
                     <ReportDetails>
-                      <div className='pdf-span'>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                      <div className='pdf-span'>Report No:  {data.reportNo}</div>
+                      <div className='pdf-span'>Report Date: {moment().format('DD-MM-YYYY')}</div>
+                      <div className='pdf-span'>Report No: IPQC-0003</div>
                     </ReportDetails>
                   </HeaderRow> : ""}
 
@@ -786,19 +774,15 @@ const PreviewReport = () => {
 
                 {/* footer */}
                 {isClick ? <div id="footer" style={{ width: '100%' }}>
-                  <Table style={{ width: '100%' }}>
+                  <Table>
                     <tbody>
                       <tr style={{ margin: 0, padding: 0 }}>
-                        {/* Ensure all cells have equal width */}
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Format No: JSR/SI</span>
-                        </TableCell>
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Rev Date and No: 00</span>
-                        </TableCell>
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                        </TableCell>
+                        <TableCell style={{ width: "50%" }}><span className='pdf-span'>Format No: JSR/SI</span></TableCell>
+                        <TableCell><span className='pdf-span'>Rev Date and No: 00</span></TableCell>
+                      </tr>
+                      <tr>
+                        <TableCell><span className='pdf-span'>Compiled By: Sanket Thakkar</span></TableCell>
+                        <TableCell><span className='pdf-span'>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
                       </tr>
                     </tbody>
                   </Table>
@@ -811,7 +795,7 @@ const PreviewReport = () => {
             {otherobservations.layup.length > 0 ?
               <>
                 {/* header */}
-                <div className="content" style={{ height: isClick ? '157vh' : "" }}>
+                <div className="content" style={{ height: isClick ? '151vh' : "" }}>
                   {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
                     <LogoContainer>
                       <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
@@ -820,8 +804,8 @@ const PreviewReport = () => {
                       <strong className='pdf-span'>In Process Inspection Daily Report</strong>
                     </TitleContainer>
                     <ReportDetails>
-                      <div className='pdf-span'>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                      <div className='pdf-span'>Report No:  {data.reportNo}</div>
+                      <div className='pdf-span'>Report Date: {moment().format('DD-MM-YYYY')}</div>
+                      <div className='pdf-span'>Report No: IPQC-0003</div>
                     </ReportDetails>
                   </HeaderRow> : ""}
 
@@ -868,19 +852,15 @@ const PreviewReport = () => {
 
                 {/* footer */}
                 {isClick ? <div id="footer" style={{ width: '100%' }}>
-                  <Table style={{ width: '100%' }}>
+                  <Table>
                     <tbody>
                       <tr style={{ margin: 0, padding: 0 }}>
-                        {/* Ensure all cells have equal width */}
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Format No: JSR/SI</span>
-                        </TableCell>
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Rev Date and No: 00</span>
-                        </TableCell>
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                        </TableCell>
+                        <TableCell style={{ width: "50%" }}><span className='pdf-span'>Format No: JSR/SI</span></TableCell>
+                        <TableCell><span className='pdf-span'>Rev Date and No: 00</span></TableCell>
+                      </tr>
+                      <tr>
+                        <TableCell><span className='pdf-span'>Compiled By: Sanket Thakkar</span></TableCell>
+                        <TableCell><span className='pdf-span'>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
                       </tr>
                     </tbody>
                   </Table>
@@ -892,7 +872,7 @@ const PreviewReport = () => {
             <div className="page-break"></div>
 
             {/* header */}
-            <div className="content" style={{ height: isClick ? '157vh' : "" }}>
+            <div className="content" style={{ height: isClick ? '151vh' : "" }}>
               <div className="content">
                 {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
                   <LogoContainer>
@@ -902,8 +882,8 @@ const PreviewReport = () => {
                     <strong className='pdf-span'>In Process Inspection Daily Report</strong>
                   </TitleContainer>
                   <ReportDetails>
-                    <div className='pdf-span'>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                    <div className='pdf-span'>Report No:  {data.reportNo}</div>
+                    <div className='pdf-span'>Report Date: {moment().format('DD-MM-YYYY')}</div>
+                    <div className='pdf-span'>Report No: IPQC-0003</div>
                   </ReportDetails>
                 </HeaderRow> : ""}
 
@@ -912,78 +892,87 @@ const PreviewReport = () => {
                   <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Lamination</p>
                   <Table>
                     <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
-                      {/* Header Row */}
                       <tr>
                         <th style={{ border: '1px solid black', padding: '5px' }}><strong>Parameters</strong></th>
-                        {Object.keys(data.lamination_work_station_no)
-                          .filter(key => data.lamination_work_station_no[key]) // Only include rounds with data
-                          .map((round, index) => (
-                            <th key={index} style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}>
-                              <strong>{`Round ${index + 1}`}</strong>
-                            </th>
-                          ))}
+                        <th style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}><strong>Round 1</strong></th>
+                        <th style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}><strong>Round 2</strong></th>
                       </tr>
-
-                      {/* Data Rows */}
-                      {[
-                        { label: "Workstation No", key: "lamination_work_station_no" },
-                        { label: "Stage 1 Cycle Time (in Sec)", key: "stage1_cycle_time" },
-                        { label: "Stage 2 Cycle Time (in Sec)", key: "stage2_cycle_time" },
-                        { label: "Temperature Stage 1 (°C)", key: "temperature_stage1" },
-                        { label: "Temperature Stage 2 (°C)", key: "temperature_stage2" },
-                        { label: "Pressure Stage 1", key: "pressure_stage1" },
-                        { label: "Pressure Stage 2", key: "pressure_stage2" },
-                        { label: "Last Gel Content Checked on Same Recipe", key: "last_gel_content_checked" },
-                        { label: "Gel Content (%)", key: "gel_content" },
-                      ].map((row, index) => (
-                        <tr key={index}>
-                          <td style={{ border: '1px solid black', padding: '5px' }}>
-                            <span><strong>{row.label}</strong></span>
-                          </td>
-                          {Object.keys(data[row.key])
-                            .filter(key => data[row.key][key]) // Only include rounds with data
-                            .map((round, index) => (
-                              <td key={index} style={{ border: '1px solid black', padding: '5px' }}>
-                                <span>{data[row.key][round]}</span>
-                              </td>
-                            ))}
-                        </tr>
-                      ))}
+                      <tr>
+                        <th style={{ border: '1px solid black', padding: '5px' }}>Workstation no</th>
+                        <th style={{ border: '1px solid black', padding: '5px' }}>{data.lamination_work_station_no.round1}</th>
+                        <th style={{ border: '1px solid black', padding: '5px' }}>{data.lamination_work_station_no.round2}</th>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Stage 1 cycle time (in Sec)</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.stage1_cycle_time.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.stage1_cycle_time.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Stage 2 cycle time (in Sec)</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.stage2_cycle_time.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.stage2_cycle_time.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Temperature Stage 1 (°C)</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.temperature_stage1.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.temperature_stage1.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Temperature Stage 2 (°C)</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.temperature_stage2.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.temperature_stage2.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Pressure Stage 1</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.pressure_stage1.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.pressure_stage1.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Pressure Stage 2</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.pressure_stage2.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.pressure_stage2.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Last Gel Content Checked on Same Recipe</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.last_gel_content_checked.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.last_gel_content_checked.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Gel Content (%)</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.gel_content.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.gel_content.round2}</span></td>
+                      </tr>
                     </tbody>
                   </Table>
                 </div>
-
 
               </div>
             </div>
 
             {/* footer */}
-            {isClick ? <div id="footer" style={{ width: '100%' }}>
-              <Table style={{ width: '100%' }}>
+            <div id="footer" className='footer'>
+              <Table>
                 <tbody>
                   <tr style={{ margin: 0, padding: 0 }}>
-                    {/* Ensure all cells have equal width */}
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Format No: JSR/SI</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Rev Date and No: 00</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                    </TableCell>
+                    <TableCell style={{ width: "50%" }}><span>Format No: JSR/SI</span></TableCell>
+                    <TableCell><span>Rev Date and No: 00</span></TableCell>
+                  </tr>
+                  <tr>
+                    <TableCell><span>Compiled By: Sanket Thakkar</span></TableCell>
+                    <TableCell><span>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
                   </tr>
                 </tbody>
               </Table>
-            </div> : ""}
+            </div>
             {/* page 4 end */}
+
 
             {/* optional page 3 start */}
             {/* <div className="page-break"></div> */}
             {otherobservations.lamination.length > 0 ?
               <>
                 {/* header */}
-                <div className="content" style={{ height: isClick ? '157vh' : "" }}>
+                <div className="content" style={{ height: isClick ? '151vh' : "" }}>
                   {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
                     <LogoContainer>
                       <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
@@ -992,8 +981,8 @@ const PreviewReport = () => {
                       <strong className='pdf-span'>In Process Inspection Daily Report</strong>
                     </TitleContainer>
                     <ReportDetails>
-                      <div className='pdf-span'>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                      <div className='pdf-span'>Report No:  {data.reportNo}</div>
+                      <div className='pdf-span'>Report Date: {moment().format('DD-MM-YYYY')}</div>
+                      <div className='pdf-span'>Report No: IPQC-0003</div>
                     </ReportDetails>
                   </HeaderRow> : ""}
 
@@ -1040,19 +1029,15 @@ const PreviewReport = () => {
 
                 {/* footer */}
                 {isClick ? <div id="footer" style={{ width: '100%' }}>
-                  <Table style={{ width: '100%' }}>
+                  <Table>
                     <tbody>
                       <tr style={{ margin: 0, padding: 0 }}>
-                        {/* Ensure all cells have equal width */}
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Format No: JSR/SI</span>
-                        </TableCell>
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Rev Date and No: 00</span>
-                        </TableCell>
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                        </TableCell>
+                        <TableCell style={{ width: "50%" }}><span className='pdf-span'>Format No: JSR/SI</span></TableCell>
+                        <TableCell><span className='pdf-span'>Rev Date and No: 00</span></TableCell>
+                      </tr>
+                      <tr>
+                        <TableCell><span className='pdf-span'>Compiled By: Sanket Thakkar</span></TableCell>
+                        <TableCell><span className='pdf-span'>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
                       </tr>
                     </tbody>
                   </Table>
@@ -1060,11 +1045,12 @@ const PreviewReport = () => {
               </> : ""}
             {/* optional page 3 end */}
 
+
             {/* page 5 start */}
             <div className="page-break"></div>
 
             {/* header */}
-            <div className="content" style={{ height: isClick ? '157vh' : "" }}>
+            <div className="content" style={{ height: isClick ? '151vh' : "" }}>
               <div className="content">
                 {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
                   <LogoContainer>
@@ -1074,8 +1060,8 @@ const PreviewReport = () => {
                     <strong className='pdf-span'>In Process Inspection Daily Report</strong>
                   </TitleContainer>
                   <ReportDetails>
-                    <div className='pdf-span'>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                    <div className='pdf-span'>Report No:  {data.reportNo}</div>
+                    <div className='pdf-span'>Report Date: {moment().format('DD-MM-YYYY')}</div>
+                    <div className='pdf-span'>Report No: IPQC-0003</div>
                   </ReportDetails>
                 </HeaderRow> : ""}
 
@@ -1084,73 +1070,98 @@ const PreviewReport = () => {
                   <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Framing</p>
                   <Table>
                     <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
-                      {/* Header Row */}
                       <tr>
                         <th style={{ border: '1px solid black', padding: '5px' }}><strong>Parameters</strong></th>
-                        {Object.keys(data.framing_work_station_no)
-                          .filter(key => data.framing_work_station_no[key]) // Only include rounds with data
-                          .map((round, index) => (
-                            <th key={index} style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}>
-                              <strong>{`Round ${index + 1}`}</strong>
-                            </th>
-                          ))}
+                        <th style={{ border: '1px solid black', padding: '5px' }}><strong>Round 1</strong></th>
+                        <th style={{ border: '1px solid black', padding: '5px' }}><strong>Round 2</strong></th>
                       </tr>
-
-                      {/* Data Rows */}
-                      {[
-                        { label: "Workstation No", key: "framing_work_station_no" },
-                        { label: "Module Width after Framing (in mm)", key: "module_width_after_framing" },
-                        { label: "Module Length after Framing (in mm)", key: "module_length_after_framing" },
-                        { label: "Frame Size (HS in mm)", key: "frame_size_hs" },
-                        { label: "X Pitch (in mm)", key: "x_pitch" },
-                        { label: "Y Pitch (in mm)", key: "y_pitch" },
-                        { label: "RTV Consumption in Long Side Frame", key: "rtv_consumption_long_side" },
-                        { label: "RTV Consumption in Short Side Frame", key: "rtv_consumption_short_side" },
-                        { label: "RTV Back Feeling", key: "rtv_back_filling" },
-                        { label: "Potting Material Mixing Ratio", key: "potting_material_mixing_ratio" },
-                        { label: "JB Fixing Process", key: "jb_fixing_process" },
-                        { label: "JB Terminal Connections", key: "jb_terminal_connections" },
-                        { label: "Raw Material Consumption Records", key: "raw_material_consumption_records" },
-                      ].map((row, index) => (
-                        <tr key={index}>
-                          <td style={{ border: '1px solid black', padding: '5px' }}>
-                            <span><strong>{row.label}</strong></span>
-                          </td>
-                          {Object.keys(data[row.key])
-                            .filter(key => data[row.key][key]) // Only include rounds with data
-                            .map((round, index) => (
-                              <td key={index} style={{ border: '1px solid black', padding: '5px' }}>
-                                <span>{data[row.key][round]}</span>
-                              </td>
-                            ))}
-                        </tr>
-                      ))}
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Workstation No</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.framing_work_station_no.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.framing_work_station_no.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Module Width after Framing (in mm)</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.module_width_after_framing.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.module_width_after_framing.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Module Length after Framing (in mm)</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.module_length_after_framing.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.module_length_after_framing.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Frame Size (HS in mm)</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.frame_size_hs.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.frame_size_hs.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>X Pitch (in mm)</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.x_pitch.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.x_pitch.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Y Pitch (in mm)</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.y_pitch.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.y_pitch.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>RTV Consumption in Long Side Frame</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.rtv_consumption_long_side.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.rtv_consumption_long_side.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>RTV Consumption in Short Side Frame</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.rtv_consumption_short_side.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.rtv_consumption_short_side.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>RTV Back Feeling</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.rtv_back_filling.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.rtv_back_filling.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Potting Material Mixing Ratio</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.potting_material_mixing_ratio.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.potting_material_mixing_ratio.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>JB Fixing Process</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.jb_fixing_process.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.jb_fixing_process.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>JB Terminal Connections</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.jb_terminal_connections.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.jb_terminal_connections.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Raw Material Consumption Records</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.raw_material_consumption_records.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.raw_material_consumption_records.round2}</span></td>
+                      </tr>
                     </tbody>
+
                   </Table>
                 </div>
-
               </div>
             </div>
 
             {/* footer */}
-            {isClick ? <div id="footer" style={{ width: '100%' }}>
-              <Table style={{ width: '100%' }}>
+            <div id="footer" className='footer'>
+              <Table>
                 <tbody>
                   <tr style={{ margin: 0, padding: 0 }}>
-                    {/* Ensure all cells have equal width */}
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Format No: JSR/SI</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Rev Date and No: 00</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                    </TableCell>
+                    <TableCell style={{ width: "50%" }}><span>Format No: JSR/SI</span></TableCell>
+                    <TableCell><span>Rev Date and No: 00</span></TableCell>
+                  </tr>
+                  <tr>
+                    <TableCell><span>Compiled By: Sanket Thakkar</span></TableCell>
+                    <TableCell><span>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
                   </tr>
                 </tbody>
               </Table>
-            </div> : ""}
+            </div>
             {/* page 5 end */}
 
             {/* optional page 4 start */}
@@ -1158,7 +1169,7 @@ const PreviewReport = () => {
             {otherobservations.framing.length > 0 ?
               <>
                 {/* header */}
-                <div className="content" style={{ height: isClick ? '157vh' : "" }}>
+                <div className="content" style={{ height: isClick ? '151vh' : "" }}>
                   {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
                     <LogoContainer>
                       <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
@@ -1167,8 +1178,8 @@ const PreviewReport = () => {
                       <strong className='pdf-span'>In Process Inspection Daily Report</strong>
                     </TitleContainer>
                     <ReportDetails>
-                      <div className='pdf-span'>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                      <div className='pdf-span'>Report No:  {data.reportNo}</div>
+                      <div className='pdf-span'>Report Date: {moment().format('DD-MM-YYYY')}</div>
+                      <div className='pdf-span'>Report No: IPQC-0003</div>
                     </ReportDetails>
                   </HeaderRow> : ""}
 
@@ -1215,19 +1226,15 @@ const PreviewReport = () => {
 
                 {/* footer */}
                 {isClick ? <div id="footer" style={{ width: '100%' }}>
-                  <Table style={{ width: '100%' }}>
+                  <Table>
                     <tbody>
                       <tr style={{ margin: 0, padding: 0 }}>
-                        {/* Ensure all cells have equal width */}
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Format No: JSR/SI</span>
-                        </TableCell>
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Rev Date and No: 00</span>
-                        </TableCell>
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                        </TableCell>
+                        <TableCell style={{ width: "50%" }}><span className='pdf-span'>Format No: JSR/SI</span></TableCell>
+                        <TableCell><span className='pdf-span'>Rev Date and No: 00</span></TableCell>
+                      </tr>
+                      <tr>
+                        <TableCell><span className='pdf-span'>Compiled By: Sanket Thakkar</span></TableCell>
+                        <TableCell><span className='pdf-span'>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
                       </tr>
                     </tbody>
                   </Table>
@@ -1240,7 +1247,7 @@ const PreviewReport = () => {
             <div className="page-break"></div>
 
             {/* header */}
-            <div className="content" style={{ height: isClick ? '157vh' : "" }}>
+            <div className="content" style={{ height: isClick ? '151vh' : "" }}>
               <div className="content">
                 {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
                   <LogoContainer>
@@ -1250,8 +1257,8 @@ const PreviewReport = () => {
                     <strong className='pdf-span'>In Process Inspection Daily Report</strong>
                   </TitleContainer>
                   <ReportDetails>
-                    <div className='pdf-span'>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                    <div className='pdf-span'>Report No:  {data.reportNo}</div>
+                    <div className='pdf-span'>Report Date: {moment().format('DD-MM-YYYY')}</div>
+                    <div className='pdf-span'>Report No: IPQC-0003</div>
                   </ReportDetails>
                 </HeaderRow> : ""}
 
@@ -1260,44 +1267,58 @@ const PreviewReport = () => {
                   <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Flasher Testing</p>
                   <Table>
                     <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
-                      {/* Table Header */}
                       <tr>
                         <th style={{ border: '1px solid black', padding: '5px' }}><strong>Parameters</strong></th>
-                        {Object.keys(data.calibration_time)
-                          .filter(key => data.calibration_time[key]) // Only include rounds with data
-                          .map((round, index) => (
-                            <th key={index} style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}>
-                              <strong>{`Round ${index + 1}`}</strong>
-                            </th>
-                          ))}
+                        <th style={{ border: '1px solid black', padding: '5px' }}><strong>Round 1</strong></th>
+                        <th style={{ border: '1px solid black', padding: '5px' }}><strong>Round 2</strong></th>
                       </tr>
-
-                      {/* Dynamic Rows */}
-                      {[
-                        { key: 'calibration_time', label: 'Calibration Time' },
-                        { key: 'calibration_by', label: 'Calibration By' },
-                        { key: 'reference_module_sr_no', label: 'Reference Module Sr No' },
-                        { key: 'difference_in_wp_measured', label: 'Difference in Wp Measured' },
-                        { key: 'difference_in_isc_measured', label: 'Difference in Isc Measured' },
-                        { key: 'difference_in_imp_measured', label: 'Difference in Imp Measured' },
-                        { key: 'difference_in_vmp_measured', label: 'Difference in Vmp Measured' },
-                        { key: 'difference_in_voc_measured', label: 'Difference in Voc Measured' },
-                        { key: 'flasher_records', label: 'Flasher Records' },
-                      ].map((row, rowIndex) => (
-                        <tr key={rowIndex}>
-                          <td style={{ border: '1px solid black', padding: '5px' }}>
-                            <span><strong>{row.label}</strong></span>
-                          </td>
-                          {Object.keys(data[row.key])
-                            .filter(key => data[row.key][key]) // Only include rounds with data
-                            .map((round, index) => (
-                              <td key={index} style={{ border: '1px solid black', padding: '5px' }}>
-                                <span>{data[row.key][round]}</span>
-                              </td>
-                            ))}
-                        </tr>
-                      ))}
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Calibration Time</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.calibration_time.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.calibration_time.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Calibration By</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.calibration_by.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.calibration_by.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Reference Module Sr No</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.reference_module_sr_no.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.reference_module_sr_no.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Difference in Wp Measured</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_wp_measured.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_wp_measured.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Difference in Isc Measured</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_isc_measured.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_isc_measured.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Difference in Imp Measured</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_imp_measured.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_imp_measured.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Difference in Vmp Measured</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_vmp_measured.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_vmp_measured.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Difference in Voc Measured</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_voc_measured.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.difference_in_voc_measured.round2}</span></td>
+                      </tr>
+                      <tr>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>Flasher Records</strong></span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.flasher_records.round1}</span></td>
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.flasher_records.round2}</span></td>
+                      </tr>
                     </tbody>
+
                   </Table>
                 </div>
 
@@ -1363,41 +1384,24 @@ const PreviewReport = () => {
                     </tbody>
                   </Table>
                 </div>
-
-                <Table>
-                  <tbody style={{ margin: 0, padding: 0 }}>
-                    <tr>
-                      <HeaderCell style={{ width: "50%" }}><span><strong>Inspection done by</strong></span></HeaderCell>
-                      <TableCell><span>{data.inpaction_done_by}</span></TableCell>
-                    </tr>
-                    <tr>
-                      <HeaderCell><span><strong>Checking together with (Customer/Manufacturer representative)</strong></span></HeaderCell>
-                      <TableCell><span>{data.checking_together}</span></TableCell>
-                    </tr>
-                  </tbody>
-                </Table>
               </div>
             </div>
 
             {/* footer */}
-            {isClick ? <div id="footer" style={{ width: '100%' }}>
-              <Table style={{ width: '100%' }}>
+            <div id="footer" className='footer'>
+              <Table>
                 <tbody>
                   <tr style={{ margin: 0, padding: 0 }}>
-                    {/* Ensure all cells have equal width */}
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Format No: JSR/SI</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Rev Date and No: 00</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                    </TableCell>
+                    <TableCell style={{ width: "50%" }}><span>Format No: JSR/SI</span></TableCell>
+                    <TableCell><span>Rev Date and No: 00</span></TableCell>
+                  </tr>
+                  <tr>
+                    <TableCell><span>Compiled By: Sanket Thakkar</span></TableCell>
+                    <TableCell><span>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
                   </tr>
                 </tbody>
               </Table>
-            </div> : ""}
+            </div>
             {/* page 6 end */}
 
             {/* optional page 5 start */}
@@ -1405,7 +1409,7 @@ const PreviewReport = () => {
             {otherobservations.flasher.length > 0 ?
               <>
                 {/* header */}
-                <div className="content" style={{ height: isClick ? '157vh' : "" }}>
+                <div className="content" style={{ height: isClick ? '151vh' : "" }}>
                   {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
                     <LogoContainer>
                       <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
@@ -1414,8 +1418,8 @@ const PreviewReport = () => {
                       <strong className='pdf-span'>In Process Inspection Daily Report</strong>
                     </TitleContainer>
                     <ReportDetails>
-                      <div className='pdf-span'>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                      <div className='pdf-span'>Report No:  {data.reportNo}</div>
+                      <div className='pdf-span'>Report Date: {moment().format('DD-MM-YYYY')}</div>
+                      <div className='pdf-span'>Report No: IPQC-0003</div>
                     </ReportDetails>
                   </HeaderRow> : ""}
 
@@ -1462,19 +1466,15 @@ const PreviewReport = () => {
 
                 {/* footer */}
                 {isClick ? <div id="footer" style={{ width: '100%' }}>
-                  <Table style={{ width: '100%' }}>
+                  <Table>
                     <tbody>
                       <tr style={{ margin: 0, padding: 0 }}>
-                        {/* Ensure all cells have equal width */}
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Format No: JSR/SI</span>
-                        </TableCell>
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Rev Date and No: 00</span>
-                        </TableCell>
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                        </TableCell>
+                        <TableCell style={{ width: "50%" }}><span className='pdf-span'>Format No: JSR/SI</span></TableCell>
+                        <TableCell><span className='pdf-span'>Rev Date and No: 00</span></TableCell>
+                      </tr>
+                      <tr>
+                        <TableCell><span className='pdf-span'>Compiled By: Sanket Thakkar</span></TableCell>
+                        <TableCell><span className='pdf-span'>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
                       </tr>
                     </tbody>
                   </Table>
@@ -1487,7 +1487,7 @@ const PreviewReport = () => {
             {otherobservations.randomsample.length > 0 ?
               <>
                 {/* header */}
-                <div className="content" style={{ height: isClick ? '157vh' : "" }}>
+                <div className="content" style={{ height: isClick ? '151vh' : "" }}>
                   {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
                     <LogoContainer>
                       <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
@@ -1496,8 +1496,8 @@ const PreviewReport = () => {
                       <strong className='pdf-span'>In Process Inspection Daily Report</strong>
                     </TitleContainer>
                     <ReportDetails>
-                      <div className='pdf-span'>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                      <div className='pdf-span'>Report No:  {data.reportNo}</div>
+                      <div className='pdf-span'>Report Date: {moment().format('DD-MM-YYYY')}</div>
+                      <div className='pdf-span'>Report No: IPQC-0003</div>
                     </ReportDetails>
                   </HeaderRow> : ""}
 
@@ -1544,19 +1544,15 @@ const PreviewReport = () => {
 
                 {/* footer */}
                 {isClick ? <div id="footer" style={{ width: '100%' }}>
-                  <Table style={{ width: '100%' }}>
+                  <Table>
                     <tbody>
                       <tr style={{ margin: 0, padding: 0 }}>
-                        {/* Ensure all cells have equal width */}
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Format No: JSR/SI</span>
-                        </TableCell>
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Rev Date and No: 00</span>
-                        </TableCell>
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                        </TableCell>
+                        <TableCell style={{ width: "50%" }}><span className='pdf-span'>Format No: JSR/SI</span></TableCell>
+                        <TableCell><span className='pdf-span'>Rev Date and No: 00</span></TableCell>
+                      </tr>
+                      <tr>
+                        <TableCell><span className='pdf-span'>Compiled By: Sanket Thakkar</span></TableCell>
+                        <TableCell><span className='pdf-span'>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
                       </tr>
                     </tbody>
                   </Table>
@@ -1564,11 +1560,12 @@ const PreviewReport = () => {
               </> : ""}
             {/* optional page 6 end */}
 
+
             {/* page 7 start */}
             {/* <div className="page-break"></div> */}
 
             {/* header */}
-            {/* <div className="content" style={{ height: isClick ? '157vh' : "" }}> */}
+            {/* <div className="content" style={{ height: isClick ? '151vh' : "" }}> */}
             {/* <div className="content">
               {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
                 <LogoContainer>
@@ -1578,8 +1575,8 @@ const PreviewReport = () => {
                   <strong className='pdf-span'>In Process Inspection Daily Report</strong>
                 </TitleContainer>
                 <ReportDetails>
-                  <div className='pdf-span'>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                  <div className='pdf-span'>Report No:  {data.reportNo}</div>
+                  <div className='pdf-span'>Report Date: {moment().format('DD-MM-YYYY')}</div>
+                  <div className='pdf-span'>Report No: IPQC-0003</div>
                 </ReportDetails>
               </HeaderRow> : ""}
 
@@ -1641,7 +1638,7 @@ const PreviewReport = () => {
           <Container id="report">
 
             {/* page 1 start */}
-            <div className="content" style={{ height: isClick ? '157vh' : "" }}>
+            <div className="content" style={{ height: isClick ? '151vh' : "" }}>
               {/* header */}
               <HeaderRow id="header" className="pdf-header">
                 <LogoContainer>
@@ -1651,8 +1648,8 @@ const PreviewReport = () => {
                   <strong className={isClick ? 'pdf-span' : ""}>In Process Inspection Daily Report</strong>
                 </TitleContainer>
                 <ReportDetails>
-                  <div>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                  <div>Report No:  {data.reportNo}</div>
+                  <div>Report Date: {moment().format('DD-MM-YYYY')}</div>
+                  <div>Report No: {datatype}-0001</div>
                 </ReportDetails>
               </HeaderRow>
 
@@ -1665,7 +1662,7 @@ const PreviewReport = () => {
                       <HeaderCell style={{ width: '25%' }}><span><strong>OA No</strong></span></HeaderCell>
                       <TableCell style={{ width: '25%' }}><span>{data.oaNo}</span></TableCell>
                       <HeaderCell style={{ width: '25%' }}><span><strong>Date</strong></span></HeaderCell>
-                      <TableCell style={{ width: '25%' }}><span>{moment(data.date).format('DD-MM-YYYY')}</span></TableCell>
+                      <TableCell style={{ width: '25%' }}><span>{data.date}</span></TableCell>
                     </tr>
                     <tr>
                       <HeaderCell><span><strong>Manufacturer</strong></span></HeaderCell>
@@ -1703,7 +1700,7 @@ const PreviewReport = () => {
                     <tr>
                       <TableCell rowSpan="6"><span>1</span></TableCell>
                       <TableCell rowSpan="6"><span>Solar Cell</span></TableCell>
-                      <TableCell><span>MBB Cells</span></TableCell>
+                      <TableCell><span>10BB Cells</span></TableCell>
                       <TableCell><span>{data.solar_cell.bb_cells}</span></TableCell>
                     </tr>
                     <tr>
@@ -1735,7 +1732,7 @@ const PreviewReport = () => {
                       <TableCell><span>{data.cell_connector.make}</span></TableCell>
                     </tr>
                     <tr>
-                      <TableCell><span>Diameter / Size</span></TableCell>
+                      <TableCell><span>Diameter</span></TableCell>
                       <TableCell><span>{data.cell_connector.diameter}</span></TableCell>
                     </tr>
                     <tr>
@@ -1868,20 +1865,16 @@ const PreviewReport = () => {
             </div>
 
             {/* Footer */}
-            {isClick ? <div id="footer" style={{ width: '100%' }}>
-              <Table style={{ width: '100%' }}>
+            {isClick ? <div id="footer" className='footer' style={{ width: '100%' }}>
+              <Table>
                 <tbody>
                   <tr style={{ margin: 0, padding: 0 }}>
-                    {/* Ensure all cells have equal width */}
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Format No: JSR/SI</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Rev Date and No: 00</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                    </TableCell>
+                    <TableCell style={{ width: "50%" }}><span className='pdf-span'>Format No: JSR/SI</span></TableCell>
+                    <TableCell><span className='pdf-span'>Rev Date and No: 00</span></TableCell>
+                  </tr>
+                  <tr>
+                    <TableCell><span className='pdf-span'>Compiled By: Sanket Thakkar</span></TableCell>
+                    <TableCell><span className='pdf-span'>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
                   </tr>
                 </tbody>
               </Table>
@@ -1893,7 +1886,7 @@ const PreviewReport = () => {
             {/* <div className="page-break"></div> */}
 
             {/* header */}
-            <div className="content" style={{ height: isClick ? '157vh' : "" }}>
+            <div className="content" style={{ height: isClick ? '151vh' : "" }}>
               {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
                 <LogoContainer>
                   <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
@@ -1902,8 +1895,8 @@ const PreviewReport = () => {
                   <strong className='pdf-span'>In Process Inspection Daily Report</strong>
                 </TitleContainer>
                 <ReportDetails>
-                  <div className='pdf-span'>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                  <div className='pdf-span'>Report No:  {data.reportNo}</div>
+                  <div className='pdf-span'>Report Date: {moment().format('DD-MM-YYYY')}</div>
+                  <div className='pdf-span'>Report No: {datatype}-0003</div>
                 </ReportDetails>
               </HeaderRow> : ""}
 
@@ -2248,19 +2241,15 @@ const PreviewReport = () => {
 
             {/* footer */}
             {isClick ? <div id="footer" style={{ width: '100%' }}>
-              <Table style={{ width: '100%' }}>
+              <Table>
                 <tbody>
                   <tr style={{ margin: 0, padding: 0 }}>
-                    {/* Ensure all cells have equal width */}
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Format No: JSR/SI</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Rev Date and No: 00</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                    </TableCell>
+                    <TableCell style={{ width: "50%" }}><span className='pdf-span'>Format No: JSR/SI</span></TableCell>
+                    <TableCell><span className='pdf-span'>Rev Date and No: 00</span></TableCell>
+                  </tr>
+                  <tr>
+                    <TableCell><span className='pdf-span'>Compiled By: Sanket Thakkar</span></TableCell>
+                    <TableCell><span className='pdf-span'>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
                   </tr>
                 </tbody>
               </Table>

@@ -202,6 +202,7 @@ const RunningReport = () => {
     placeOfInspection: '',
     customerName: '',
     shift: '',
+    reportNo:'',
     // date: null,
     enddate: null,
     wpInNos: null,
@@ -285,6 +286,8 @@ const RunningReport = () => {
       { sr_no: 7, test: "Laminate visual inspection", module_sr_no: "", result: "" },
       { sr_no: 8, test: "Ground continuity test", module_sr_no: "", result: "" },
     ],
+    inpaction_done_by:"",
+    checking_together:"",
     solar_cell: {
       bb_cells: "",
       efficiency: "",
@@ -681,7 +684,17 @@ const RunningReport = () => {
                     + Add Observation
                   </button>
                 )}
-                <button className="add-btn mx-2" onClick={() => navigate('/reports/preview_report', { state: { pagetype:data.reportType,data: formData, observations: observations } })}>
+                <button className="add-btn mx-2" onClick={() => navigate('/reports/preview_report', {
+                  state: {
+                    pagetype: data.reportType, data: formData, observations: observations,
+                    otherobservations: {
+                      filmCutting: otherdetails, tabber: tabberotherdetails,
+                      layup: layupotherdetails, lamination: laminationotherdetails, framing: framingotherdetails,
+                      flasher: flasherotherdetails,
+                      randomsample: randomsampleotherdetails
+                    }
+                  }
+                })}>
                   Preview
                 </button>
                 <button className="add-btn mx-2" onClick={() => { }}>
@@ -783,10 +796,8 @@ const RunningReport = () => {
                           onChange={handleChange}
                           className="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-1.5 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                         >
-                          <option value="">Type your subject</option>
-                          <option value="USA">USA</option>
-                          <option value="UK">UK</option>
-                          <option value="Canada">Canada</option>
+                          <option value="">Select customer</option>
+                          <option value="GSE Renewables India Pvt ltd">GSE Renewables India Pvt ltd</option>
                         </select>
                         <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2">
                           <svg
@@ -812,6 +823,20 @@ const RunningReport = () => {
                   </div>
 
                   <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                  <div className="w-full xl:w-1/2">
+                      <label className="mb-2.5 block text-black dark:text-white">
+                      Report No
+                      </label>
+                      <input
+                        type="text"
+                        name="reportNo"
+                        placeholder="Report No"
+                        value={formData.reportNo}
+                        onChange={handleChange}
+                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                        style={{ margin: 0 }}
+                      />
+                    </div>
                     <div className="w-full xl:w-1/2">
                       <label className="mb-2.5 block text-black dark:text-white">
                         Shift
@@ -822,6 +847,7 @@ const RunningReport = () => {
                           value={formData.shift}
                           onChange={handleChange}
                           className="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-1.5 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary">
+                          <option value="">Select Shift</option>
                           <option value="Day">Day</option>
                           <option value="Night">Night</option>
                         </select>
@@ -1095,7 +1121,7 @@ const RunningReport = () => {
 
                           {/* Backsheet Cutting Length */}
                           <tr>
-                            <td>EVA thickness (mm)</td>
+                            <td>Backsheet Cutting length (mm)</td>
                             {["round1", "round2"].map((round) => (
                               <td key={round}>
                                 <input
@@ -1212,7 +1238,7 @@ const RunningReport = () => {
                                     type="text"
                                     placeholder="Machine No"
                                     className="input-field"
-                                    value={formData.soldering_temp_a[round]}
+                                    value={formData.machine_no[round]}
                                     onChange={(e) => handleNestedChange(e, "machine_no", round)}
                                   />
                                 </td>
@@ -2290,6 +2316,39 @@ const RunningReport = () => {
                                       ))}
                                     </tbody>
                                   </table>
+                                  <br/>
+                                  <table className="production-table">
+                                    <thead>
+                                      <tr>
+                                        <th>Inspection done by</th>
+                                        <th>Checking together with (Customer/Manufacturer representative)</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                          <td style={{width:'50%'}}>
+                                            <input
+                                              type="text"
+                                              name="inpaction_done_by"
+                                              placeholder="Inspection done by"
+                                              className="input-field"
+                                              value={formData.inpaction_done_by}
+                                              onChange={handleChange}
+                                            />
+                                          </td>
+                                          <td>
+                                            <input
+                                              type="text"
+                                              name="checking_together"
+                                              placeholder="Checking together with"
+                                              className="input-field"
+                                              value={formData.checking_together}
+                                              onChange={handleChange}
+                                            />
+                                          </td>
+                                        </tr>
+                                    </tbody>
+                                  </table>
                                   <div className="observation-container" style={{ width: '100%' }}>
                                     <button className="add-btn" onClick={addrandomsampleOtherdetails} style={{ justifyContent: 'end' }}>
                                       + Add Extra Details
@@ -2367,7 +2426,18 @@ const RunningReport = () => {
                     + Add Observation
                   </button>
                 )}
-                <button className="add-btn mx-2" onClick={() => navigate('/reports/preview_report', { state: {pagetype:data.reportType,data:formData,observations:observations} })}>
+                <button className="add-btn mx-2" onClick={() => navigate('/reports/preview_report', {
+                  state: {
+                    pagetype: data.reportType, data: formData, observations: observations, otherobservations: {
+                      filmCutting: otherdetails,
+                      tabber: tabberotherdetails,
+                      layup: layupotherdetails,
+                      lamination: laminationotherdetails, framing: framingotherdetails,
+                      flasher: flasherotherdetails,
+                      randomsample: randomsampleotherdetails
+                    }
+                  }
+                })}>
                   Preview
                 </button>
                 <button className="add-btn mx-2" onClick={() => { }}>
@@ -2469,10 +2539,8 @@ const RunningReport = () => {
                           onChange={handleChange}
                           className="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-1.5 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                         >
-                          <option value="">Type your subject</option>
-                          <option value="USA">USA</option>
-                          <option value="UK">UK</option>
-                          <option value="Canada">Canada</option>
+                          <option value="">Select customer</option>
+                          <option value="GSE Renewables India Pvt ltd">GSE Renewables India Pvt ltd</option>
                         </select>
                         <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2">
                           <svg
@@ -2498,6 +2566,20 @@ const RunningReport = () => {
                   </div>
 
                   <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                  <div className="w-full xl:w-1/2">
+                      <label className="mb-2.5 block text-black dark:text-white">
+                      Report No
+                      </label>
+                      <input
+                        type="text"
+                        name="reportNo"
+                        placeholder="Report No"
+                        value={formData.reportNo}
+                        onChange={handleChange}
+                        className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                        style={{ margin: 0 }}
+                      />
+                    </div>
                     <div className="w-full xl:w-1/2">
                       <label className="mb-2.5 block text-black dark:text-white">
                         Shift
@@ -2508,6 +2590,7 @@ const RunningReport = () => {
                           value={formData.shift}
                           onChange={handleChange}
                           className="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-1.5 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary">
+                          <option value="">Select </option>
                           <option value="Day">Day</option>
                           <option value="Night">Night</option>
                         </select>
@@ -2551,7 +2634,7 @@ const RunningReport = () => {
                       <tr>
                         <td rowSpan="6">1</td>
                         <td rowSpan="6">Solar Cell</td>
-                        <td>10BB Cells</td>
+                        <td>MBB Cells</td>
                         <td>
                           <input
                             className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
@@ -2664,7 +2747,7 @@ const RunningReport = () => {
                           </td>
                         </tr>
                         <tr>
-                          <td>Diameter</td>
+                          <td>Diameter / Size</td>
                           <td>
                             <input
                               className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
@@ -3614,14 +3697,14 @@ const RunningReport = () => {
       {/* Right Container (20%) for Section List */}
       <div className="right-container">
         <h2>Sections</h2>
-        <div className="sections"  style={{ height: '70vh' }}>
+        <div className="sections" style={{ height: '70vh' }}>
           {sections.map((section: any, index: any) => {
             const isActive = selectedSection?.section === section.title;
             return (
               <div key={index} className="section">
                 <div
                   className={`section-header ${isActive ? 'active-section' : ''}`}
-                  onClick={() =>handleSectionClick(section.title)}
+                  onClick={() => handleSectionClick(section.title)}
                 >
                   <span className={`icon ${isActive ? 'active-section' : ''}`}>
                     {section.icon}
