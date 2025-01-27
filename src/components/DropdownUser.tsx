@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 
-import UserOne from '../images/user/user-01.png';
+import UserOne from '../images/user/nouser.png';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -38,6 +38,12 @@ const DropdownUser = () => {
     return () => document.removeEventListener('keydown', keyHandler);
   });
 
+  function logout(e:any){
+    e.preventDefault();
+    localStorage.clear();
+    navigate("/auth/signin");
+  }
+
   return (
     <div className="relative">
       <Link
@@ -48,16 +54,16 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            Vishal Kheni
+            {localStorage.getItem('user_name')}
           </span>
-          <span className="block text-xs">Developer</span>
+          <span className="block text-xs">{localStorage.getItem('user_role')}</span>
         </span>
 
         <span className="h-12 w-12 rounded-full">
           <img src={UserOne} alt="User" />
         </span>
 
-        <svg
+        <svg  
           className={`hidden fill-current sm:block ${
             dropdownOpen ? 'rotate-180' : ''
           }`}
@@ -85,7 +91,7 @@ const DropdownUser = () => {
           dropdownOpen === true ? 'block' : 'hidden'
         }`}
       >
-        <ul className="flex flex-col gap-5 border-b border-stroke px-6 py-7.5 dark:border-strokedark">
+        {/* <ul className="flex flex-col gap-5 border-b border-stroke px-6 py-7.5 dark:border-strokedark">
           <li>
             <Link
               to="/profile"
@@ -111,7 +117,7 @@ const DropdownUser = () => {
               My Profile
             </Link>
           </li>
-          {/* <li>
+          <li>
             <Link
               to="#"
               className="flex items-center gap-3.5 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base"
@@ -156,9 +162,9 @@ const DropdownUser = () => {
               </svg>
               Account Settings
             </Link>
-          </li> */}
-        </ul>
-        <button onClick={()=>navigate("/auth/signin")} className="flex items-center gap-3.5 py-4 px-6 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
+          </li>
+        </ul> */}
+        <button onClick={logout} className="flex items-center gap-3.5 py-4 px-6 text-sm font-medium duration-300 ease-in-out hover:text-primary lg:text-base">
           <svg
             className="fill-current"
             width="22"

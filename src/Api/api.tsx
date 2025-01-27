@@ -4,7 +4,10 @@ export const baseUrl = "http://localhost:8000";
 //imgurl
 export const imgUrl = "http://localhost/jsradmin/";
 
-//blog module
+//login
+export const LOGIN_API = baseUrl + "/login"
+
+//form module
 export const LIST_FORM_API = baseUrl + "/get_forms";
 export const LIST_FORM_FORMAT_API = baseUrl + "/get_form_formats";
 export const LIST_FORM_SECTIONS_API = baseUrl + "/get_sections";
