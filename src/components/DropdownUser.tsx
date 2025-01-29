@@ -38,7 +38,7 @@ const DropdownUser = () => {
     return () => document.removeEventListener('keydown', keyHandler);
   });
 
-  function logout(e:any){
+  function logout(e: any) {
     e.preventDefault();
     localStorage.clear();
     navigate("/auth/signin");
@@ -56,17 +56,20 @@ const DropdownUser = () => {
           <span className="block text-sm font-medium text-black dark:text-white">
             {localStorage.getItem('user_name')}
           </span>
-          <span className="block text-xs">{localStorage.getItem('user_role')}</span>
+          <span className="block text-xs">
+            {localStorage.getItem('user_role') === 'subadmin' ?
+              localStorage.getItem('sub_role') :
+              localStorage.getItem('user_role')}
+          </span>
         </span>
 
         <span className="h-12 w-12 rounded-full">
           <img src={UserOne} alt="User" />
         </span>
 
-        <svg  
-          className={`hidden fill-current sm:block ${
-            dropdownOpen ? 'rotate-180' : ''
-          }`}
+        <svg
+          className={`hidden fill-current sm:block${dropdownOpen ? 'rotate-180' : ''
+            }`}
           width="12"
           height="8"
           viewBox="0 0 12 8"
@@ -87,9 +90,8 @@ const DropdownUser = () => {
         ref={dropdown}
         onFocus={() => setDropdownOpen(true)}
         onBlur={() => setDropdownOpen(false)}
-        className={`absolute right-0 mt-4 flex w-62.5 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark ${
-          dropdownOpen === true ? 'block' : 'hidden'
-        }`}
+        className={`absolute right-0 mt-4 flex w-62.5 flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark ${dropdownOpen === true ? 'block' : 'hidden'
+          }`}
       >
         {/* <ul className="flex flex-col gap-5 border-b border-stroke px-6 py-7.5 dark:border-strokedark">
           <li>
