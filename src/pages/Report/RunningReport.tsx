@@ -1,23 +1,23 @@
 import { useState, useEffect } from "react";
-import { LIST_FORM_SECTIONS_API, LIST_SECTION_PARAMS_API, LIST_CUSTOMER_API, SUBMIT_SECTION_API } from "../../Api/api.tsx";
+import { LIST_FORM_SECTIONS_API, LIST_SECTION_PARAMS_API, LIST_CUSTOMER_API, SUBMIT_SECTION_API, ADD_OBSERVATIONS_API, GET_OBSERVATIONS_API, UPLOAD_IMAGE_API,imgUrl } from "../../Api/api.tsx";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FaChevronDown } from "react-icons/fa";
 import { toast } from "react-toastify";
 
 const RunningReport = () => {
   var utoken = localStorage.getItem('userToken');
-  console.log(utoken);
   const navigate = useNavigate();
   const location = useLocation();
-  const data = location.state;
+  var data = location.state;
+  if (!data) {
+    data = { reportType: "IPQC" };
+  }
   const [selectedSection, setSelectedSection] = useState<any>({ section: 'Report Details', section_id: 1, section_type: 'inputField' });
-  const [expandedSection, setExpandedSection] = useState<any>(null);
   const [customer, setCustomer] = useState([]);
   const [isLoaded, setLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    console.log("data", data);
     if (data.Datas) {
       try {
         setFormData(data.Datas);
@@ -31,12 +31,14 @@ const RunningReport = () => {
   }, [data]);
 
   const [sectionparams, setSectionparams] = useState<any>([]);
-  const [sections, setSections] = useState([]);
+  const [sections, setSections] = useState<any>([]);
+  const [observations, setObservations] = useState<any>([]);
 
   useEffect(() => {
     setLoaded(true);
     listSections();
     listSectionParams(selectedSection.section_id);
+    listobservations(selectedSection.section_id);
     listCustomer();
   }, []);
 
@@ -96,8 +98,41 @@ const RunningReport = () => {
       if (data.Status === 0) {
         setLoaded(false);
       } else if (data.Status === 1) {
-        console.log("params", data.info);
+        console.log("sectionparams", data.info);
         setSectionparams(data.info);
+        setLoaded(false);
+      }
+    } catch (error) {
+      console.error("Error fetching sections:", error);
+      setLoaded(false);
+    }
+  };
+
+  const listobservations = async (e: any) => {
+    const params = new URLSearchParams({
+      form_id: "1",
+      section_id: e
+    });
+
+    console.log("listSectionParams", params);
+
+    try {
+      const response = await fetch(`${GET_OBSERVATIONS_API}?${params.toString()}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${utoken}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      });
+
+      const data = await response.json();
+      console.log("data", data);
+      if (data.Status === 0) {
+        setLoaded(false);
+      } else if (data.Status === 1) {
+        console.log("observations", data.info);
+        setObservations(data.info);
         setLoaded(false);
       }
     } catch (error) {
@@ -135,6 +170,10 @@ const RunningReport = () => {
   const submitSection = async (e: any) => {
     e.preventDefault();
     setIsLoading(true);
+    if (selectedSection.section_id === 4) {
+      setSectionparams([]);
+    }
+    addobservations(e);
     try {
       const response = await fetch(SUBMIT_SECTION_API, {
         method: "POST",
@@ -164,6 +203,89 @@ const RunningReport = () => {
     }
   }
 
+  const addobservations = async (e: any) => {
+    e.preventDefault();
+    setIsLoading(true);
+    try {
+      const response = await fetch(ADD_OBSERVATIONS_API, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${utoken}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          form_id: 1,
+          section_id: selectedSection.section_id,
+          jsonData: JSON.stringify(observations)
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.Status === 0) {
+        setIsLoading(false);
+      } else if (data.Status === 1) {
+        // toast.success(data.Message);
+        listobservations(sectionparams.section_id);
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.error("Error fetching sections:", error);
+      setIsLoading(false);
+    }
+  }
+
+  const addAndUploadImages = async (observations_id: number, newImages: File[]) => {
+    const formData = new FormData();
+console.log('newImages',newImages);
+    // Append each file to the same parameter
+    for (const file of newImages) {
+      formData.append('observations', file);
+    }
+
+    try {
+      // Upload images to the server
+      const response = await fetch(UPLOAD_IMAGE_API, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${utoken}`,
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (data.Status === 1) {
+        console.log("images ->> data.info",data.info);
+        // If upload is successful, update the local state with the new image URLs
+        setObservations((prevObservations: any) =>
+          prevObservations.map((obs: any) =>
+            obs.observations_id === observations_id
+              ? {
+                ...obs,
+                images: [
+                  ...obs.images,
+                  ...data.info.map((url: string) => ({ image_id: 0, image: url })),
+                ],
+              }
+              : obs
+          )
+        );
+
+        // Show success message
+        // toast.success(data.Message);
+      } else {
+        // Handle upload failure
+        toast.error("Failed to upload images.");
+      }
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      toast.error("An error occurred while uploading images.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
   // Map sections into viewable data
   const viewSections = sections.map((item: any) => ({
     section_id: item.section_id,
@@ -175,7 +297,8 @@ const RunningReport = () => {
   const handleSectionClick = (section: any, section_id = null, section_type: any) => {
     console.log(section_id);
     setSelectedSection({ section, section_id, section_type });
-    listSectionParams(section_id);
+    section_id === 4 ? "" : listSectionParams(section_id);
+    listobservations(section_id);
     // console.log("selected section ->>>", selectedSection, section, section_id,section_type);
   };
 
@@ -398,125 +521,50 @@ const RunningReport = () => {
     );
   };
 
-  const handleArrayChange = (e: any, key: any, index: any, field: any) => {
+  const handleArrayChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number,
+    field: "module_sr_no" | "result"
+  ) => {
+    console.log("data ->>", e, index, field);
     const newValue = e.target.value;
-    setFormData((prevFormData: any) => {
-      const updatedArray = [...prevFormData[key]];
-      updatedArray[index][field] = newValue;
-      return { ...prevFormData, [key]: updatedArray };
-    });
+    console.log("value ->>", newValue);
+    var sparams = [...sectionparams];
+    sparams[index] = { ...sparams[index], [field]: newValue };
+    setSectionparams(sparams);
   };
 
-  // observations section
-  const [observations, setObservations] = useState<any>([]);
+  // Update observation description
+  const updateDescription = (observations_id: number, newDescription: string) => {
+    setObservations((prevObservations) =>
+      prevObservations.map((obs) =>
+        obs.observations_id === observations_id
+          ? { ...obs, observations_text: newDescription }
+          : obs
+      )
+    );
+  };
 
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>,observationsId:any) => {
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const newImages = Array.from(files);
+      addAndUploadImages(observationsId, newImages);
+    }
+  };
+
+  // Add a new observation
   const addObservation = () => {
-    setObservations([
-      ...observations,
-      {
-        id: observations.length + 1,
-        description: "",
-        images: [],
-      },
-    ]);
+    const newObservation = {
+      observations_id: 0,
+      observations_text: "",
+      is_major: selectedSection.section_id === 4 ? "Yes" : "No", // Set is_major based on section_id
+      images: [],
+    };
+
+    setObservations([...observations, newObservation]);
   };
 
-  const updateDescription = (id: any, newDescription: any) => {
-    setObservations((prevObservations: any) =>
-      prevObservations.map((obs: any) =>
-        obs.id === id ? { ...obs, description: newDescription } : obs
-      )
-    );
-  };
-
-  const addImages = (id: any, newImages: string[]) => {
-    setObservations((prevObservations: any) =>
-      prevObservations.map((obs: any) =>
-        obs.id === id
-          ? { ...obs, images: [...obs.images, ...newImages] } // Append all new images
-          : obs
-      )
-    );
-  };
-
-  //other seaction
-  const [otherdetails, setOtherdetails] = useState<any>([]);
-
-  //tabber section
-  const [tabberotherdetails, setTabberOtherdetails] = useState<any>([]);
-
-  const addtabberOtherdetails = () => {
-    setTabberOtherdetails([
-      ...tabberotherdetails,
-      {
-        id: tabberotherdetails.length + 1,
-        description: "",
-        images: [],
-      },
-    ]);
-  };
-
-  const updatetabberDescription = (id: any, newDescription: any) => {
-    setTabberOtherdetails((prevObservations: any) =>
-      prevObservations.map((obs: any) =>
-        obs.id === id ? { ...obs, description: newDescription } : obs
-      )
-    );
-  };
-
-  const addtabberotherImages = (id: any, newImages: string[]) => {
-    setTabberOtherdetails((prevObservations: any) =>
-      prevObservations.map((obs: any) =>
-        obs.id === id
-          ? { ...obs, images: [...obs.images, ...newImages] } // Append all new images
-          : obs
-      )
-    );
-  };
-
-  //layup section
-  const [layupotherdetails, setLayupOtherdetails] = useState<any>([]);
-
-  //Lamination section
-  const [laminationotherdetails, setLaminationOtherdetails] = useState<any>([]);
-
-  //Framing section
-  const [framingotherdetails, setFramingOtherdetails] = useState<any>([]);
-
-  //Flasher Testing section
-  const [flasherotherdetails, setFlasherOtherdetails] = useState<any>([]);
-
-  //Random Sample Check
-  const [randomsampleotherdetails, setRandomsampleOtherdetails] = useState<any>([]);
-
-  const addrandomsampleOtherdetails = () => {
-    setRandomsampleOtherdetails([
-      ...randomsampleotherdetails,
-      {
-        id: randomsampleotherdetails.length + 1,
-        description: "",
-        images: [],
-      },
-    ]);
-  };
-
-  const updaterandomsampleDescription = (id: any, newDescription: any) => {
-    setRandomsampleOtherdetails((prevObservations: any) =>
-      prevObservations.map((obs: any) =>
-        obs.id === id ? { ...obs, description: newDescription } : obs
-      )
-    );
-  };
-
-  const addrandomsampleotherImages = (id: any, newImages: string[]) => {
-    setRandomsampleOtherdetails((prevObservations: any) =>
-      prevObservations.map((obs: any) =>
-        obs.id === id
-          ? { ...obs, images: [...obs.images, ...newImages] } // Append all new images
-          : obs
-      )
-    );
-  };
 
   return (
     <div className="container">
@@ -537,13 +585,7 @@ const RunningReport = () => {
                 )}
                 <button className="add-btn mx-2" onClick={() => navigate('/reports/preview_report', {
                   state: {
-                    pagetype: data.reportType, data: formData, observations: observations,
-                    otherobservations: {
-                      filmCutting: otherdetails, tabber: tabberotherdetails,
-                      layup: layupotherdetails, lamination: laminationotherdetails, framing: framingotherdetails,
-                      flasher: flasherotherdetails,
-                      randomsample: randomsampleotherdetails
-                    }
+                    pagetype: data.reportType, data: formData
                   }
                 })}>
                   Preview
@@ -645,7 +687,6 @@ const RunningReport = () => {
                     ))}
                 </div>
               </form>
-
               : selectedSection.section_type === "table" ?
                 <div className="table-container">
                   <table className="production-table">
@@ -679,16 +720,16 @@ const RunningReport = () => {
                       </thead>
                       <tbody>
                         {observations.map((observation: any, index: any) => (
-                          <tr key={observation.id}>
+                          <tr key={observation.observations_id}>
                             <td>{index + 1}</td>
                             <td>
                               <div className="observation-detail">
                                 {/* Editable Description */}
                                 <textarea
                                   className="input-field"
-                                  value={observation.description}
+                                  value={observation.observations_text}
                                   onChange={(e) =>
-                                    updateDescription(observation.id, e.target.value)
+                                    updateDescription(observation.observations_id, e.target.value)
                                   }
                                   placeholder="Enter description"
                                 />
@@ -698,25 +739,18 @@ const RunningReport = () => {
                                   {observation.images.map((image: any, idx: any) => (
                                     <img
                                       key={idx}
-                                      src={image}
+                                      src={imgUrl+image.image}
                                       alt={`Observation ${index + 1} - Image ${idx + 1}`}
                                     />
                                   ))}
                                 </div>
 
+                                {/* File Upload */}
                                 <input
                                   type="file"
                                   accept="image/*"
                                   multiple
-                                  onChange={(e: any) => {
-                                    const files = e.target.files; // Get all selected files
-                                    if (files.length > 0) {
-                                      const imageUrls = Array.from(files).map((file: any) =>
-                                        URL.createObjectURL(file)
-                                      );
-                                      addImages(observation.id, imageUrls); // Pass array of image URLs
-                                    }
-                                  }}
+                                  onChange={(e:any)=>handleFileUpload(e,observation.observations_id)}
                                 />
                               </div>
                             </td>
@@ -739,7 +773,7 @@ const RunningReport = () => {
                         </thead>
                         <tbody>
                           {sectionparams.map((item: any, index: number) => (
-                            <tr key={item.param_id}>
+                            <tr key={index}>
                               <td>{item.param_name}</td>
                               {["round1", "round2", "round3", "round4"].map((round) => (
                                 <td key={round}>
@@ -747,8 +781,8 @@ const RunningReport = () => {
                                     type={item.inputType}
                                     placeholder={item.param_name}
                                     className="input-field"
-                                    value={item.value[round]}  // Directly use the value from sectionparams
-                                    onChange={(e) => handleNestedChange(e, item.param_id, round)}  // Pass param_id
+                                    value={item.value ? item.value[round] : ""}
+                                    onChange={(e) => handleNestedChange(e, item.param_id, round)}
                                   />
                                 </td>
                               ))}
@@ -757,7 +791,7 @@ const RunningReport = () => {
                         </tbody>
                       </table>
                       <div className="observation-container" style={{ width: '100%' }}>
-                        <button className="add-btn" onClick={addtabberOtherdetails} style={{ justifyContent: 'end' }}>
+                        <button className="add-btn" onClick={addObservation} style={{ justifyContent: 'end' }}>
                           + Add Extra Details
                         </button>
                         <table className="observation-table">
@@ -768,50 +802,43 @@ const RunningReport = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {tabberotherdetails.map((observation: any, index: any) => (
-                              <tr key={observation.id}>
-                                <td>{index + 1}</td>
-                                <td>
-                                  <div className="observation-detail">
-                                    {/* Editable Description */}
-                                    <textarea
-                                      className="input-field"
-                                      value={observation.description}
-                                      onChange={(e) =>
-                                        updatetabberDescription(observation.id, e.target.value)
-                                      }
-                                      placeholder="Enter description"
-                                    />
+                          {observations.map((observation: any, index: any) => (
+                          <tr key={observation.observations_id}>
+                            <td>{index + 1}</td>
+                            <td>
+                              <div className="observation-detail">
+                                {/* Editable Description */}
+                                <textarea
+                                  className="input-field"
+                                  value={observation.observations_text}
+                                  onChange={(e) =>
+                                    updateDescription(observation.observations_id, e.target.value)
+                                  }
+                                  placeholder="Enter description"
+                                />
 
-                                    {/* Display Images */}
-                                    <div className="image-row">
-                                      {observation.images.map((image: any, idx: any) => (
-                                        <img
-                                          key={idx}
-                                          src={image}
-                                          alt={`Observation ${index + 1} - Image ${idx + 1}`}
-                                        />
-                                      ))}
-                                    </div>
-
-                                    <input
-                                      type="file"
-                                      accept="image/*"
-                                      multiple
-                                      onChange={(e: any) => {
-                                        const files = e.target.files;
-                                        if (files.length > 0) {
-                                          const imageUrls = Array.from(files).map((file: any) =>
-                                            URL.createObjectURL(file)
-                                          );
-                                          addtabberotherImages(observation.id, imageUrls);
-                                        }
-                                      }}
+                                {/* Display Images */}
+                                <div className="image-row">
+                                  {observation.images.map((image: any, idx: any) => (
+                                    <img
+                                      key={idx}
+                                      src={imgUrl+image.image}
+                                      alt={`Observation ${index + 1} - Image ${idx + 1}`}
                                     />
-                                  </div>
-                                </td>
-                              </tr>
-                            ))}
+                                  ))}
+                                </div>
+
+                                {/* File Upload */}
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  multiple
+                                  onChange={(e:any)=>handleFileUpload(e,observation.observations_id)}
+                                />
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
                           </tbody>
                         </table>
                       </div>
@@ -821,37 +848,31 @@ const RunningReport = () => {
                         <table className="production-table">
                           <thead>
                             <tr>
-                              <th>Sr No</th>
                               <th>Test</th>
                               <th>Module Sr. No.</th>
                               <th>Result</th>
                             </tr>
                           </thead>
                           <tbody>
-                            {formData.test_results.map((test: any, index: any) => (
+                            {sectionparams.map((test: any, index: any) => (
                               <tr key={index}>
-                                <td>{test.sr_no}</td>
                                 <td>{test.test}</td>
                                 <td>
                                   <input
-                                    type="text"
+                                    type={test.inputType}
                                     placeholder="Module Sr. No."
                                     className="input-field"
                                     value={test.module_sr_no}
-                                    onChange={(e) =>
-                                      handleArrayChange(e, "test_results", index, "module_sr_no")
-                                    }
+                                    onChange={(e) => handleArrayChange(e, index, "module_sr_no")}
                                   />
                                 </td>
                                 <td>
                                   <input
-                                    type="text"
+                                    type={test.inputType}
                                     placeholder="Result"
                                     className="input-field"
                                     value={test.result}
-                                    onChange={(e) =>
-                                      handleArrayChange(e, "test_results", index, "result")
-                                    }
+                                    onChange={(e) => handleArrayChange(e, index, "result")}
                                   />
                                 </td>
                               </tr>

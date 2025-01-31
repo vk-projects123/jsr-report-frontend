@@ -1,316 +1,16 @@
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import Breadcrumb from '../../components/Breadcrumb';
+import { LIST_REPORTS_API } from '../../Api/api';
+import moment from "moment";
 
 const LastForms = () => {
-
-  var data = [
-    {
-      report_id: 1,
-      oa_no: 1,
-      date: "12 nov 2024",
-      shift: "Day",
-      client: "Tata Power",
-      oem: "xy",
-      oem_plant: "xy-1",
-      inpection_eng_1: "Vikash",
-      inpection_eng_2: "Vishal",
-      report_type: "IPQC",
-      connected_report: [{
-        report_id: 2,
-        report_name: "PDI Report"
-      }],
-      attechment: [{
-        attechment_id: 1,
-        attechment: ""
-      }]
-    },
-    {
-      report_id: 2,
-      oa_no: 2,
-      date: "13 nov 2024",
-      shift: "Night",
-      client: "Tata Power",
-      oem: "xy",
-      oem_plant: "xy-2",
-      inpection_eng_1: "Amit",
-      inpection_eng_2: "Ravi",
-      report_type: "PDi",
-      connected_report: [{
-        report_id: 3,
-        report_name: "PDI Report"
-      }],
-      attechment: [{
-        attechment_id: 2,
-        attechment: "https://example.com/sample-2-320.jpg"
-      }]
-    },
-    {
-      report_id: 3,
-      oa_no: 3,
-      date: "14 nov 2024",
-      shift: "Day",
-      client: "Adani Power",
-      oem: "yz",
-      oem_plant: "yz-3",
-      inpection_eng_1: "Sanjay",
-      inpection_eng_2: "Manoj",
-      report_type: "PDI",
-      connected_report: [{
-        report_id: 4,
-        report_name: "Inspection Report"
-      }],
-      attechment: [{
-        attechment_id: 3,
-        attechment: "https://example.com/sample-3-320.jpg"
-      }]
-    },
-    {
-      report_id: 4,
-      oa_no: 4,
-      date: "15 nov 2024",
-      shift: "Night",
-      client: "NTPC",
-      oem: "yz",
-      oem_plant: "yz-4",
-      inpection_eng_1: "Deepak",
-      inpection_eng_2: "Sumit",
-      report_type: "Rejection",
-      connected_report: [{
-        report_id: 5,
-        report_name: "PDI Report"
-      }],
-      attechment: [{
-        attechment_id: 4,
-        attechment: "https://example.com/sample-4-320.jpg"
-      }]
-    },
-    {
-      report_id: 5,
-      oa_no: 5,
-      date: "16 nov 2024",
-      shift: "Day",
-      client: "Reliance Power",
-      oem: "xz",
-      oem_plant: "xz-5",
-      inpection_eng_1: "Rajesh",
-      inpection_eng_2: "Prakash",
-      report_type: "IPQC",
-      connected_report: [{
-        report_id: 6,
-        report_name: "Maintenance Report"
-      }],
-      attechment: [{
-        attechment_id: 5,
-        attechment: "https://example.com/sample-5-320.jpg"
-      }]
-    },
-    {
-      report_id: 6,
-      oa_no: 6,
-      date: "17 nov 2024",
-      shift: "Night",
-      client: "Tata Power",
-      oem: "xz",
-      oem_plant: "xz-6",
-      inpection_eng_1: "Anil",
-      inpection_eng_2: "Suresh",
-      report_type: "Rejection",
-      connected_report: [{
-        report_id: 7,
-        report_name: "PDI Report"
-      }],
-      attechment: [{
-        attechment_id: 6,
-        attechment: "https://example.com/sample-6-320.jpg"
-      }]
-    },
-    {
-      report_id: 7,
-      oa_no: 7,
-      date: "18 nov 2024",
-      shift: "Day",
-      client: "Adani Power",
-      oem: "yz",
-      oem_plant: "yz-7",
-      inpection_eng_1: "Rohit",
-      inpection_eng_2: "Sunil",
-      report_type: "PDI",
-      connected_report: [{
-        report_id: 8,
-        report_name: "Inspection Report"
-      }],
-      attechment: [{
-        attechment_id: 7,
-        attechment: "https://example.com/sample-7-320.jpg"
-      }]
-    },
-    {
-      report_id: 8,
-      oa_no: 8,
-      date: "19 nov 2024",
-      shift: "Night",
-      client: "NTPC",
-      oem: "xy",
-      oem_plant: "xy-8",
-      inpection_eng_1: "Mahesh",
-      inpection_eng_2: "Dinesh",
-      report_type: "BOM",
-      connected_report: [{
-        report_id: 9,
-        report_name: "PDI Report"
-      }],
-      attechment: [{
-        attechment_id: 8,
-        attechment: "https://example.com/sample-8-320.jpg"
-      }]
-    },
-    {
-      report_id: 9,
-      oa_no: 9,
-      date: "20 nov 2024",
-      shift: "Day",
-      client: "Reliance Power",
-      oem: "xz",
-      oem_plant: "xz-9",
-      inpection_eng_1: "Abhishek",
-      inpection_eng_2: "Tarun",
-      report_type: "IPQC",
-      connected_report: [{
-        report_id: 10,
-        report_name: "Maintenance Report"
-      }],
-      attechment: [{
-        attechment_id: 9,
-        attechment: "https://example.com/sample-9-320.jpg"
-      }]
-    },
-    {
-      report_id: 10,
-      oa_no: 10,
-      date: "21 nov 2024",
-      shift: "Night",
-      client: "Tata Power",
-      oem: "xy",
-      oem_plant: "xy-10",
-      inpection_eng_1: "Vikram",
-      inpection_eng_2: "Yogesh",
-      report_type: "PDI",
-      connected_report: [{
-        report_id: 11,
-        report_name: "PDI Report"
-      }],
-      attechment: [{
-        attechment_id: 10,
-        attechment: "https://example.com/sample-10-320.jpg"
-      }]
-    },
-    {
-      report_id: 11,
-      oa_no: 11,
-      date: "22 nov 2024",
-      shift: "Day",
-      client: "Adani Power",
-      oem: "yz",
-      oem_plant: "yz-11",
-      inpection_eng_1: "Sameer",
-      inpection_eng_2: "Rajeev",
-      report_type: "BOM",
-      connected_report: [{
-        report_id: 12,
-        report_name: "Inspection Report"
-      }],
-      attechment: [{
-        attechment_id: 11,
-        attechment: "https://example.com/sample-11-320.jpg"
-      }]
-    },
-    {
-      report_id: 12,
-      oa_no: 12,
-      date: "23 nov 2024",
-      shift: "Night",
-      client: "NTPC",
-      oem: "xz",
-      oem_plant: "xz-12",
-      inpection_eng_1: "Piyush",
-      inpection_eng_2: "Vikas",
-      report_type: "IPQC",
-      connected_report: [{
-        report_id: 13,
-        report_name: "PDI Report"
-      }],
-      attechment: [{
-        attechment_id: 12,
-        attechment: "https://example.com/sample-12-320.jpg"
-      }]
-    },
-    {
-      report_id: 13,
-      oa_no: 13,
-      date: "24 nov 2024",
-      shift: "Day",
-      client: "Reliance Power",
-      oem: "yz",
-      oem_plant: "yz-13",
-      inpection_eng_1: "Nikhil",
-      inpection_eng_2: "Amit",
-      report_type: "Rejection",
-      connected_report: [{
-        report_id: 14,
-        report_name: "Maintenance Report"
-      }],
-      attechment: [{
-        attechment_id: 13,
-        attechment: "https://example.com/sample-13-320.jpg"
-      }]
-    },
-    {
-      report_id: 14,
-      oa_no: 14,
-      date: "25 nov 2024",
-      shift: "Night",
-      client: "Tata Power",
-      oem: "xy",
-      oem_plant: "xy-14",
-      inpection_eng_1: "Lokesh",
-      inpection_eng_2: "Arun",
-      report_type: "BOM",
-      connected_report: [{
-        report_id: 15,
-        report_name: "PDI Report"
-      }],
-      attechment: [{
-        attechment_id: 14,
-        attechment: "https://example.com/sample-14-320.jpg"
-      }]
-    },
-    {
-      report_id: 15,
-      oa_no: 15,
-      date: "26 nov 2024",
-      shift: "Day",
-      client: "Adani Power",
-      oem: "xz",
-      oem_plant: "xz-15",
-      inpection_eng_1: "Rakesh",
-      inpection_eng_2: "Neeraj",
-      report_type: "PDI",
-      connected_report: [{
-        report_id: 16,
-        report_name: "Inspection Report"
-      }],
-      attechment: [{
-        attechment_id: 15,
-        attechment: "https://example.com/sample-15-320.jpg"
-      }]
-    }
-  ];
-
-  const [reportData, setReportData] = useState(data);
+  var utoken = localStorage.getItem('userToken');
+  const [reportData, setReportData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
+  const [isLoaded, setLoaded] = useState(false);
 
   // Pagination logic
   const lastItemIndex = currentPage * itemsPerPage;
@@ -356,6 +56,42 @@ const LastForms = () => {
     setCurrentPage(1); // Reset to the first page after search
   };
 
+    useEffect(() => {
+      setLoaded(true);
+      listReports();
+    }, []);
+  
+    // Function to fetch sections
+    const listReports = async () => {
+      const params = new URLSearchParams({
+        pageNo: '1',
+        report_type: 'All'
+      });
+  
+      try {
+        const response = await fetch(`${LIST_REPORTS_API}?${params.toString()}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${utoken}`,
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        });
+  
+        const data = await response.json();
+  
+        if (data.Status === 0) {
+          setLoaded(false);
+        } else if (data.Status === 1) {
+          console.log("data ->>>",data.info.data);
+          setReportData(data.info.data);
+          setLoaded(false);
+        }
+      } catch (error) {
+        console.error("Error fetching sections:", error);
+        setLoaded(false);
+      }
+    };
 
   return (
     <>
@@ -417,7 +153,7 @@ const LastForms = () => {
             <table className="w-full table-auto">
               <thead>
                 <tr className="bg-gray-2 text-left dark:bg-meta-4">
-                  {["Report id", "OA No", "Date", "Shift", "Client", "OEM", "OEM Plant", "Inpection Eng-1", "Inpection Eng-2", "Report Type", "Connected Reports", "Attechment", "Actions"].map(
+                  {["Report id", "Client", "Report Type", "Status", "Inpection Eng-1", "Inpection Eng-2","Date", "Actions"].map(
                     (col) => (
                       <th
                         key={col}
@@ -434,105 +170,32 @@ const LastForms = () => {
                 </tr>
               </thead>
               <tbody>
-                {currentItems.map((item, i) => (
-                  <tr key={i}>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark text-center">
-                      <p className="text-black dark:text-white">{item.report_id}</p>
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <p className="text-black dark:text-white">{item.oa_no}</p>
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <p className="text-black dark:text-white">{item.date}</p>
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <p className="text-black dark:text-white">{item.shift}</p>
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <p className="text-black dark:text-white">{item.client}</p>
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <p className="text-black dark:text-white">{item.oem}</p>
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <p className="text-black dark:text-white">{item.oem_plant}</p>
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <p className="text-black dark:text-white">{item.inpection_eng_1}</p>
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <p className="text-black dark:text-white">{item.inpection_eng_2}</p>
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                      <p className="inline-flex rounded-full bg-success bg-opacity-10 py-1 px-3 text-sm font-medium text-success">
-                        {item.report_type}
-                      </p>
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark text-center">
-                      <button className="hover:text-primary">
-                        <svg
-                          className="fill-current"
-                          width="18"
-                          height="18"
-                          viewBox="0 0 18 18"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M8.99981 14.8219C3.43106 14.8219 0.674805 9.50624 0.562305 9.28124C0.47793 9.11249 0.47793 8.88749 0.562305 8.71874C0.674805 8.49374 3.43106 3.20624 8.99981 3.20624C14.5686 3.20624 17.3248 8.49374 17.4373 8.71874C17.5217 8.88749 17.5217 9.11249 17.4373 9.28124C17.3248 9.50624 14.5686 14.8219 8.99981 14.8219ZM1.85605 8.99999C2.4748 10.0406 4.89356 13.5562 8.99981 13.5562C13.1061 13.5562 15.5248 10.0406 16.1436 8.99999C15.5248 7.95936 13.1061 4.44374 8.99981 4.44374C4.89356 4.44374 2.4748 7.95936 1.85605 8.99999Z"
-                            fill=""
-                          />
-                          <path
-                            d="M9 11.3906C7.67812 11.3906 6.60938 10.3219 6.60938 9C6.60938 7.67813 7.67812 6.60938 9 6.60938C10.3219 6.60938 11.3906 7.67813 11.3906 9C11.3906 10.3219 10.3219 11.3906 9 11.3906ZM9 7.875C8.38125 7.875 7.875 8.38125 7.875 9C7.875 9.61875 8.38125 10.125 9 10.125C9.61875 10.125 10.125 9.61875 10.125 9C10.125 8.38125 9.61875 7.875 9 7.875Z"
-                            fill=""
-                          />
-                        </svg>
-                      </button>
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark text-center">
-                      <button className="hover:text-primary">
-                        <svg
-                          className="fill-current"
-                          width="18"
-                          height="18"
-                          viewBox="0 0 18 18"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M8.99981 14.8219C3.43106 14.8219 0.674805 9.50624 0.562305 9.28124C0.47793 9.11249 0.47793 8.88749 0.562305 8.71874C0.674805 8.49374 3.43106 3.20624 8.99981 3.20624C14.5686 3.20624 17.3248 8.49374 17.4373 8.71874C17.5217 8.88749 17.5217 9.11249 17.4373 9.28124C17.3248 9.50624 14.5686 14.8219 8.99981 14.8219ZM1.85605 8.99999C2.4748 10.0406 4.89356 13.5562 8.99981 13.5562C13.1061 13.5562 15.5248 10.0406 16.1436 8.99999C15.5248 7.95936 13.1061 4.44374 8.99981 4.44374C4.89356 4.44374 2.4748 7.95936 1.85605 8.99999Z"
-                            fill=""
-                          />
-                          <path
-                            d="M9 11.3906C7.67812 11.3906 6.60938 10.3219 6.60938 9C6.60938 7.67813 7.67812 6.60938 9 6.60938C10.3219 6.60938 11.3906 7.67813 11.3906 9C11.3906 10.3219 10.3219 11.3906 9 11.3906ZM9 7.875C8.38125 7.875 7.875 8.38125 7.875 9C7.875 9.61875 8.38125 10.125 9 10.125C9.61875 10.125 10.125 9.61875 10.125 9C10.125 8.38125 9.61875 7.875 9 7.875Z"
-                            fill=""
-                          />
-                        </svg>
-                      </button>
-                    </td>
-                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark text-center">
-                      <button className="hover:text-primary">
-                        <svg
-                          className="fill-current"
-                          width="18"
-                          height="18"
-                          viewBox="0 0 18 18"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
-                        >
-                          <path
-                            d="M8.99981 14.8219C3.43106 14.8219 0.674805 9.50624 0.562305 9.28124C0.47793 9.11249 0.47793 8.88749 0.562305 8.71874C0.674805 8.49374 3.43106 3.20624 8.99981 3.20624C14.5686 3.20624 17.3248 8.49374 17.4373 8.71874C17.5217 8.88749 17.5217 9.11249 17.4373 9.28124C17.3248 9.50624 14.5686 14.8219 8.99981 14.8219ZM1.85605 8.99999C2.4748 10.0406 4.89356 13.5562 8.99981 13.5562C13.1061 13.5562 15.5248 10.0406 16.1436 8.99999C15.5248 7.95936 13.1061 4.44374 8.99981 4.44374C4.89356 4.44374 2.4748 7.95936 1.85605 8.99999Z"
-                            fill=""
-                          />
-                          <path
-                            d="M9 11.3906C7.67812 11.3906 6.60938 10.3219 6.60938 9C6.60938 7.67813 7.67812 6.60938 9 6.60938C10.3219 6.60938 11.3906 7.67813 11.3906 9C11.3906 10.3219 10.3219 11.3906 9 11.3906ZM9 7.875C8.38125 7.875 7.875 8.38125 7.875 9C7.875 9.61875 8.38125 10.125 9 10.125C9.61875 10.125 10.125 9.61875 10.125 9C10.125 8.38125 9.61875 7.875 9 7.875Z"
-                            fill=""
-                          />
-                        </svg>
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+               {reportData.map((item:any, i:any) => (
+                                 <tr key={i}>
+                                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark text-center">
+                                     <p className="text-black dark:text-white">{item.submission_id}</p>
+                                   </td>
+                                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                     <p className="text-black dark:text-white">{item.customer_name}</p>
+                                   </td>
+                                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                     <p className="text-black dark:text-white">{item.form_name}</p>
+                                   </td>
+                                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                   <p className="inline-flex rounded-full bg-success bg-opacity-10 py-1 px-3 text-sm font-medium text-success">
+                                     {item.submission_status}</p>
+                                   </td>
+                                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                     <p className="text-black dark:text-white">{item.employee_name}</p>
+                                   </td>
+                                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                     <p className="text-black dark:text-white">{'-'}</p>
+                                   </td>
+                                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                     <p className="text-black dark:text-white">{moment(item.created_at).format("YYYY-MM-DD")}</p>
+                                   </td>
+                                 </tr>
+                               ))}
               </tbody>
             </table>
           </div>
