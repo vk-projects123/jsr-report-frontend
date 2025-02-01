@@ -2,8 +2,11 @@ import { useState,useEffect } from "react";
 import Breadcrumb from '../../components/Breadcrumb';
 import { LIST_REPORTS_API } from '../../Api/api';
 import moment from "moment";
+import { useNavigate } from 'react-router-dom';
+import { FaEye } from "react-icons/fa";     
 
 const LastForms = () => {
+  const navigate = useNavigate();
   var utoken = localStorage.getItem('userToken');
   const [reportData, setReportData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -194,6 +197,9 @@ const LastForms = () => {
                                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                                      <p className="text-black dark:text-white">{moment(item.created_at).format("YYYY-MM-DD")}</p>
                                    </td>
+                                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                                                         <div onClick={()=>navigate("/reports/view_report/1")}><FaEye className="w-5 h-5" /></div>
+                                                       </td>
                                  </tr>
                                ))}
               </tbody>

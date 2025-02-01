@@ -3,6 +3,7 @@ import Breadcrumb from '../../components/Breadcrumb';
 import { useParams, useNavigate } from 'react-router-dom';
 import { LIST_REPORTS_API } from '../../Api/api';
 import moment from "moment";
+import { FaEye } from "react-icons/fa";
 
 const Forms = () => {
   const { reportType } = useParams();
@@ -302,6 +303,7 @@ const Forms = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
   const [isLoaded, setLoaded] = useState(false);
+  const [reportStatus,setReportstatus] = useState('Running');
   var utoken = localStorage.getItem('userToken');
 
   // Pagination logic
@@ -378,6 +380,7 @@ const Forms = () => {
       } else if (data.Status === 1) {
         console.log("data ->>>",data.info.data);
         setReportData(data.info.data);
+        setReportstatus(data.info.reportStatus);
         setLoaded(false);
       }
     } catch (error) {
@@ -400,12 +403,12 @@ const Forms = () => {
           >
             New Report
           </button> */}
-          <button
-            onClick={() => navigate('/reports/running_report/1', { state: { reportType: reportType } })}
+          {reportType == "BOM" ? "" : <button
+            onClick={() => navigate('/reports/running_report/1', { state: { reportType: reportType,formId:1 } })}
             className="inline-flex items-center justify-center rounded-md bg-primary py-2 mx-2 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
           >
-            Running Report
-          </button>
+            {reportStatus} Report
+          </button>}
           <div className="relative mx-2">
             <button className="absolute top-1/2 left-0 -translate-y-1/2">
               <svg
@@ -488,6 +491,9 @@ const Forms = () => {
                     </td>
                     <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
                       <p className="text-black dark:text-white">{moment(item.created_at).format("YYYY-MM-DD")}</p>
+                    </td>
+                    <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
+                      <div onClick={()=>navigate("/reports/view_report/1")}><FaEye className="w-5 h-5" /></div>
                     </td>
                   </tr>
                 ))}

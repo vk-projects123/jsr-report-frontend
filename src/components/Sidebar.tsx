@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 // import Logo from '../images/logo/logo.svg';
 import Logo from '../images/logo.svg';
 import SidebarLinkGroup from './SidebarLinkGroup';
@@ -10,7 +10,9 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
+  var utoken = localStorage.getItem('userToken');
   const location = useLocation();
+  const navigate = useNavigate();
   const { pathname } = location;
 
   const trigger = useRef<any>(null);
@@ -22,6 +24,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   );
 
   useEffect(() => {
+    if (!utoken) {
+      navigate("/auth/signin");
+    }
     const clickHandler = ({ target }: MouseEvent) => {
       if (!sidebar.current || !trigger.current) return;
       if (

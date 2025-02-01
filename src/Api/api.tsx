@@ -1,8 +1,8 @@
 //baseurl
-export const baseUrl = "http://localhost:8000";
+export const baseUrl = "https://workplace.jsr-renewables.com:8000";
 
 //imgurl
-export const imgUrl = "http://localhost:8000/";
+export const imgUrl = "https://workplace.jsr-renewables.com:8000/";
 
 //login
 export const LOGIN_API = baseUrl + "/login"
@@ -23,4 +23,8 @@ export const GET_OBSERVATIONS_API = baseUrl + "/get_observations";
 export const UPLOAD_IMAGE_API = baseUrl + "/upload_images";
 
 //list Reports
-export const LIST_REPORTS_API = baseUrl + "/list_reports"
+export const LIST_REPORTS_API = baseUrl + "/list_reports";
+export const VIEW_REPORTS_API = baseUrl + "/view_reports";
+
+//submit report
+export const SUBMIT_REPORT_API = baseUrl + "/submit_report"

@@ -4,7 +4,9 @@ import html2pdf from 'html2pdf.js';
 import pdflogo from "../../images/pdflogo.jpg";
 import { FaDownload } from 'react-icons/fa';
 import { useLocation, useNavigate } from 'react-router-dom';
-import moment from 'moment'
+import { VIEW_REPORTS_API, SUBMIT_REPORT_API, imgUrl } from "../../Api/api.tsx";
+import moment from 'moment';
+import { toast } from "react-toastify";
 
 const Container = styled.div`
   display: flex;
@@ -141,32 +143,73 @@ const PreviewReport = () => {
   const location = useLocation();
   const Datas = location.state;
   const data = Datas.data;
-  const observations = Datas.observations;
-  var datatype = Datas.pagetype;
-  var otherobservations = Datas.otherobservations;
+  var reporttype: any;
+  var submissionID: any;
+  var formId: any;
+  try {
+    reporttype = Datas.reporttype;
+    submissionID = Datas.submissionID;
+    formId = Datas.formId;
+  } catch (e) {
+    reporttype = "IPQC";
+    submissionID = 0;
+    formId = 1;
+  }
 
   const handleBackButton = () => {
     console.log("back button pressed!");
-    // Pass params back to the previous screen
-    navigate('/reports/running_report/1', { state: { reportType: datatype, Datas: data, observations: observations } });
+    navigate('/reports/running_report/1', { state: { formId:formId,reporttype: reporttype, submissionID: submissionID } });
   };
 
+  var utoken = localStorage.getItem('userToken');
+  const [isLoaded, setLoaded] = useState(false);
+  var [reportData, setReportdata] = useState([]);
+
   useEffect(() => {
+    setLoaded(true);
+    listsectiondatas();
+  }, []);
 
-    // handleBackButton();
+  // Function to fetch sections
+  const listsectiondatas = async () => {
 
-    // window.onpopstate = handleBackButton;
+    const params = new URLSearchParams({
+      form_id: formId,
+      report_type: reporttype,
+      submission_id: submissionID
+    });
 
-    return () => {
-      window.onpopstate = null; // Cleanup
-    };
-  }, [navigate]);
+    try {
+      const response = await fetch(`${VIEW_REPORTS_API}?${params.toString()}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${utoken}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.Status === 0) {
+        setLoaded(false);
+      } else if (data.Status === 1) {
+        console.log(data.info);
+        setReportdata(data.info || []);
+        setLoaded(false);
+      }
+    } catch (error) {
+      console.error("Error fetching sections:", error);
+      setLoaded(false);
+    }
+  };
 
   const [isClick, setIsclick] = useState(false);
 
-  const generatePDF = () => {
+  const generatePDF = async () => {
     setIsclick(true);
     const input = document.getElementById('report') as HTMLElement;
+
     // Apply styles to all spans within tables
     const spans = document.querySelectorAll('table span');
     spans.forEach((text) => {
@@ -174,7 +217,7 @@ const PreviewReport = () => {
     });
 
     if (input) {
-      const options = { // Adjust margins for spacing
+      const options = {
         filename: 'inspection_report.pdf',
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: {
@@ -185,21 +228,76 @@ const PreviewReport = () => {
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
       };
 
-      // html2pdf().set(options).from(input).save();
-      html2pdf().set(options).from(input).save().then(() => {
+      // Wait for all images to load
+      const images = input.getElementsByTagName('img');
+      const imagePromises = Array.from(images).map((img) => {
+        if (img.complete) {
+          return Promise.resolve();
+        } else {
+          return new Promise((resolve, reject) => {
+            img.onload = resolve;
+            img.onerror = reject;
+          });
+        }
+      });
+
+      try {
+        // Wait for all images to load
+        await Promise.all(imagePromises);
+
+        // Add a small delay (e.g., 500ms) to ensure rendering is complete
+        await new Promise((resolve) => setTimeout(resolve, 500));
+
+        // Generate the PDF
+        await html2pdf().set(options).from(input).save();
+
         // Remove the class after PDF generation is complete
         spans.forEach((text) => {
           text.classList.remove('pdf-span'); // Remove the class
         });
-        setIsclick(false);
-      }).catch((error: any) => {
+      } catch (error) {
         console.error("Error generating PDF:", error);
         // Optionally, remove the class even if there's an error
         spans.forEach((text) => {
           text.classList.remove('pdf-span'); // Remove the class
         });
+      } finally {
         setIsclick(false);
-      });
+      }
+    }
+  };
+
+  const submitReport = async (e: any) => {
+    e.preventDefault();
+    if (submissionID == 0) {
+      toast.error("please fill atleast one section");
+    } else {
+      try {
+        const response = await fetch(SUBMIT_REPORT_API, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${utoken}`,
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body:JSON.stringify({
+            submission_id: submissionID
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.Status === 0) {
+          setLoaded(false);
+        } else if (data.Status === 1) {
+          toast.success("Report Submitted Success");
+          navigate(`/reports/${reporttype}`);
+          setLoaded(false);
+        }
+      } catch (error) {
+        console.error("Error fetching sections:", error);
+        setLoaded(false);
+      }
     }
   };
 
@@ -210,13 +308,15 @@ const PreviewReport = () => {
       <button className="add-btn mx-2" onClick={handleBackButton}>
         Back
       </button>
-      {datatype === "IPQC" ?
+      {submissionID != 0 ? <button className="add-btn mx-2" onClick={submitReport}>
+        Submit Report
+      </button> : ""}
+      {reporttype === "IPQC" ?
         <div>
           {/* content */}
-          <Container id="report">
-
+          {reportData.length <= 0 ? "Report Empty" : <Container id="report">
             {/* page 1 start */}
-            <div className="content" style={{ height: isClick ? '157vh' : "" }}>
+            <div className="content" style={{ height: isClick ? '150vh' : "" }}>
               {/* header */}
               <HeaderRow id="header" className="pdf-header">
                 <LogoContainer>
@@ -226,8 +326,8 @@ const PreviewReport = () => {
                   <strong className={isClick ? 'pdf-span' : ""}>In Process Inspection Daily Report</strong>
                 </TitleContainer>
                 <ReportDetails>
-                  <div>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                  <div>Report No:  {data.reportNo}</div>
+                  <div>Report Date: {moment(reportData[0].value.find(item => item.param_name === "Date")?.value).format('DD-MM-YYYY')}</div>
+                  <div>Report No: {reportData[0].value.find(item => item.param_name === "Report No")?.value}</div>
                 </ReportDetails>
               </HeaderRow>
 
@@ -236,130 +336,44 @@ const PreviewReport = () => {
                 <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Report Details –</p>
                 <Table>
                   <tbody>
-                    <tr>
-                      <HeaderCell style={{ width: '25%' }}><span><strong>OA No</strong></span></HeaderCell>
-                      <TableCell style={{ width: '25%' }}><span>{data.oaNo}</span></TableCell>
-                      <HeaderCell style={{ width: '25%' }}><span><strong>Date</strong></span></HeaderCell>
-                      <TableCell style={{ width: '25%' }}><span>{moment(data.date).format('DD-MM-YYYY')}</span></TableCell>
-                    </tr>
-                    <tr>
-                      <HeaderCell><span><strong>Manufacturer</strong></span></HeaderCell>
-                      <TableCell><span>{data.manufacturer}</span></TableCell>
-                      <HeaderCell><span><strong>Shift</strong></span></HeaderCell>
-                      <TableCell><span>{data.shift}</span></TableCell>
-                    </tr>
-                    <tr>
-                      <HeaderCell><span><strong>Place of Inspection</strong></span></HeaderCell>
-                      <TableCell><span>{data.placeOfInspection}</span></TableCell>
-                      <HeaderCell><span><strong>Customer name</strong></span></HeaderCell>
-                      <TableCell><span>{data.customerName}</span></TableCell>
-                    </tr>
-                    <tr>
-                      <HeaderCell><span><strong>Report created by</strong></span></HeaderCell>
-                      <TableCell><span>{data.reportCreatedBy}</span></TableCell>
-                    </tr>
+                    {reportData[0].value.map((item, index) => {
+                      // Check if the index is even to start a new row
+                      if (index % 2 === 0) {
+                        return (
+                          <tr key={index}>
+                            {/* First column */}
+                            <HeaderCell style={{ width: '25%' }}><span><strong>{reportData[0].value[index].param_name}</strong></span></HeaderCell>
+                            <TableCell style={{ width: '25%' }}><span>{reportData[0].value[index].value}</span></TableCell>
+                            {/* Second column */}
+                            {reportData[0].value[index + 1] && (
+                              <>
+                                <HeaderCell style={{ width: '25%' }}><span><strong>{reportData[0].value[index + 1].param_name}</strong></span></HeaderCell>
+                                <TableCell style={{ width: '25%' }}><span>{reportData[0].value[index + 1].value}</span></TableCell>
+                              </>
+                            )}
+                          </tr>
+                        );
+                      }
+                      return null; // Skip odd indices since they are handled in the previous iteration
+                    })}
                   </tbody>
                 </Table>
               </div>
-
-              {/* Production Details */}
-              {/* <div className="avoid-break" id="productionDetails">
-              <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Production Details -</p>
-              <Table>
-              <tbody style={{ margin: 0, padding: 0 }}>
-                  <tr style={{ margin: 0, padding: 0 }}>
-                    <HeaderCell style={{ width: "50%" }}><span><strong>Last Working Day</strong></span></HeaderCell>
-                    <TableCell><span><strong>10 Aug, 2020</strong></span></TableCell>
-                  </tr>
-                  <tr>
-                    <HeaderCell><span><strong>Total Layup</strong></span></HeaderCell>
-                    <TableCell><span>900</span></TableCell>
-                  </tr>
-                  <tr>
-                    <HeaderCell><span><strong>Total VQC fail</strong></span></HeaderCell>
-                    <TableCell><span>4</span></TableCell>
-                  </tr>
-                  <tr>
-                    <HeaderCell><span><strong>Total after lamination EL fail</strong></span></HeaderCell>
-                    <TableCell><span>3</span></TableCell>
-                  </tr>
-                  <tr>
-                    <HeaderCell><span>< strong>Total low Wp</strong></span></HeaderCell>
-                    <TableCell><span>0</span></TableCell>
-                  </tr>
-                  <tr>
-                    <HeaderCell><span><strong>Other reject/fail</strong></span></HeaderCell>
-                    <TableCell><span>Nil</span></TableCell>
-                  </tr>
-                </tbody>
-              </Table>
-            </div> */}
 
               {/* Production Stage Wise */}
               <div className="avoid-break" id="productionStageWise">
                 <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Production Stage Wise -</p>
                 <Table>
                   <tbody style={{ margin: 0, padding: 0 }}>
-                    <tr>
-                      <HeaderCell style={{ width: "50%" }}><span><strong>Product</strong></span></HeaderCell>
-                      <TableCell><span>{data.product}</span></TableCell>
-                    </tr>
-                    <tr>
-                      <HeaderCell><span><strong>Total Layup</strong></span></HeaderCell>
-                      <TableCell><span>{data.total_layup}</span></TableCell>
-                    </tr>
-                    <tr>
-                      <HeaderCell><span><strong>Total VQC Fail</strong></span></HeaderCell>
-                      <TableCell><span>{data.total_vqc_fail}</span></TableCell>
-                    </tr>
-                    <tr>
-                      <HeaderCell><span><strong>Total after lamination EL fail</strong></span></HeaderCell>
-                      <TableCell><span>{data.total_lamination_el_fail}</span></TableCell>
-                    </tr>
-                    <tr>
-                      <HeaderCell><span><strong>Total FQC Fail</strong></span></HeaderCell>
-                      <TableCell><span>{data.total_fqc_fail}</span></TableCell>
-                    </tr>
-                    <tr>
-                      <HeaderCell><span><strong>Total low Wp</strong></span></HeaderCell>
-                      <TableCell><span>{data.total_low_wp}</span></TableCell>
-                    </tr>
-                    <tr>
-                      <HeaderCell><span><strong>Other reject/fail</strong></span></HeaderCell>
-                      <TableCell><span>{data.other_reject}</span></TableCell>
-                    </tr>
+                    {reportData[1].value.map((item, index) => (
+                      <tr key={index}>
+                        <HeaderCell style={{ width: "50%" }}><span><strong>{item.param_name}</strong></span></HeaderCell>
+                        <TableCell><span>{item.value}</span></TableCell>
+                      </tr>
+                    ))}
                   </tbody>
                 </Table>
               </div>
-
-              {/* Dispatch Details */}
-              {/* <div className="avoid-break" id="dispatchDetails">
-              <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Dispatch Details – <em>“Not done for this lot”</em></p>
-              <Table>
-                <tbody>
-                  <tr>
-                    <HeaderCell style={{ width: "50%" }}><span><strong>Last Working Day</strong></span></HeaderCell>
-                    <TableCell><span>&nbsp;</span></TableCell>
-                    <TableCell><span>&nbsp;</span></TableCell>
-                  </tr>
-                  <tr>
-                    <HeaderCell><span><strong>Wp in Nos</strong></span></HeaderCell>
-                    <TableCell><span>&nbsp;</span></TableCell>
-                    <TableCell><span>&nbsp;</span></TableCell>
-                  </tr>
-                  <tr>
-                    <HeaderCell><span><strong>Total Dispatch Modules in Nos</strong></span></HeaderCell>
-                    <TableCell><span>&nbsp;</span></TableCell>
-                    <TableCell><span>&nbsp;</span></TableCell>
-                  </tr>
-                  <tr>
-                    <HeaderCell><span><strong>Total Dispatch in MW</strong></span></HeaderCell>
-                    <TableCell><span>&nbsp;</span></TableCell>
-                    <TableCell><span>&nbsp;</span></TableCell>
-                  </tr>
-                </tbody>
-              </Table>
-            </div> */}
             </div>
 
             {/* Footer */}
@@ -367,7 +381,6 @@ const PreviewReport = () => {
               <Table style={{ width: '100%' }}>
                 <tbody>
                   <tr style={{ margin: 0, padding: 0 }}>
-                    {/* Ensure all cells have equal width */}
                     <TableCell style={{ width: '33.33%' }}>
                       <span className="pdf-span">Format No: JSR/SI</span>
                     </TableCell>
@@ -385,7 +398,7 @@ const PreviewReport = () => {
             {/* page 1 end */}
 
             {/* page 2 start */}
-            {/* <div className="page-break"></div> */}
+            <div className="page-break"></div>
 
             {/* header */}
             <div className="content" style={{ height: isClick ? '157vh' : "" }}>
@@ -397,8 +410,8 @@ const PreviewReport = () => {
                   <strong className='pdf-span'>In Process Inspection Daily Report</strong>
                 </TitleContainer>
                 <ReportDetails>
-                  <div className='pdf-span'>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                  <div className='pdf-span'>Report No:  {data.reportNo}</div>
+                  <div className='pdf-span'>Report Date: {moment(reportData[0].value.find(item => item.param_name === "Date")?.value).format('DD-MM-YYYY')}</div>
+                  <div className='pdf-span'>Report No: {reportData[0].value.find(item => item.param_name === "Report No")?.value}</div>
                 </ReportDetails>
               </HeaderRow> : ""}
 
@@ -408,31 +421,20 @@ const PreviewReport = () => {
                 <Table>
                   <tbody style={{ margin: 0, padding: 0 }}>
                     <tr style={{ margin: 0, padding: 0 }}>
-                      <HeaderCell><span>
-                        <strong>Sr No</strong>
-                      </span></HeaderCell>
-                      <HeaderCell colSpan={2}>
-                        <span>
-                          <strong>Observations / Deficiency Details</strong>
-                        </span></HeaderCell>
+                      <HeaderCell><span><strong>Sr No</strong></span></HeaderCell>
+                      <HeaderCell colSpan={2}><span><strong>Observations / Deficiency Details</strong></span></HeaderCell>
                     </tr>
-
-                    {observations.map((observation: any, index: any) => (
+                    {reportData[2].value.map((observation: any, index: any) => (
                       <>
-                        <tr>
-                          <TableCell rowSpan={2}>
-                            <span>
-                              <strong>{index + 1}</strong>
-                            </span></TableCell>
-                          <TableCell colSpan={2}>
-                            <span>
-                              {observation.description}
-                            </span></TableCell>
+                        <tr key={index}>
+                          <TableCell rowSpan={2}><span><strong>{index + 1}</strong></span></TableCell>
+                          <TableCell colSpan={2}><span>{observation.observations_text}</span></TableCell>
                         </tr>
                         <tr>
                           {observation.images.map((image: any, idx: any) => (
-                            <TableCell>
-                              <img src={image} alt="PDF Sub" style={{ padding: 5, height: 300 }} />
+                            <TableCell key={idx}>
+                              {/* Correctly concatenate imgUrl with image.image */}
+                              <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{ padding: 5, height: 300 }} />
                             </TableCell>
                           ))}
                         </tr>
@@ -448,7 +450,6 @@ const PreviewReport = () => {
               <Table style={{ width: '100%' }}>
                 <tbody>
                   <tr style={{ margin: 0, padding: 0 }}>
-                    {/* Ensure all cells have equal width */}
                     <TableCell style={{ width: '33.33%' }}>
                       <span className="pdf-span">Format No: JSR/SI</span>
                     </TableCell>
@@ -477,8 +478,8 @@ const PreviewReport = () => {
                   <strong className='pdf-span'>In Process Inspection Daily Report</strong>
                 </TitleContainer>
                 <ReportDetails>
-                  <div className='pdf-span'>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                  <div className='pdf-span'>Report No:  {data.reportNo}</div>
+                  <div className='pdf-span'>Report Date: {moment(reportData[0].value.find(item => item.param_name === "Date")?.value).format('DD-MM-YYYY')}</div>
+                  <div className='pdf-span'>Report No: {reportData[0].value.find(item => item.param_name === "Report No")?.value}</div>
                 </ReportDetails>
               </HeaderRow> : ""}
 
@@ -489,49 +490,37 @@ const PreviewReport = () => {
                 <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Film Cutting</p>
                 <Table>
                   <tbody style={{ margin: 0, padding: 0 }}>
-                    {/* Header Row */}
                     <tr>
                       <HeaderCell><span><strong>Parameters</strong></span></HeaderCell>
-                      {Object.keys(data.eva_cutting_length)
-                        .filter(round => data.eva_cutting_length[round]) // Only include rounds with data
-                        .map((round, index) => (
-                          <TableCell key={index}><span><strong>{`Round ${index + 1}`}</strong></span></TableCell>
-                        ))}
+                      {/* Dynamically render round columns based on data */}
+                      {Object.keys(reportData[3].value[0].value).map((round, index) => {
+                        // Check if any row has data for this round
+                        const hasData = reportData[3].value.some(item => item.value[round] !== "");
+                        if (hasData) {
+                          return (
+                            <TableCell key={index}><span><strong>{`Round ${index + 1}`}</strong></span></TableCell>
+                          );
+                        }
+                        return null; // Skip rendering if no data for this round
+                      })}
                     </tr>
-
-                    {/* EVA Cutting Length Row */}
-                    <tr>
-                      <HeaderCell><span><strong>EVA Cutting length (in mm)</strong></span></HeaderCell>
-                      {Object.keys(data.eva_cutting_length)
-                        .filter(round => data.eva_cutting_length[round]) // Only include rounds with data
-                        .map((round, index) => (
-                          <TableCell key={index}><span>{data.eva_cutting_length[round]}</span></TableCell>
-                        ))}
-                    </tr>
-
-                    {/* Backsheet Cutting Length Row */}
-                    <tr>
-                      <HeaderCell><span><strong>Backsheet Cutting length (in mm)</strong></span></HeaderCell>
-                      {Object.keys(data.backsheet_cutting_length)
-                        .filter(round => data.backsheet_cutting_length[round]) // Only include rounds with data
-                        .map((round, index) => (
-                          <TableCell key={index}><span>{data.backsheet_cutting_length[round]}</span></TableCell>
-                        ))}
-                    </tr>
-
-                    {/* Raw Material Used Records Row */}
-                    <tr>
-                      <HeaderCell><span><strong>Raw material used records</strong></span></HeaderCell>
-                      {Object.keys(data.raw_material_used_records)
-                        .filter(round => data.raw_material_used_records[round]) // Only include rounds with data
-                        .map((round, index) => (
-                          <TableCell key={index}><span>{data.raw_material_used_records[round]}</span></TableCell>
-                        ))}
-                    </tr>
+                    {reportData[3].value.map((item, index) => (
+                      <tr key={index}>
+                        <HeaderCell><span><strong>{item.param_name}</strong></span></HeaderCell>
+                        {Object.keys(item.value).map((round, idx) => {
+                          // Check if this round has data
+                          if (item.value[round] !== "") {
+                            return (
+                              <TableCell key={idx}><span>{item.value[round]}</span></TableCell>
+                            );
+                          }
+                          return null; // Skip rendering if no data for this round
+                        })}
+                      </tr>
+                    ))}
                   </tbody>
                 </Table>
               </div>
-
 
               {/* Process – Tabber & Stringer */}
               <div className="avoid-break">
@@ -539,37 +528,36 @@ const PreviewReport = () => {
                   <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Tabber & Stringer</p>
                   <Table>
                     <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
-                      {/* Header Row */}
                       <tr>
                         <th style={{ border: '1px solid black', padding: '5px' }}><strong>Parameters</strong></th>
-                        {Object.keys(data.machine_no)
-                          .filter(round => data.machine_no[round]) // Only include rounds with data
-                          .map((round, index) => (
-                            <th key={index} style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}>
-                              <strong>{`Round ${index + 1}`}</strong>
-                            </th>
-                          ))}
+                        {/* Dynamically render round columns based on data */}
+                        {Object.keys(reportData[4].value[0].value).map((round, index) => {
+                          // Check if any row has data for this round
+                          const hasData = reportData[4].value.some(item => item.value[round] !== "");
+                          if (hasData) {
+                            return (
+                              <th key={index} style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}>
+                                <strong>{`Round ${index + 1}`}</strong>
+                              </th>
+                            );
+                          }
+                          return null; // Skip rendering if no data for this round
+                        })}
                       </tr>
-
-                      {/* Dynamic Rows */}
-                      {[
-                        { label: "Machine No", key: "machine_no" },
-                        { label: "Soldering Temperature - A (°C)", key: "soldering_temp_a" },
-                        { label: "Soldering Temperature - B (°C)", key: "soldering_temp_b" },
-                        { label: "Peel Strength - Front (N)", key: "peel_strength_front" },
-                        { label: "Peel Strength - Back (N)", key: "peel_strength_back" },
-                        { label: "All Machine Peel Strength", key: "all_machine_peel_strength" },
-                        { label: "Raw Material Track Records", key: "raw_material_track_records" }
-                      ].map((row, rowIndex) => (
+                      {reportData[4].value.map((row, rowIndex) => (
                         <tr key={rowIndex}>
-                          <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>{row.label}</strong></span></td>
-                          {Object.keys(data[row.key])
-                            .filter(round => data[row.key][round]) // Only include rounds with data
-                            .map((round, index) => (
-                              <td key={index} style={{ border: '1px solid black', padding: '5px' }}>
-                                <span>{data[row.key][round]}</span>
-                              </td>
-                            ))}
+                          <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>{row.param_name}</strong></span></td>
+                          {Object.keys(row.value).map((round, index) => {
+                            // Check if this round has data
+                            if (row.value[round] !== "") {
+                              return (
+                                <td key={index} style={{ border: '1px solid black', padding: '5px' }}>
+                                  <span>{row.value[round]}</span>
+                                </td>
+                              );
+                            }
+                            return null; // Skip rendering if no data for this round
+                          })}
                         </tr>
                       ))}
                     </tbody>
@@ -577,47 +565,46 @@ const PreviewReport = () => {
                 </div>
               </div>
 
-
               {/* Process – Layup */}
               <div className="avoid-break" id="productionDetails">
                 <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Layup</p>
                 <Table>
                   <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
-                    {/* Header Row */}
                     <tr>
                       <th style={{ border: '1px solid black', padding: '5px' }}><strong>Parameters</strong></th>
-                      {Object.keys(data.work_station_no)
-                        .filter(round => data.work_station_no[round]) // Only include rounds with data
-                        .map((round, index) => (
-                          <th key={index} style={{ border: '1px solid black', padding: '5px' }}>
-                            <strong>{`Round ${index + 1}`}</strong>
-                          </th>
-                        ))}
+                      {/* Dynamically render round columns based on data */}
+                      {Object.keys(reportData[5].value[0].value).map((round, index) => {
+                        // Check if any row has data for this round
+                        const hasData = reportData[5].value.some(item => item.value[round] !== "");
+                        if (hasData) {
+                          return (
+                            <th key={index} style={{ border: '1px solid black', padding: '5px' }}>
+                              <strong>{`Round ${index + 1}`}</strong>
+                            </th>
+                          );
+                        }
+                        return null; // Skip rendering if no data for this round
+                      })}
                     </tr>
-
-                    {/* Dynamic Rows */}
-                    {[
-                      { label: "Workstation No", key: "work_station_no" },
-                      { label: "Running Module Serial No.", key: "running_module_serial_no" },
-                      { label: "Soldering Station Temperature (°C)", key: "soldering_station_temp" },
-                      { label: "Soldering Station Calibration", key: "soldering_station_calibration" },
-                      { label: "WIP (including Pre-Lam EL Fail & OK)", key: "wip" }
-                    ].map((row, rowIndex) => (
+                    {reportData[5].value.map((row, rowIndex) => (
                       <tr key={rowIndex}>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>{row.label}</strong></span></td>
-                        {Object.keys(data[row.key])
-                          .filter(round => data[row.key][round]) // Only include rounds with data
-                          .map((round, index) => (
-                            <td key={index} style={{ border: '1px solid black', padding: '5px' }}>
-                              <span>{data[row.key][round]}</span>
-                            </td>
-                          ))}
+                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>{row.param_name}</strong></span></td>
+                        {Object.keys(row.value).map((round, index) => {
+                          // Check if this round has data
+                          if (row.value[round] !== "") {
+                            return (
+                              <td key={index} style={{ border: '1px solid black', padding: '5px' }}>
+                                <span>{row.value[round]}</span>
+                              </td>
+                            );
+                          }
+                          return null; // Skip rendering if no data for this round
+                        })}
                       </tr>
                     ))}
                   </tbody>
                 </Table>
               </div>
-
             </div>
 
             {/* footer */}
@@ -625,7 +612,6 @@ const PreviewReport = () => {
               <Table style={{ width: '100%' }}>
                 <tbody>
                   <tr style={{ margin: 0, padding: 0 }}>
-                    {/* Ensure all cells have equal width */}
                     <TableCell style={{ width: '33.33%' }}>
                       <span className="pdf-span">Format No: JSR/SI</span>
                     </TableCell>
@@ -641,253 +627,6 @@ const PreviewReport = () => {
             </div> : ""}
             {/* page 3 end */}
 
-
-            {/* optional page 1 start */}
-            {/* <div className="page-break"></div> */}
-            {otherobservations.filmCutting.length > 0 ?
-              <>
-                {/* header */}
-                <div className="content" style={{ height: isClick ? '157vh' : "" }}>
-                  {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
-                    <LogoContainer>
-                      <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
-                    </LogoContainer>
-                    <TitleContainer>
-                      <strong className='pdf-span'>In Process Inspection Daily Report</strong>
-                    </TitleContainer>
-                    <ReportDetails>
-                      <div className='pdf-span'>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                      <div className='pdf-span'>Report No:  {data.reportNo}</div>
-                    </ReportDetails>
-                  </HeaderRow> : ""}
-
-                  {/* film cutting Observations */}
-                  <div className="avoid-break" id="majorObservations">
-                    <Title className={isClick ? "pdf-span" : ""}>Film Cutting Observations –</Title>
-                    <Table>
-                      <tbody style={{ margin: 0, padding: 0 }}>
-                        <tr style={{ margin: 0, padding: 0 }}>
-                          <HeaderCell><span>
-                            <strong>Sr No</strong>
-                          </span></HeaderCell>
-                          <HeaderCell colSpan={2}>
-                            <span>
-                              <strong>Observations / Deficiency Details</strong>
-                            </span></HeaderCell>
-                        </tr>
-
-                        {otherobservations.filmCutting.map((observation: any, index: any) => (
-                          <>
-                            <tr>
-                              <TableCell rowSpan={2}>
-                                <span>
-                                  <strong>{index + 1}</strong>
-                                </span></TableCell>
-                              <TableCell colSpan={2}>
-                                <span>
-                                  {observation.description}
-                                </span></TableCell>
-                            </tr>
-                            <tr>
-                              {observation.images.map((image: any, idx: any) => (
-                                <TableCell>
-                                  <img src={image} alt="PDF Sub" style={{ padding: 5, height: 300 }} />
-                                </TableCell>
-                              ))}
-                            </tr>
-                          </>
-                        ))}
-                      </tbody>
-                    </Table>
-                  </div>
-                </div>
-
-                {/* footer */}
-                {isClick ? <div id="footer" style={{ width: '100%' }}>
-                  <Table style={{ width: '100%' }}>
-                    <tbody>
-                      <tr style={{ margin: 0, padding: 0 }}>
-                        {/* Ensure all cells have equal width */}
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Format No: JSR/SI</span>
-                        </TableCell>
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Rev Date and No: 00</span>
-                        </TableCell>
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                        </TableCell>
-                      </tr>
-                    </tbody>
-                  </Table>
-                </div> : ""}
-              </> : ""}
-            {/* optional page 1 end */}
-
-            {/* optional page 2 start */}
-            {/* <div className="page-break"></div> */}
-            {otherobservations.tabber.length > 0 ?
-              <>
-                {/* header */}
-                <div className="content" style={{ height: isClick ? '157vh' : "" }}>
-                  {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
-                    <LogoContainer>
-                      <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
-                    </LogoContainer>
-                    <TitleContainer>
-                      <strong className='pdf-span'>In Process Inspection Daily Report</strong>
-                    </TitleContainer>
-                    <ReportDetails>
-                      <div className='pdf-span'>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                      <div className='pdf-span'>Report No:  {data.reportNo}</div>
-                    </ReportDetails>
-                  </HeaderRow> : ""}
-
-                  {/* tabber cutting Observations */}
-                  <div className="avoid-break" id="majorObservations">
-                    <Title className={isClick ? "pdf-span" : ""}>Tabber Observations –</Title>
-                    <Table>
-                      <tbody style={{ margin: 0, padding: 0 }}>
-                        <tr style={{ margin: 0, padding: 0 }}>
-                          <HeaderCell><span>
-                            <strong>Sr No</strong>
-                          </span></HeaderCell>
-                          <HeaderCell colSpan={2}>
-                            <span>
-                              <strong>Observations / Deficiency Details</strong>
-                            </span></HeaderCell>
-                        </tr>
-
-                        {otherobservations.tabber.map((observation: any, index: any) => (
-                          <>
-                            <tr>
-                              <TableCell rowSpan={2}>
-                                <span>
-                                  <strong>{index + 1}</strong>
-                                </span></TableCell>
-                              <TableCell colSpan={2}>
-                                <span>
-                                  {observation.description}
-                                </span></TableCell>
-                            </tr>
-                            <tr>
-                              {observation.images.map((image: any, idx: any) => (
-                                <TableCell>
-                                  <img src={image} alt="PDF Sub" style={{ padding: 5, height: 300 }} />
-                                </TableCell>
-                              ))}
-                            </tr>
-                          </>
-                        ))}
-                      </tbody>
-                    </Table>
-                  </div>
-                </div>
-
-                {/* footer */}
-                {isClick ? <div id="footer" style={{ width: '100%' }}>
-                  <Table style={{ width: '100%' }}>
-                    <tbody>
-                      <tr style={{ margin: 0, padding: 0 }}>
-                        {/* Ensure all cells have equal width */}
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Format No: JSR/SI</span>
-                        </TableCell>
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Rev Date and No: 00</span>
-                        </TableCell>
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                        </TableCell>
-                      </tr>
-                    </tbody>
-                  </Table>
-                </div> : ""}
-              </> : ""}
-            {/* optional page 2 end */}
-
-            {/* optional page 2 start */}
-            {/* <div className="page-break"></div> */}
-            {otherobservations.layup.length > 0 ?
-              <>
-                {/* header */}
-                <div className="content" style={{ height: isClick ? '157vh' : "" }}>
-                  {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
-                    <LogoContainer>
-                      <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
-                    </LogoContainer>
-                    <TitleContainer>
-                      <strong className='pdf-span'>In Process Inspection Daily Report</strong>
-                    </TitleContainer>
-                    <ReportDetails>
-                      <div className='pdf-span'>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                      <div className='pdf-span'>Report No:  {data.reportNo}</div>
-                    </ReportDetails>
-                  </HeaderRow> : ""}
-
-                  {/* layup cutting Observations */}
-                  <div className="avoid-break" id="majorObservations">
-                    <Title className={isClick ? "pdf-span" : ""}>layup Observations –</Title>
-                    <Table>
-                      <tbody style={{ margin: 0, padding: 0 }}>
-                        <tr style={{ margin: 0, padding: 0 }}>
-                          <HeaderCell><span>
-                            <strong>Sr No</strong>
-                          </span></HeaderCell>
-                          <HeaderCell colSpan={2}>
-                            <span>
-                              <strong>Observations / Deficiency Details</strong>
-                            </span></HeaderCell>
-                        </tr>
-
-                        {otherobservations.layup.map((observation: any, index: any) => (
-                          <>
-                            <tr>
-                              <TableCell rowSpan={2}>
-                                <span>
-                                  <strong>{index + 1}</strong>
-                                </span></TableCell>
-                              <TableCell colSpan={2}>
-                                <span>
-                                  {observation.description}
-                                </span></TableCell>
-                            </tr>
-                            <tr>
-                              {observation.images.map((image: any, idx: any) => (
-                                <TableCell>
-                                  <img src={image} alt="PDF Sub" style={{ padding: 5, height: 300 }} />
-                                </TableCell>
-                              ))}
-                            </tr>
-                          </>
-                        ))}
-                      </tbody>
-                    </Table>
-                  </div>
-                </div>
-
-                {/* footer */}
-                {isClick ? <div id="footer" style={{ width: '100%' }}>
-                  <Table style={{ width: '100%' }}>
-                    <tbody>
-                      <tr style={{ margin: 0, padding: 0 }}>
-                        {/* Ensure all cells have equal width */}
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Format No: JSR/SI</span>
-                        </TableCell>
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Rev Date and No: 00</span>
-                        </TableCell>
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                        </TableCell>
-                      </tr>
-                    </tbody>
-                  </Table>
-                </div> : ""}
-              </> : ""}
-            {/* optional page 2 end */}
-
             {/* page 4 start */}
             <div className="page-break"></div>
 
@@ -902,8 +641,8 @@ const PreviewReport = () => {
                     <strong className='pdf-span'>In Process Inspection Daily Report</strong>
                   </TitleContainer>
                   <ReportDetails>
-                    <div className='pdf-span'>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                    <div className='pdf-span'>Report No:  {data.reportNo}</div>
+                    <div className='pdf-span'>Report Date: {moment(reportData[0].value.find(item => item.param_name === "Date")?.value).format('DD-MM-YYYY')}</div>
+                    <div className='pdf-span'>Report No: {reportData[0].value.find(item => item.param_name === "Report No")?.value}</div>
                   </ReportDetails>
                 </HeaderRow> : ""}
 
@@ -912,48 +651,41 @@ const PreviewReport = () => {
                   <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Lamination</p>
                   <Table>
                     <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
-                      {/* Header Row */}
                       <tr>
                         <th style={{ border: '1px solid black', padding: '5px' }}><strong>Parameters</strong></th>
-                        {Object.keys(data.lamination_work_station_no)
-                          .filter(key => data.lamination_work_station_no[key]) // Only include rounds with data
-                          .map((round, index) => (
-                            <th key={index} style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}>
-                              <strong>{`Round ${index + 1}`}</strong>
-                            </th>
-                          ))}
+                        {/* Dynamically render round columns based on data */}
+                        {Object.keys(reportData[6].value[0].value).map((round, index) => {
+                          // Check if any row has data for this round
+                          const hasData = reportData[6].value.some(item => item.value[round] !== "");
+                          if (hasData) {
+                            return (
+                              <th key={index} style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}>
+                                <strong>{`Round ${index + 1}`}</strong>
+                              </th>
+                            );
+                          }
+                          return null; // Skip rendering if no data for this round
+                        })}
                       </tr>
-
-                      {/* Data Rows */}
-                      {[
-                        { label: "Workstation No", key: "lamination_work_station_no" },
-                        { label: "Stage 1 Cycle Time (in Sec)", key: "stage1_cycle_time" },
-                        { label: "Stage 2 Cycle Time (in Sec)", key: "stage2_cycle_time" },
-                        { label: "Temperature Stage 1 (°C)", key: "temperature_stage1" },
-                        { label: "Temperature Stage 2 (°C)", key: "temperature_stage2" },
-                        { label: "Pressure Stage 1", key: "pressure_stage1" },
-                        { label: "Pressure Stage 2", key: "pressure_stage2" },
-                        { label: "Last Gel Content Checked on Same Recipe", key: "last_gel_content_checked" },
-                        { label: "Gel Content (%)", key: "gel_content" },
-                      ].map((row, index) => (
-                        <tr key={index}>
-                          <td style={{ border: '1px solid black', padding: '5px' }}>
-                            <span><strong>{row.label}</strong></span>
-                          </td>
-                          {Object.keys(data[row.key])
-                            .filter(key => data[row.key][key]) // Only include rounds with data
-                            .map((round, index) => (
-                              <td key={index} style={{ border: '1px solid black', padding: '5px' }}>
-                                <span>{data[row.key][round]}</span>
-                              </td>
-                            ))}
+                      {reportData[6].value.map((row, rowIndex) => (
+                        <tr key={rowIndex}>
+                          <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>{row.param_name}</strong></span></td>
+                          {Object.keys(row.value).map((round, index) => {
+                            // Check if this round has data
+                            if (row.value[round] !== "") {
+                              return (
+                                <td key={index} style={{ border: '1px solid black', padding: '5px' }}>
+                                  <span>{row.value[round]}</span>
+                                </td>
+                              );
+                            }
+                            return null; // Skip rendering if no data for this round
+                          })}
                         </tr>
                       ))}
                     </tbody>
                   </Table>
                 </div>
-
-
               </div>
             </div>
 
@@ -962,7 +694,6 @@ const PreviewReport = () => {
               <Table style={{ width: '100%' }}>
                 <tbody>
                   <tr style={{ margin: 0, padding: 0 }}>
-                    {/* Ensure all cells have equal width */}
                     <TableCell style={{ width: '33.33%' }}>
                       <span className="pdf-span">Format No: JSR/SI</span>
                     </TableCell>
@@ -978,88 +709,6 @@ const PreviewReport = () => {
             </div> : ""}
             {/* page 4 end */}
 
-            {/* optional page 3 start */}
-            {/* <div className="page-break"></div> */}
-            {otherobservations.lamination.length > 0 ?
-              <>
-                {/* header */}
-                <div className="content" style={{ height: isClick ? '157vh' : "" }}>
-                  {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
-                    <LogoContainer>
-                      <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
-                    </LogoContainer>
-                    <TitleContainer>
-                      <strong className='pdf-span'>In Process Inspection Daily Report</strong>
-                    </TitleContainer>
-                    <ReportDetails>
-                      <div className='pdf-span'>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                      <div className='pdf-span'>Report No:  {data.reportNo}</div>
-                    </ReportDetails>
-                  </HeaderRow> : ""}
-
-                  {/* lamination cutting Observations */}
-                  <div className="avoid-break" id="majorObservations">
-                    <Title className={isClick ? "pdf-span" : ""}>Lamination Observations –</Title>
-                    <Table>
-                      <tbody style={{ margin: 0, padding: 0 }}>
-                        <tr style={{ margin: 0, padding: 0 }}>
-                          <HeaderCell><span>
-                            <strong>Sr No</strong>
-                          </span></HeaderCell>
-                          <HeaderCell colSpan={2}>
-                            <span>
-                              <strong>Observations / Deficiency Details</strong>
-                            </span></HeaderCell>
-                        </tr>
-
-                        {otherobservations.lamination.map((observation: any, index: any) => (
-                          <>
-                            <tr>
-                              <TableCell rowSpan={2}>
-                                <span>
-                                  <strong>{index + 1}</strong>
-                                </span></TableCell>
-                              <TableCell colSpan={2}>
-                                <span>
-                                  {observation.description}
-                                </span></TableCell>
-                            </tr>
-                            <tr>
-                              {observation.images.map((image: any, idx: any) => (
-                                <TableCell>
-                                  <img src={image} alt="PDF Sub" style={{ padding: 5, height: 300 }} />
-                                </TableCell>
-                              ))}
-                            </tr>
-                          </>
-                        ))}
-                      </tbody>
-                    </Table>
-                  </div>
-                </div>
-
-                {/* footer */}
-                {isClick ? <div id="footer" style={{ width: '100%' }}>
-                  <Table style={{ width: '100%' }}>
-                    <tbody>
-                      <tr style={{ margin: 0, padding: 0 }}>
-                        {/* Ensure all cells have equal width */}
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Format No: JSR/SI</span>
-                        </TableCell>
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Rev Date and No: 00</span>
-                        </TableCell>
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                        </TableCell>
-                      </tr>
-                    </tbody>
-                  </Table>
-                </div> : ""}
-              </> : ""}
-            {/* optional page 3 end */}
-
             {/* page 5 start */}
             <div className="page-break"></div>
 
@@ -1074,8 +723,8 @@ const PreviewReport = () => {
                     <strong className='pdf-span'>In Process Inspection Daily Report</strong>
                   </TitleContainer>
                   <ReportDetails>
-                    <div className='pdf-span'>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                    <div className='pdf-span'>Report No:  {data.reportNo}</div>
+                    <div className='pdf-span'>Report Date: {moment(reportData[0].value.find(item => item.param_name === "Date")?.value).format('DD-MM-YYYY')}</div>
+                    <div className='pdf-span'>Report No: {reportData[0].value.find(item => item.param_name === "Report No")?.value}</div>
                   </ReportDetails>
                 </HeaderRow> : ""}
 
@@ -1084,51 +733,41 @@ const PreviewReport = () => {
                   <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Framing</p>
                   <Table>
                     <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
-                      {/* Header Row */}
                       <tr>
                         <th style={{ border: '1px solid black', padding: '5px' }}><strong>Parameters</strong></th>
-                        {Object.keys(data.framing_work_station_no)
-                          .filter(key => data.framing_work_station_no[key]) // Only include rounds with data
-                          .map((round, index) => (
-                            <th key={index} style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}>
-                              <strong>{`Round ${index + 1}`}</strong>
-                            </th>
-                          ))}
+                        {/* Dynamically render round columns based on data */}
+                        {Object.keys(reportData[7].value[0].value).map((round, index) => {
+                          // Check if any row has data for this round
+                          const hasData = reportData[7].value.some(item => item.value[round] !== "");
+                          if (hasData) {
+                            return (
+                              <th key={index} style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}>
+                                <strong>{`Round ${index + 1}`}</strong>
+                              </th>
+                            );
+                          }
+                          return null; // Skip rendering if no data for this round
+                        })}
                       </tr>
-
-                      {/* Data Rows */}
-                      {[
-                        { label: "Workstation No", key: "framing_work_station_no" },
-                        { label: "Module Width after Framing (in mm)", key: "module_width_after_framing" },
-                        { label: "Module Length after Framing (in mm)", key: "module_length_after_framing" },
-                        { label: "Frame Size (HS in mm)", key: "frame_size_hs" },
-                        { label: "X Pitch (in mm)", key: "x_pitch" },
-                        { label: "Y Pitch (in mm)", key: "y_pitch" },
-                        { label: "RTV Consumption in Long Side Frame", key: "rtv_consumption_long_side" },
-                        { label: "RTV Consumption in Short Side Frame", key: "rtv_consumption_short_side" },
-                        { label: "RTV Back Feeling", key: "rtv_back_filling" },
-                        { label: "Potting Material Mixing Ratio", key: "potting_material_mixing_ratio" },
-                        { label: "JB Fixing Process", key: "jb_fixing_process" },
-                        { label: "JB Terminal Connections", key: "jb_terminal_connections" },
-                        { label: "Raw Material Consumption Records", key: "raw_material_consumption_records" },
-                      ].map((row, index) => (
-                        <tr key={index}>
-                          <td style={{ border: '1px solid black', padding: '5px' }}>
-                            <span><strong>{row.label}</strong></span>
-                          </td>
-                          {Object.keys(data[row.key])
-                            .filter(key => data[row.key][key]) // Only include rounds with data
-                            .map((round, index) => (
-                              <td key={index} style={{ border: '1px solid black', padding: '5px' }}>
-                                <span>{data[row.key][round]}</span>
-                              </td>
-                            ))}
+                      {reportData[7].value.map((row, rowIndex) => (
+                        <tr key={rowIndex}>
+                          <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>{row.param_name}</strong></span></td>
+                          {Object.keys(row.value).map((round, index) => {
+                            // Check if this round has data
+                            if (row.value[round] !== "") {
+                              return (
+                                <td key={index} style={{ border: '1px solid black', padding: '5px' }}>
+                                  <span>{row.value[round]}</span>
+                                </td>
+                              );
+                            }
+                            return null; // Skip rendering if no data for this round
+                          })}
                         </tr>
                       ))}
                     </tbody>
                   </Table>
                 </div>
-
               </div>
             </div>
 
@@ -1137,7 +776,6 @@ const PreviewReport = () => {
               <Table style={{ width: '100%' }}>
                 <tbody>
                   <tr style={{ margin: 0, padding: 0 }}>
-                    {/* Ensure all cells have equal width */}
                     <TableCell style={{ width: '33.33%' }}>
                       <span className="pdf-span">Format No: JSR/SI</span>
                     </TableCell>
@@ -1153,89 +791,6 @@ const PreviewReport = () => {
             </div> : ""}
             {/* page 5 end */}
 
-            {/* optional page 4 start */}
-            {/* <div className="page-break"></div> */}
-            {otherobservations.framing.length > 0 ?
-              <>
-                {/* header */}
-                <div className="content" style={{ height: isClick ? '157vh' : "" }}>
-                  {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
-                    <LogoContainer>
-                      <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
-                    </LogoContainer>
-                    <TitleContainer>
-                      <strong className='pdf-span'>In Process Inspection Daily Report</strong>
-                    </TitleContainer>
-                    <ReportDetails>
-                      <div className='pdf-span'>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                      <div className='pdf-span'>Report No:  {data.reportNo}</div>
-                    </ReportDetails>
-                  </HeaderRow> : ""}
-
-                  {/* lamination cutting Observations */}
-                  <div className="avoid-break" id="majorObservations">
-                    <Title className={isClick ? "pdf-span" : ""}>Framing Observations –</Title>
-                    <Table>
-                      <tbody style={{ margin: 0, padding: 0 }}>
-                        <tr style={{ margin: 0, padding: 0 }}>
-                          <HeaderCell><span>
-                            <strong>Sr No</strong>
-                          </span></HeaderCell>
-                          <HeaderCell colSpan={2}>
-                            <span>
-                              <strong>Observations / Deficiency Details</strong>
-                            </span></HeaderCell>
-                        </tr>
-
-                        {otherobservations.framing.map((observation: any, index: any) => (
-                          <>
-                            <tr>
-                              <TableCell rowSpan={2}>
-                                <span>
-                                  <strong>{index + 1}</strong>
-                                </span></TableCell>
-                              <TableCell colSpan={2}>
-                                <span>
-                                  {observation.description}
-                                </span></TableCell>
-                            </tr>
-                            <tr>
-                              {observation.images.map((image: any, idx: any) => (
-                                <TableCell>
-                                  <img src={image} alt="PDF Sub" style={{ padding: 5, height: 300 }} />
-                                </TableCell>
-                              ))}
-                            </tr>
-                          </>
-                        ))}
-                      </tbody>
-                    </Table>
-                  </div>
-                </div>
-
-                {/* footer */}
-                {isClick ? <div id="footer" style={{ width: '100%' }}>
-                  <Table style={{ width: '100%' }}>
-                    <tbody>
-                      <tr style={{ margin: 0, padding: 0 }}>
-                        {/* Ensure all cells have equal width */}
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Format No: JSR/SI</span>
-                        </TableCell>
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Rev Date and No: 00</span>
-                        </TableCell>
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                        </TableCell>
-                      </tr>
-                    </tbody>
-                  </Table>
-                </div> : ""}
-              </> : ""}
-            {/* optional page 4 end */}
-
-
             {/* page 6 start */}
             <div className="page-break"></div>
 
@@ -1250,8 +805,8 @@ const PreviewReport = () => {
                     <strong className='pdf-span'>In Process Inspection Daily Report</strong>
                   </TitleContainer>
                   <ReportDetails>
-                    <div className='pdf-span'>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                    <div className='pdf-span'>Report No:  {data.reportNo}</div>
+                    <div className='pdf-span'>Report Date: {moment(reportData[0].value.find(item => item.param_name === "Date")?.value).format('DD-MM-YYYY')}</div>
+                    <div className='pdf-span'>Report No: {reportData[0].value.find(item => item.param_name === "Report No")?.value}</div>
                   </ReportDetails>
                 </HeaderRow> : ""}
 
@@ -1260,41 +815,36 @@ const PreviewReport = () => {
                   <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Flasher Testing</p>
                   <Table>
                     <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
-                      {/* Table Header */}
                       <tr>
                         <th style={{ border: '1px solid black', padding: '5px' }}><strong>Parameters</strong></th>
-                        {Object.keys(data.calibration_time)
-                          .filter(key => data.calibration_time[key]) // Only include rounds with data
-                          .map((round, index) => (
-                            <th key={index} style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}>
-                              <strong>{`Round ${index + 1}`}</strong>
-                            </th>
-                          ))}
+                        {/* Dynamically render round columns based on data */}
+                        {Object.keys(reportData[8].value[0].value).map((round, index) => {
+                          // Check if any row has data for this round
+                          const hasData = reportData[8].value.some(item => item.value[round] !== "");
+                          if (hasData) {
+                            return (
+                              <th key={index} style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}>
+                                <strong>{`Round ${index + 1}`}</strong>
+                              </th>
+                            );
+                          }
+                          return null; // Skip rendering if no data for this round
+                        })}
                       </tr>
-
-                      {/* Dynamic Rows */}
-                      {[
-                        { key: 'calibration_time', label: 'Calibration Time' },
-                        { key: 'calibration_by', label: 'Calibration By' },
-                        { key: 'reference_module_sr_no', label: 'Reference Module Sr No' },
-                        { key: 'difference_in_wp_measured', label: 'Difference in Wp Measured' },
-                        { key: 'difference_in_isc_measured', label: 'Difference in Isc Measured' },
-                        { key: 'difference_in_imp_measured', label: 'Difference in Imp Measured' },
-                        { key: 'difference_in_vmp_measured', label: 'Difference in Vmp Measured' },
-                        { key: 'difference_in_voc_measured', label: 'Difference in Voc Measured' },
-                        { key: 'flasher_records', label: 'Flasher Records' },
-                      ].map((row, rowIndex) => (
+                      {reportData[8].value.map((row, rowIndex) => (
                         <tr key={rowIndex}>
-                          <td style={{ border: '1px solid black', padding: '5px' }}>
-                            <span><strong>{row.label}</strong></span>
-                          </td>
-                          {Object.keys(data[row.key])
-                            .filter(key => data[row.key][key]) // Only include rounds with data
-                            .map((round, index) => (
-                              <td key={index} style={{ border: '1px solid black', padding: '5px' }}>
-                                <span>{data[row.key][round]}</span>
-                              </td>
-                            ))}
+                          <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>{row.param_name}</strong></span></td>
+                          {Object.keys(row.value).map((round, index) => {
+                            // Check if this round has data
+                            if (row.value[round] !== "") {
+                              return (
+                                <td key={index} style={{ border: '1px solid black', padding: '5px' }}>
+                                  <span>{row.value[round]}</span>
+                                </td>
+                              );
+                            }
+                            return null; // Skip rendering if no data for this round
+                          })}
                         </tr>
                       ))}
                     </tbody>
@@ -1312,54 +862,14 @@ const PreviewReport = () => {
                         <th style={{ border: '1px solid black', padding: '5px' }}><strong>Module Sr. No.</strong></th>
                         <th style={{ border: '1px solid black', padding: '5px' }}><strong>Results</strong></th>
                       </tr>
-                      <tr>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>1</span></td>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>Flash test</span></td>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[0].module_sr_no}</span></td>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[0].result}</span></td>
-                      </tr>
-                      <tr>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>2</span></td>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>Insulation Test</span></td>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[1].module_sr_no}</span></td>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[1].result}</span></td>
-                      </tr>
-                      <tr>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>3</span></td>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>High Voltage Test</span></td>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[2].module_sr_no}</span></td>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[2].result}</span></td>
-                      </tr>
-                      <tr>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>4</span></td>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>Electroluminescence Test</span></td>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[3].module_sr_no}</span></td>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[3].result}</span></td>
-                      </tr>
-                      <tr>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>5</span></td>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>Soldering Peel Test</span></td>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[4].module_sr_no}</span></td>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[4].result}</span></td>
-                      </tr>
-                      <tr>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>6</span></td>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>Final Visual Inspection</span></td>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[5].module_sr_no}</span></td>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[5].result}</span></td>
-                      </tr>
-                      <tr>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>7</span></td>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>Laminate visual inspection</span></td>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[6].module_sr_no}</span></td>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[6].result}</span></td>
-                      </tr>
-                      <tr>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>8</span></td>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>Ground continuity test</span></td>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[7].module_sr_no}</span></td>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span>{data.test_results[7].result}</span></td>
-                      </tr>
+                      {reportData[9].value.map((item, index) => (
+                        <tr key={index}>
+                          <td style={{ border: '1px solid black', padding: '5px' }}><span>{index + 1}</span></td>
+                          <td style={{ border: '1px solid black', padding: '5px' }}><span>{item.test}</span></td>
+                          <td style={{ border: '1px solid black', padding: '5px' }}><span>{item.module_sr_no}</span></td>
+                          <td style={{ border: '1px solid black', padding: '5px' }}><span>{item.result}</span></td>
+                        </tr>
+                      ))}
                     </tbody>
                   </Table>
                 </div>
@@ -1368,11 +878,11 @@ const PreviewReport = () => {
                   <tbody style={{ margin: 0, padding: 0 }}>
                     <tr>
                       <HeaderCell style={{ width: "50%" }}><span><strong>Inspection done by</strong></span></HeaderCell>
-                      <TableCell><span>{data.inpaction_done_by}</span></TableCell>
+                      <TableCell><span>{reportData[0].value.find(item => item.param_name === "Report Created By")?.value}</span></TableCell>
                     </tr>
                     <tr>
                       <HeaderCell><span><strong>Checking together with (Customer/Manufacturer representative)</strong></span></HeaderCell>
-                      <TableCell><span>{data.checking_together}</span></TableCell>
+                      <TableCell><span>{reportData[0].value.find(item => item.param_name === "Customer Name")?.value}</span></TableCell>
                     </tr>
                   </tbody>
                 </Table>
@@ -1384,7 +894,6 @@ const PreviewReport = () => {
               <Table style={{ width: '100%' }}>
                 <tbody>
                   <tr style={{ margin: 0, padding: 0 }}>
-                    {/* Ensure all cells have equal width */}
                     <TableCell style={{ width: '33.33%' }}>
                       <span className="pdf-span">Format No: JSR/SI</span>
                     </TableCell>
@@ -1399,241 +908,7 @@ const PreviewReport = () => {
               </Table>
             </div> : ""}
             {/* page 6 end */}
-
-            {/* optional page 5 start */}
-            {/* <div className="page-break"></div> */}
-            {otherobservations.flasher.length > 0 ?
-              <>
-                {/* header */}
-                <div className="content" style={{ height: isClick ? '157vh' : "" }}>
-                  {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
-                    <LogoContainer>
-                      <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
-                    </LogoContainer>
-                    <TitleContainer>
-                      <strong className='pdf-span'>In Process Inspection Daily Report</strong>
-                    </TitleContainer>
-                    <ReportDetails>
-                      <div className='pdf-span'>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                      <div className='pdf-span'>Report No:  {data.reportNo}</div>
-                    </ReportDetails>
-                  </HeaderRow> : ""}
-
-                  {/* flasher Observations */}
-                  <div className="avoid-break" id="majorObservations">
-                    <Title className={isClick ? "pdf-span" : ""}>Flasher Observations –</Title>
-                    <Table>
-                      <tbody style={{ margin: 0, padding: 0 }}>
-                        <tr style={{ margin: 0, padding: 0 }}>
-                          <HeaderCell><span>
-                            <strong>Sr No</strong>
-                          </span></HeaderCell>
-                          <HeaderCell colSpan={2}>
-                            <span>
-                              <strong>Observations / Deficiency Details</strong>
-                            </span></HeaderCell>
-                        </tr>
-
-                        {otherobservations.flasher.map((observation: any, index: any) => (
-                          <>
-                            <tr>
-                              <TableCell rowSpan={2}>
-                                <span>
-                                  <strong>{index + 1}</strong>
-                                </span></TableCell>
-                              <TableCell colSpan={2}>
-                                <span>
-                                  {observation.description}
-                                </span></TableCell>
-                            </tr>
-                            <tr>
-                              {observation.images.map((image: any, idx: any) => (
-                                <TableCell>
-                                  <img src={image} alt="PDF Sub" style={{ padding: 5, height: 300 }} />
-                                </TableCell>
-                              ))}
-                            </tr>
-                          </>
-                        ))}
-                      </tbody>
-                    </Table>
-                  </div>
-                </div>
-
-                {/* footer */}
-                {isClick ? <div id="footer" style={{ width: '100%' }}>
-                  <Table style={{ width: '100%' }}>
-                    <tbody>
-                      <tr style={{ margin: 0, padding: 0 }}>
-                        {/* Ensure all cells have equal width */}
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Format No: JSR/SI</span>
-                        </TableCell>
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Rev Date and No: 00</span>
-                        </TableCell>
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                        </TableCell>
-                      </tr>
-                    </tbody>
-                  </Table>
-                </div> : ""}
-              </> : ""}
-            {/* optional page 5 end */}
-
-            {/* optional page 6 start */}
-            {/* <div className="page-break"></div> */}
-            {otherobservations.randomsample.length > 0 ?
-              <>
-                {/* header */}
-                <div className="content" style={{ height: isClick ? '157vh' : "" }}>
-                  {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
-                    <LogoContainer>
-                      <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
-                    </LogoContainer>
-                    <TitleContainer>
-                      <strong className='pdf-span'>In Process Inspection Daily Report</strong>
-                    </TitleContainer>
-                    <ReportDetails>
-                      <div className='pdf-span'>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                      <div className='pdf-span'>Report No:  {data.reportNo}</div>
-                    </ReportDetails>
-                  </HeaderRow> : ""}
-
-                  {/* random sample Observations */}
-                  <div className="avoid-break" id="majorObservations">
-                    <Title className={isClick ? "pdf-span" : ""}>Random Sample Check Observations –</Title>
-                    <Table>
-                      <tbody style={{ margin: 0, padding: 0 }}>
-                        <tr style={{ margin: 0, padding: 0 }}>
-                          <HeaderCell><span>
-                            <strong>Sr No</strong>
-                          </span></HeaderCell>
-                          <HeaderCell colSpan={2}>
-                            <span>
-                              <strong>Observations / Deficiency Details</strong>
-                            </span></HeaderCell>
-                        </tr>
-
-                        {otherobservations.randomsample.map((observation: any, index: any) => (
-                          <>
-                            <tr>
-                              <TableCell rowSpan={2}>
-                                <span>
-                                  <strong>{index + 1}</strong>
-                                </span></TableCell>
-                              <TableCell colSpan={2}>
-                                <span>
-                                  {observation.description}
-                                </span></TableCell>
-                            </tr>
-                            <tr>
-                              {observation.images.map((image: any, idx: any) => (
-                                <TableCell>
-                                  <img src={image} alt="PDF Sub" style={{ padding: 5, height: 300 }} />
-                                </TableCell>
-                              ))}
-                            </tr>
-                          </>
-                        ))}
-                      </tbody>
-                    </Table>
-                  </div>
-                </div>
-
-                {/* footer */}
-                {isClick ? <div id="footer" style={{ width: '100%' }}>
-                  <Table style={{ width: '100%' }}>
-                    <tbody>
-                      <tr style={{ margin: 0, padding: 0 }}>
-                        {/* Ensure all cells have equal width */}
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Format No: JSR/SI</span>
-                        </TableCell>
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Rev Date and No: 00</span>
-                        </TableCell>
-                        <TableCell style={{ width: '33.33%' }}>
-                          <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                        </TableCell>
-                      </tr>
-                    </tbody>
-                  </Table>
-                </div> : ""}
-              </> : ""}
-            {/* optional page 6 end */}
-
-            {/* page 7 start */}
-            {/* <div className="page-break"></div> */}
-
-            {/* header */}
-            {/* <div className="content" style={{ height: isClick ? '157vh' : "" }}> */}
-            {/* <div className="content">
-              {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
-                <LogoContainer>
-                  <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
-                </LogoContainer>
-                <TitleContainer>
-                  <strong className='pdf-span'>In Process Inspection Daily Report</strong>
-                </TitleContainer>
-                <ReportDetails>
-                  <div className='pdf-span'>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                  <div className='pdf-span'>Report No:  {data.reportNo}</div>
-                </ReportDetails>
-              </HeaderRow> : ""}
-
-              <div className="avoid-break" id="majorObservations">
-                <Table>
-                  <tbody>
-                    <tr>
-                      <HeaderCell><span>
-                        Cutting EVA film measurements
-                      </span></HeaderCell>
-                      <HeaderCell><span>
-                        Cutting Backsheet film measurements
-                      </span></HeaderCell>
-                    </tr>
-                    <tr>
-                      <TableCell>
-                        <img src={pdfsub4} alt="PDF Sub" style={{ padding: 5, height: 230 }} /></TableCell>
-                      <TableCell>
-                        <img src={pdfsub5} alt="PDF Sub" style={{ padding: 5, height: 230 }} /></TableCell>
-                    </tr>
-                    <tr>
-                      <HeaderCell colSpan={2} style={{ textAlign: 'center' }}>
-                        <span>
-                          Raw material used records
-                        </span>
-                      </HeaderCell>
-                    </tr>
-                    <tr>
-                      <TableCell colSpan={2} className='webkitcenter'>
-                        <img src={pdfsub6} alt="PDF Sub" style={{ padding: 5, height: 280 }} /></TableCell>
-                    </tr>
-                  </tbody>
-                </Table>
-              </div>
-            </div> */}
-            {/* </div> */}
-
-            {/* footer */}
-            {/* <div id="footer" className='footer'>
-            <Table>
-              <tbody>
-                <tr style={{ margin: 0, padding: 0 }}>
-                  <TableCell style={{ width: "50%" }}><span>Format No: JSR/SI</span></TableCell>
-                  <TableCell><span>Rev Date and No: 00</span></TableCell>
-                </tr>
-                <tr>
-                  <TableCell><span>Compiled By: Sanket Thakkar</span></TableCell>
-                  <TableCell><span>Compiled Date: {moment().format('DD-MM-YYYY')}</span></TableCell>
-                </tr>
-              </tbody>
-            </Table>
-          </div> */}
-            {/* page 7 end */}
-          </Container>
+          </Container>}
         </div>
         :
         <>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { LIST_FORM_SECTIONS_API, LIST_SECTION_PARAMS_API, LIST_CUSTOMER_API, SUBMIT_SECTION_API, ADD_OBSERVATIONS_API, GET_OBSERVATIONS_API, UPLOAD_IMAGE_API,imgUrl } from "../../Api/api.tsx";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FaChevronDown } from "react-icons/fa";
+import { LIST_FORM_SECTIONS_API, LIST_SECTION_PARAMS_API, LIST_CUSTOMER_API, SUBMIT_SECTION_API, ADD_OBSERVATIONS_API, GET_OBSERVATIONS_API, UPLOAD_IMAGE_API, imgUrl } from "../../Api/api.tsx";
 import { toast } from "react-toastify";
 
 const RunningReport = () => {
@@ -10,7 +10,7 @@ const RunningReport = () => {
   const location = useLocation();
   var data = location.state;
   if (!data) {
-    data = { reportType: "IPQC" };
+    data = { reportType: "IPQC",formId : 1 };
   }
   const [selectedSection, setSelectedSection] = useState<any>({ section: 'Report Details', section_id: 1, section_type: 'inputField' });
   const [customer, setCustomer] = useState([]);
@@ -33,6 +33,7 @@ const RunningReport = () => {
   const [sectionparams, setSectionparams] = useState<any>([]);
   const [sections, setSections] = useState<any>([]);
   const [observations, setObservations] = useState<any>([]);
+  const [submissionID, setsubmissionID] = useState<any>(0);
 
   useEffect(() => {
     setLoaded(true);
@@ -100,6 +101,7 @@ const RunningReport = () => {
       } else if (data.Status === 1) {
         console.log("sectionparams", data.info);
         setSectionparams(data.info);
+        setsubmissionID(data.submission_id);
         setLoaded(false);
       }
     } catch (error) {
@@ -133,6 +135,7 @@ const RunningReport = () => {
       } else if (data.Status === 1) {
         console.log("observations", data.info);
         setObservations(data.info);
+        setsubmissionID(data.submission_id);
         setLoaded(false);
       }
     } catch (error) {
@@ -238,7 +241,7 @@ const RunningReport = () => {
 
   const addAndUploadImages = async (observations_id: number, newImages: File[]) => {
     const formData = new FormData();
-console.log('newImages',newImages);
+    console.log('newImages', newImages);
     // Append each file to the same parameter
     for (const file of newImages) {
       formData.append('observations', file);
@@ -257,7 +260,7 @@ console.log('newImages',newImages);
       const data = await response.json();
 
       if (data.Status === 1) {
-        console.log("images ->> data.info",data.info);
+        console.log("images ->> data.info", data.info);
         // If upload is successful, update the local state with the new image URLs
         setObservations((prevObservations: any) =>
           prevObservations.map((obs: any) =>
@@ -545,7 +548,7 @@ console.log('newImages',newImages);
     );
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>,observationsId:any) => {
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>, observationsId: any) => {
     const files = event.target.files;
     if (files && files.length > 0) {
       const newImages = Array.from(files);
@@ -585,7 +588,7 @@ console.log('newImages',newImages);
                 )}
                 <button className="add-btn mx-2" onClick={() => navigate('/reports/preview_report', {
                   state: {
-                    pagetype: data.reportType, data: formData
+                    formId:data.formId,reporttype: data.reportType, submissionID:submissionID
                   }
                 })}>
                   Preview
@@ -739,7 +742,7 @@ console.log('newImages',newImages);
                                   {observation.images.map((image: any, idx: any) => (
                                     <img
                                       key={idx}
-                                      src={imgUrl+image.image}
+                                      src={imgUrl + image.image}
                                       alt={`Observation ${index + 1} - Image ${idx + 1}`}
                                     />
                                   ))}
@@ -750,7 +753,7 @@ console.log('newImages',newImages);
                                   type="file"
                                   accept="image/*"
                                   multiple
-                                  onChange={(e:any)=>handleFileUpload(e,observation.observations_id)}
+                                  onChange={(e: any) => handleFileUpload(e, observation.observations_id)}
                                 />
                               </div>
                             </td>
@@ -802,43 +805,43 @@ console.log('newImages',newImages);
                             </tr>
                           </thead>
                           <tbody>
-                          {observations.map((observation: any, index: any) => (
-                          <tr key={observation.observations_id}>
-                            <td>{index + 1}</td>
-                            <td>
-                              <div className="observation-detail">
-                                {/* Editable Description */}
-                                <textarea
-                                  className="input-field"
-                                  value={observation.observations_text}
-                                  onChange={(e) =>
-                                    updateDescription(observation.observations_id, e.target.value)
-                                  }
-                                  placeholder="Enter description"
-                                />
-
-                                {/* Display Images */}
-                                <div className="image-row">
-                                  {observation.images.map((image: any, idx: any) => (
-                                    <img
-                                      key={idx}
-                                      src={imgUrl+image.image}
-                                      alt={`Observation ${index + 1} - Image ${idx + 1}`}
+                            {observations.map((observation: any, index: any) => (
+                              <tr key={observation.observations_id}>
+                                <td>{index + 1}</td>
+                                <td>
+                                  <div className="observation-detail">
+                                    {/* Editable Description */}
+                                    <textarea
+                                      className="input-field"
+                                      value={observation.observations_text}
+                                      onChange={(e) =>
+                                        updateDescription(observation.observations_id, e.target.value)
+                                      }
+                                      placeholder="Enter description"
                                     />
-                                  ))}
-                                </div>
 
-                                {/* File Upload */}
-                                <input
-                                  type="file"
-                                  accept="image/*"
-                                  multiple
-                                  onChange={(e:any)=>handleFileUpload(e,observation.observations_id)}
-                                />
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
+                                    {/* Display Images */}
+                                    <div className="image-row">
+                                      {observation.images.map((image: any, idx: any) => (
+                                        <img
+                                          key={idx}
+                                          src={imgUrl + image.image}
+                                          alt={`Observation ${index + 1} - Image ${idx + 1}`}
+                                        />
+                                      ))}
+                                    </div>
+
+                                    {/* File Upload */}
+                                    <input
+                                      type="file"
+                                      accept="image/*"
+                                      multiple
+                                      onChange={(e: any) => handleFileUpload(e, observation.observations_id)}
+                                    />
+                                  </div>
+                                </td>
+                              </tr>
+                            ))}
                           </tbody>
                         </table>
                       </div>
@@ -913,7 +916,7 @@ console.log('newImages',newImages);
                           </tbody>
                         </table>
                         <div className="observation-container" style={{ width: '100%' }}>
-                          <button className="add-btn" onClick={addrandomsampleOtherdetails} style={{ justifyContent: 'end' }}>
+                          <button className="add-btn" onClick={addObservation} style={{ justifyContent: 'end' }}>
                             + Add Extra Details
                           </button>
                           <table className="observation-table">
@@ -924,17 +927,17 @@ console.log('newImages',newImages);
                               </tr>
                             </thead>
                             <tbody>
-                              {randomsampleotherdetails.map((observation: any, index: any) => (
-                                <tr key={observation.id}>
+                              {observations.map((observation: any, index: any) => (
+                                <tr key={observation.observations_id}>
                                   <td>{index + 1}</td>
                                   <td>
                                     <div className="observation-detail">
                                       {/* Editable Description */}
                                       <textarea
                                         className="input-field"
-                                        value={observation.description}
+                                        value={observation.observations_text}
                                         onChange={(e) =>
-                                          updaterandomsampleDescription(observation.id, e.target.value)
+                                          updateDescription(observation.observations_id, e.target.value)
                                         }
                                         placeholder="Enter description"
                                       />
@@ -944,25 +947,18 @@ console.log('newImages',newImages);
                                         {observation.images.map((image: any, idx: any) => (
                                           <img
                                             key={idx}
-                                            src={image}
+                                            src={imgUrl + image.image}
                                             alt={`Observation ${index + 1} - Image ${idx + 1}`}
                                           />
                                         ))}
                                       </div>
 
+                                      {/* File Upload */}
                                       <input
                                         type="file"
                                         accept="image/*"
                                         multiple
-                                        onChange={(e: any) => {
-                                          const files = e.target.files;
-                                          if (files.length > 0) {
-                                            const imageUrls = Array.from(files).map((file: any) =>
-                                              URL.createObjectURL(file)
-                                            );
-                                            addrandomsampleotherImages(observation.id, imageUrls);
-                                          }
-                                        }}
+                                        onChange={(e: any) => handleFileUpload(e, observation.observations_id)}
                                       />
                                     </div>
                                   </td>

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState,useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Logo from '../../images/logo.jpg';
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -8,6 +8,15 @@ import "react-toastify/dist/ReactToastify.css";
 
 const SignIn = () => {
   const navigate = useNavigate();
+
+useEffect(() => {
+  if (utoken) {
+    navigate("/");
+  }
+  }, []);
+
+
+  var utoken = localStorage.getItem('userToken');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errortext, setErrortext] = useState('');
