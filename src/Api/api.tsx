@@ -21,6 +21,7 @@ export const SUBMIT_SECTION_API = baseUrl + "/submit_section";
 export const ADD_OBSERVATIONS_API = baseUrl + "/add_observations";
 export const GET_OBSERVATIONS_API = baseUrl + "/get_observations";
 export const UPLOAD_IMAGE_API = baseUrl + "/upload_images";
+export const DELETE_IMAGE_API = baseUrl + "/delete_image";
 
 //list Reports
 export const LIST_REPORTS_API = baseUrl + "/list_reports";

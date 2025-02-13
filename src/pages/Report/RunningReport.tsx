@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FaChevronDown } from "react-icons/fa";
-import { LIST_FORM_SECTIONS_API, LIST_SECTION_PARAMS_API, LIST_CUSTOMER_API, SUBMIT_SECTION_API, ADD_OBSERVATIONS_API, GET_OBSERVATIONS_API, UPLOAD_IMAGE_API, imgUrl } from "../../Api/api.tsx";
+import { FaChevronDown, FaRegTrashAlt } from "react-icons/fa";
+import { LIST_FORM_SECTIONS_API, LIST_SECTION_PARAMS_API, LIST_CUSTOMER_API, SUBMIT_SECTION_API, ADD_OBSERVATIONS_API, GET_OBSERVATIONS_API, UPLOAD_IMAGE_API, DELETE_IMAGE_API, imgUrl } from "../../Api/api.tsx";
 import { toast } from "react-toastify";
 
 const RunningReport = () => {
@@ -10,7 +10,7 @@ const RunningReport = () => {
   const location = useLocation();
   var data = location.state;
   if (!data) {
-    data = { reportType: "IPQC",formId : 1 };
+    data = { reporttype: "IPQC", formId: 1, submissionID: 0, selectedSection: { section: 'Report Details', section_id: 1, section_type: 'inputField' } };
   }
   const [selectedSection, setSelectedSection] = useState<any>({ section: 'Report Details', section_id: 1, section_type: 'inputField' });
   const [customer, setCustomer] = useState([]);
@@ -18,6 +18,7 @@ const RunningReport = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    console.log("data", data);
     if (data.Datas) {
       try {
         setFormData(data.Datas);
@@ -25,28 +26,36 @@ const RunningReport = () => {
           setObservations(data.observations);
         }
       } catch (e) {
-        console.log('datas not get');
+        //console.log('datas not get');
       }
     }
   }, [data]);
 
   const [sectionparams, setSectionparams] = useState<any>([]);
+  const [submitsectionby, setSubmitsectionby] = useState<any>("");
+  const [checkingtogether, setCheckingtogether] = useState<any>("");
   const [sections, setSections] = useState<any>([]);
   const [observations, setObservations] = useState<any>([]);
   const [submissionID, setsubmissionID] = useState<any>(0);
 
   useEffect(() => {
     setLoaded(true);
+    if (data.selectedSection) {
+      setSelectedSection(data.selectedSection);
+      listobservations(data.selectedSection.section_id);
+      listSectionParams(data.selectedSection.section_id);
+    } else {
+      listSectionParams(selectedSection.section_id);
+      listobservations(selectedSection.section_id);
+    }
     listSections();
-    listSectionParams(selectedSection.section_id);
-    listobservations(selectedSection.section_id);
     listCustomer();
-  }, []);
+  }, [data]);
 
   // Function to fetch sections
   const listSections = async () => {
     const params = new URLSearchParams({
-      form_id: "1",
+      form_id: data.formId,
       format_id: "1"
     });
 
@@ -65,7 +74,7 @@ const RunningReport = () => {
       if (data.Status === 0) {
         setLoaded(false);
       } else if (data.Status === 1) {
-        console.log(data.info);
+        //console.log(data.info);
         setSections(data.info || []);
         setLoaded(false);
       }
@@ -77,12 +86,12 @@ const RunningReport = () => {
 
   const listSectionParams = async (e: any) => {
     const params = new URLSearchParams({
-      form_id: "1",
+      form_id: data.formId,
       format_id: "1",
       section_id: e
     });
 
-    console.log("listSectionParams", params);
+    //console.log("listSectionParams", params);
 
     try {
       const response = await fetch(`${LIST_SECTION_PARAMS_API}?${params.toString()}`, {
@@ -95,13 +104,14 @@ const RunningReport = () => {
       });
 
       const data = await response.json();
-      console.log("data", data);
+      //console.log("data", data);
       if (data.Status === 0) {
         setLoaded(false);
       } else if (data.Status === 1) {
-        console.log("sectionparams", data.info);
         setSectionparams(data.info);
         setsubmissionID(data.submission_id);
+        setSubmitsectionby(data.Datas.inspection_done_by);
+        setCheckingtogether(data.Datas.checking_together);
         setLoaded(false);
       }
     } catch (error) {
@@ -111,36 +121,44 @@ const RunningReport = () => {
   };
 
   const listobservations = async (e: any) => {
-    const params = new URLSearchParams({
-      form_id: "1",
+    console.log("list observation called", {
+      form_id: data.formId,
       section_id: e
     });
-
-    console.log("listSectionParams", params);
-
-    try {
-      const response = await fetch(`${GET_OBSERVATIONS_API}?${params.toString()}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${utoken}`,
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
+    if (data.submissionID === 0 || !data.submissionID) {
+      console.log("no observation found");
+    } else {
+      const params = new URLSearchParams({
+        form_id: data.formId,
+        section_id: e
       });
 
-      const data = await response.json();
-      console.log("data", data);
-      if (data.Status === 0) {
-        setLoaded(false);
-      } else if (data.Status === 1) {
-        console.log("observations", data.info);
-        setObservations(data.info);
-        setsubmissionID(data.submission_id);
+      //console.log("listSectionParams", params);
+
+      try {
+        const response = await fetch(`${GET_OBSERVATIONS_API}?${params.toString()}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${utoken}`,
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        });
+
+        const data = await response.json();
+        //console.log("data", data);
+        if (data.Status === 0) {
+          setLoaded(false);
+        } else if (data.Status === 1) {
+          //console.log("observations", data.info);
+          setObservations(data.info);
+          setsubmissionID(data.submission_id);
+          setLoaded(false);
+        }
+      } catch (error) {
+        console.error("Error fetching sections:", error);
         setLoaded(false);
       }
-    } catch (error) {
-      console.error("Error fetching sections:", error);
-      setLoaded(false);
     }
   };
 
@@ -160,7 +178,7 @@ const RunningReport = () => {
       if (data.Status === 0) {
         setLoaded(false);
       } else if (data.Status === 1) {
-        console.log("customer", data.info);
+        //console.log("customer", data.info);
         setCustomer(data.info);
         setLoaded(false);
       }
@@ -173,6 +191,10 @@ const RunningReport = () => {
   const submitSection = async (e: any) => {
     e.preventDefault();
     setIsLoading(true);
+
+    console.log("selectedSection->>", selectedSection);
+    console.log("sectionparams->>", sectionparams);
+
     if (selectedSection.section_id === 4) {
       setSectionparams([]);
     }
@@ -186,18 +208,20 @@ const RunningReport = () => {
           Accept: "application/json",
         },
         body: JSON.stringify({
-          form_id: 1,
+          form_id: data.formId,
           section_id: selectedSection.section_id,
+          inspection_done_by: submitsectionby,
+          checking_together: checkingtogether,
           jsonData: JSON.stringify(sectionparams)
         })
       });
 
-      const data = await response.json();
+      const datas = await response.json();
 
-      if (data.Status === 0) {
+      if (datas.Status === 0) {
         setIsLoading(false);
-      } else if (data.Status === 1) {
-        toast.success(data.Message);
+      } else if (datas.Status === 1) {
+        toast.success(datas.Message);
         setIsLoading(false);
       }
     } catch (error) {
@@ -230,7 +254,7 @@ const RunningReport = () => {
         setIsLoading(false);
       } else if (data.Status === 1) {
         // toast.success(data.Message);
-        listobservations(sectionparams.section_id);
+        listobservations(selectedSection.section_id);
         setIsLoading(false);
       }
     } catch (error) {
@@ -239,9 +263,9 @@ const RunningReport = () => {
     }
   }
 
-  const addAndUploadImages = async (observations_id: number, newImages: File[]) => {
+  const addAndUploadImages = async (index: number, newImages: File[]) => {
     const formData = new FormData();
-    console.log('newImages', newImages);
+    //console.log('newImages', newImages);
     // Append each file to the same parameter
     for (const file of newImages) {
       formData.append('observations', file);
@@ -260,11 +284,11 @@ const RunningReport = () => {
       const data = await response.json();
 
       if (data.Status === 1) {
-        console.log("images ->> data.info", data.info);
+        //console.log("images ->> data.info", data.info);
         // If upload is successful, update the local state with the new image URLs
         setObservations((prevObservations: any) =>
-          prevObservations.map((obs: any) =>
-            obs.observations_id === observations_id
+          prevObservations.map((obs: any, idx: any) =>
+            idx === index
               ? {
                 ...obs,
                 images: [
@@ -289,6 +313,7 @@ const RunningReport = () => {
       setIsLoading(false);
     }
   };
+
   // Map sections into viewable data
   const viewSections = sections.map((item: any) => ({
     section_id: item.section_id,
@@ -298,199 +323,14 @@ const RunningReport = () => {
   }));
 
   const handleSectionClick = (section: any, section_id = null, section_type: any) => {
-    console.log(section_id);
+    //console.log(section_id);
     setSelectedSection({ section, section_id, section_type });
     section_id === 4 ? "" : listSectionParams(section_id);
     listobservations(section_id);
-    // console.log("selected section ->>>", selectedSection, section, section_id,section_type);
+    // //console.log("selected section ->>>", selectedSection, section, section_id,section_type);
   };
 
-  const [formData, setFormData] = useState<any>({
-    oaNo: '',
-    manufacturer: '',
-    date: '',
-    reportCreatedBy: '',
-    placeOfInspection: '',
-    customerName: '',
-    shift: '',
-    reportNo: '',
-    // date: null,
-    enddate: null,
-    wpInNos: null,
-    totalProductionNos: null,
-    totalProductionMw: null,
-    tillDateWpInNos: null,
-    tillDateTotalProductionNos: null,
-    tillDateTotalProductionMw: null,
-    product: null,
-    total_layup: null,
-    total_vqc_fail: null,
-    total_fqc_fail: null,
-    total_lamination_el_fail: null,
-    total_low_wp: null,
-    other_reject: null,
-    eva_cutting_length: { round1: "", round2: "", round3: "", round4: "" },
-    backsheet_cutting_length: { round1: "", round2: "", round3: "", round4: "" },
-    epe_strip_cutting_size: { round1: "", round2: "", round3: "", round4: "" },
-    busbar_cutting_size: { round1: "", round2: "", round3: "", round4: "" },
-    raw_material_used_records: { round1: "", round2: "", round3: "", round4: "" },
-    machine_no: { round1: "", round2: "", round3: "", round4: "" },
-    soldering_temp_a: { round1: "", round2: "", round3: "", round4: "" },
-    soldering_temp_b: { round1: "", round2: "", round3: "", round4: "" },
-    peel_strength_front: { round1: "", round2: "", round3: "", round4: "" },
-    peel_strength_back: { round1: "", round2: "", round3: "", round4: "" },
-    all_machine_peel_strength: { round1: "", round2: "", round3: "", round4: "" },
-    raw_material_track_records: { round1: "", round2: "", round3: "", round4: "" },
-    tabber_observations: { round1: "", round2: "", round3: "", round4: "" },
-    work_station_no: { round1: "", round2: "", round3: "", round4: "" },
-    running_module_serial_no: { round1: "", round2: "", round3: "", round4: "" },
-    soldering_station_temp: { round1: "", round2: "", round3: "", round4: "" },
-    soldering_station_calibration: { round1: "", round2: "", round3: "", round4: "" },
-    wip: { round1: "", round2: "", round3: "", round4: "" },
-    layupobservations: { round1: "", round2: "", round3: "", round4: "" },
-    lamination_work_station_no: { round1: "", round2: "", round3: "", round4: "" },
-    stage1_cycle_time: { round1: "", round2: "", round3: "", round4: "" },
-    stage2_cycle_time: { round1: "", round2: "", round3: "", round4: "" },
-    temperature_stage1: { round1: "", round2: "", round3: "", round4: "" },
-    temperature_stage2: { round1: "", round2: "", round3: "", round4: "" },
-    pressure_stage1: { round1: "", round2: "", round3: "", round4: "" },
-    pressure_stage2: { round1: "", round2: "", round3: "", round4: "" },
-    last_gel_content_checked: { round1: "", round2: "", round3: "", round4: "" },
-    gel_content: { round1: "", round2: "", round3: "", round4: "" },
-    framing_work_station_no: { round1: "", round2: "", round3: "", round4: "" },
-    module_width_after_framing: { round1: "", round2: "", round3: "", round4: "" },
-    module_length_after_framing: { round1: "", round2: "", round3: "", round4: "" },
-    frame_size_hs: { round1: "", round2: "", round3: "", round4: "" },
-    x_pitch: { round1: "", round2: "", round3: "", round4: "" },
-    y_pitch: { round1: "", round2: "", round3: "", round4: "" },
-    rtv_consumption_long_side: { round1: "", round2: "", round3: "", round4: "" },
-    rtv_consumption_short_side: { round1: "", round2: "", round3: "", round4: "" },
-    rtv_back_filling: { round1: "", round2: "", round3: "", round4: "" },
-    potting_material_mixing_ratio: { round1: "", round2: "", round3: "", round4: "" },
-    jb_fixing_process: { round1: "", round2: "", round3: "", round4: "" },
-    jb_terminal_connections: { round1: "", round2: "", round3: "", round4: "" },
-    raw_material_consumption_records: { round1: "", round2: "", round3: "", round4: "" },
-    calibration_time: { round1: "", round2: "", round3: "", round4: "" },
-    calibration_by: { round1: "", round2: "", round3: "", round4: "" },
-    reference_module_sr_no: { round1: "", round2: "", round3: "", round4: "" },
-    difference_in_wp_measured: { round1: "", round2: "", round3: "", round4: "" },
-    difference_in_isc_measured: { round1: "", round2: "", round3: "", round4: "" },
-    difference_in_imp_measured: { round1: "", round2: "", round3: "", round4: "" },
-    difference_in_vmp_measured: { round1: "", round2: "", round3: "", round4: "" },
-    difference_in_voc_measured: { round1: "", round2: "", round3: "", round4: "" },
-    flasher_records: { round1: "", round2: "", round3: "", round4: "" },
-    flash_test: { round1: "", round2: "", round3: "", round4: "" },
-    insulation_test: { round1: "", round2: "", round3: "", round4: "" },
-    high_voltage_test: { round1: "", round2: "", round3: "", round4: "" },
-    electroluminescence_test: { round1: "", round2: "", round3: "", round4: "" },
-    soldering_peel_test: { round1: "", round2: "", round3: "", round4: "" },
-    final_visual_inspection: { round1: "", round2: "", round3: "", round4: "" },
-    laminate_visual_inspection: { round1: "", round2: "", round3: "", round4: "" },
-    ground_continuity_test: { round1: "", round2: "", round3: "", round4: "" },
-    test_results: [
-      { sr_no: 1, test: "Flash test", module_sr_no: "", result: "" },
-      { sr_no: 2, test: "Insulation Test", module_sr_no: "", result: "" },
-      { sr_no: 3, test: "High Voltage Test", module_sr_no: "", result: "" },
-      { sr_no: 4, test: "Electroluminescence Test", module_sr_no: "", result: "" },
-      { sr_no: 5, test: "Soldering Peel Test", module_sr_no: "", result: "" },
-      { sr_no: 6, test: "Final Visual Inspection", module_sr_no: "", result: "" },
-      { sr_no: 7, test: "Laminate visual inspection", module_sr_no: "", result: "" },
-      { sr_no: 8, test: "Ground continuity test", module_sr_no: "", result: "" },
-    ],
-    inpaction_done_by: "",
-    checking_together: "",
-    solar_cell: {
-      bb_cells: "",
-      efficiency: "",
-      size: "",
-      product_name: "",
-      batch: "",
-      company_make: "",
-    },
-    cell_connector: {
-      make: "",
-      diameter: "",
-      batch: "",
-    },
-    soldering_flux: {
-      make: "",
-      model: "",
-      batch: "",
-      manufacturing_date: "",
-    },
-    glass: {
-      make: "",
-      dimension: "",
-      ar_coated: "",
-      batch: "",
-      manufacturing_date: "",
-    },
-    eva: {
-      make: "",
-      model: "",
-      batch: "",
-      manufacturing_date: "",
-    },
-    string_connector: {
-      make: "",
-      dimension: "",
-      batch: "",
-    },
-    back_sheet: {
-      make: "",
-      model: "",
-      batch: "",
-      manufacturing_date: "",
-    },
-    frame: {
-      make: "",
-      long_side_dimension: "",
-      short_side_dimension: "",
-      punching_location: "",
-      model: "",
-      batch: "",
-    },
-    junction_box: {
-      company_make: "",
-      batch: "",
-    },
-    connector: {
-      type: "",
-    },
-    potting_for_jb: {
-      make: "",
-      model: "",
-      batch: "",
-      manufacturing_date: "",
-    },
-    adhesive_for_jb: {
-      make: "",
-      model: "",
-      batch: "",
-      manufacturing_date: "",
-    },
-    insulation_layer_sealant: {
-      make: "",
-      model: "",
-    },
-    bypass_diode: {
-      make: "",
-      model: "",
-    },
-    fixing_tape: {
-      make: "",
-      model: "",
-    },
-    cable: {
-      make_dimension: "",
-    },
-    rfid: {
-      company_make: "",
-      model_no: "",
-    },
-    remarks: "",
-    verification_done_by: ""
-  });
+  const [formData, setFormData] = useState<any>();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -529,43 +369,109 @@ const RunningReport = () => {
     index: number,
     field: "module_sr_no" | "result"
   ) => {
-    console.log("data ->>", e, index, field);
+    //console.log("data ->>", e, index, field);
     const newValue = e.target.value;
-    console.log("value ->>", newValue);
+    //console.log("value ->>", newValue);
     var sparams = [...sectionparams];
     sparams[index] = { ...sparams[index], [field]: newValue };
     setSectionparams(sparams);
   };
 
-  // Update observation description
-  const updateDescription = (observations_id: number, newDescription: string) => {
-    setObservations((prevObservations) =>
-      prevObservations.map((obs) =>
-        obs.observations_id === observations_id
-          ? { ...obs, observations_text: newDescription }
-          : obs
+  const updateDescription = (index: number, newDescription: string) => {
+    setObservations((prevObservations: any) =>
+      prevObservations.map((obs: any, i: any) =>
+        i === index
+          ? { ...obs, observations_text: newDescription } // Update the description for the matching index
+          : obs // Leave other observations unchanged
       )
     );
   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>, observationsId: any) => {
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>, index: any, imageLength: any) => {
     const files = event.target.files;
+    if (imageLength >= 2) {
+      alert(`You can upload a maximum of two images.`);
+      event.target.value = "";
+      return;
+    } else if ((parseInt(imageLength) + parseInt(files.length)) > 2) {
+      alert(`You can upload a maximum of two images.`);
+      event.target.value = "";
+      return;
+    } else if (files.length > 2) {
+      alert(`You can upload a maximum of two images.`);
+      event.target.value = "";
+      return;
+    }
+
     if (files && files.length > 0) {
       const newImages = Array.from(files);
-      addAndUploadImages(observationsId, newImages);
+      addAndUploadImages(index, newImages);
     }
   };
 
   // Add a new observation
   const addObservation = () => {
-    const newObservation = {
-      observations_id: 0,
-      observations_text: "",
-      is_major: selectedSection.section_id === 4 ? "Yes" : "No", // Set is_major based on section_id
-      images: [],
-    };
 
-    setObservations([...observations, newObservation]);
+    const addData = () => {
+      const newObservation = {
+        observations_id: 0,
+        observations_text: "",
+        is_major: selectedSection.section_id === 4 ? "Yes" : "No", // Set is_major based on section_id
+        images: [],
+      };
+
+      setObservations([...observations, newObservation]);
+    }
+
+    if (observations.length >= 1) {
+      var lastobservation = observations.length - 1;
+      if (observations[lastobservation]["observations_text"] == "") {
+        alert("please enter last observations");
+      } else {
+        addData();
+      }
+    } else {
+      addData();
+    }
+
+  };
+
+
+  const handleDeleteImage = async (obsIndex: number, imgIndex: number, image_id: number, image: string) => {
+    const params = new URLSearchParams({
+      image_id: image_id.toString(),
+      image: image
+    });
+    try {
+
+      const response = await fetch(`${DELETE_IMAGE_API}?${params.toString()}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${utoken}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        }
+      });
+
+      const data = await response.json();
+
+      if (data.Status === 1) {
+        toast.success(data.Message);
+
+        // Update local state without calling API again
+        setObservations((prevObservations: any) => {
+          const updatedObservations = [...prevObservations];
+          updatedObservations[obsIndex].images.splice(imgIndex, 1);
+          return updatedObservations;
+        });
+
+      } else {
+        toast.error("Failed to delete image.");
+      }
+    } catch (error) {
+      console.error("Error deleting image:", error);
+      toast.error("An error occurred while deleting the image.");
+    }
   };
 
 
@@ -573,7 +479,7 @@ const RunningReport = () => {
     <div className="container">
       {/* Left Container (80%) for Form */}
       <div className="left-container">
-        {data.reportType === "IPQC" && selectedSection ? (
+        {data.reporttype === "IPQC" && selectedSection ? (
           <div className="border border-stroke bg-white shadow-default">
             <div className="flex justify-between items-center border-b border-stroke mt-5 px-6.5 dark:border-strokedark">
               <h3 className="font-medium text-black dark:text-white">
@@ -588,7 +494,7 @@ const RunningReport = () => {
                 )}
                 <button className="add-btn mx-2" onClick={() => navigate('/reports/preview_report', {
                   state: {
-                    formId:data.formId,reporttype: data.reportType, submissionID:submissionID
+                    formId: data.formId, reporttype: data.reporttype, submissionID: submissionID, selectedSection: selectedSection
                   }
                 })}>
                   Preview
@@ -722,7 +628,7 @@ const RunningReport = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {observations.map((observation: any, index: any) => (
+                        {observations.map((observation: any, index: number) => (
                           <tr key={observation.observations_id}>
                             <td>{index + 1}</td>
                             <td>
@@ -731,20 +637,27 @@ const RunningReport = () => {
                                 <textarea
                                   className="input-field"
                                   value={observation.observations_text}
-                                  onChange={(e) =>
-                                    updateDescription(observation.observations_id, e.target.value)
-                                  }
+                                  onChange={(e) => updateDescription(index, e.target.value)}
                                   placeholder="Enter description"
                                 />
 
-                                {/* Display Images */}
+                                {/* Display Images with Delete Icon */}
                                 <div className="image-row">
-                                  {observation.images.map((image: any, idx: any) => (
-                                    <img
-                                      key={idx}
-                                      src={imgUrl + image.image}
-                                      alt={`Observation ${index + 1} - Image ${idx + 1}`}
-                                    />
+                                  {observation.images.map((image: any, imgIdx: number) => (
+                                    <div key={imgIdx} className="image-container">
+                                      {/* Observation Image */}
+                                      <img
+                                        className="observation-close-image"
+                                        src={imgUrl + image.image}
+                                        alt={`Observation ${index + 1} - Image ${imgIdx + 1}`}
+                                      />
+
+                                      {/* Delete Icon in Top-Right Corner */}
+                                      <FaRegTrashAlt
+                                        className="delete-icon"
+                                        onClick={() => handleDeleteImage(index, imgIdx, image.image_id, image.image)}
+                                      />
+                                    </div>
                                   ))}
                                 </div>
 
@@ -753,7 +666,7 @@ const RunningReport = () => {
                                   type="file"
                                   accept="image/*"
                                   multiple
-                                  onChange={(e: any) => handleFileUpload(e, observation.observations_id)}
+                                  onChange={(e: any) => handleFileUpload(e, index, observation.images.length)}
                                 />
                               </div>
                             </td>
@@ -815,7 +728,7 @@ const RunningReport = () => {
                                       className="input-field"
                                       value={observation.observations_text}
                                       onChange={(e) =>
-                                        updateDescription(observation.observations_id, e.target.value)
+                                        updateDescription(index, e.target.value)
                                       }
                                       placeholder="Enter description"
                                     />
@@ -836,7 +749,7 @@ const RunningReport = () => {
                                       type="file"
                                       accept="image/*"
                                       multiple
-                                      onChange={(e: any) => handleFileUpload(e, observation.observations_id)}
+                                      onChange={(e: any) => handleFileUpload(e, index, observation.images.length)}
                                     />
                                   </div>
                                 </td>
@@ -883,38 +796,6 @@ const RunningReport = () => {
                           </tbody>
                         </table>
                         <br />
-                        <table className="production-table">
-                          <thead>
-                            <tr>
-                              <th>Inspection done by</th>
-                              <th>Checking together with (Customer/Manufacturer representative)</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td style={{ width: '50%' }}>
-                                <input
-                                  type="text"
-                                  name="inpaction_done_by"
-                                  placeholder="Inspection done by"
-                                  className="input-field"
-                                  value={formData.inpaction_done_by}
-                                  onChange={handleChange}
-                                />
-                              </td>
-                              <td>
-                                <input
-                                  type="text"
-                                  name="checking_together"
-                                  placeholder="Checking together with"
-                                  className="input-field"
-                                  value={formData.checking_together}
-                                  onChange={handleChange}
-                                />
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
                         <div className="observation-container" style={{ width: '100%' }}>
                           <button className="add-btn" onClick={addObservation} style={{ justifyContent: 'end' }}>
                             + Add Extra Details
@@ -937,7 +818,7 @@ const RunningReport = () => {
                                         className="input-field"
                                         value={observation.observations_text}
                                         onChange={(e) =>
-                                          updateDescription(observation.observations_id, e.target.value)
+                                          updateDescription(index, e.target.value)
                                         }
                                         placeholder="Enter description"
                                       />
@@ -958,7 +839,7 @@ const RunningReport = () => {
                                         type="file"
                                         accept="image/*"
                                         multiple
-                                        onChange={(e: any) => handleFileUpload(e, observation.observations_id)}
+                                        onChange={(e: any) => handleFileUpload(e, index, observation.images.length)}
                                       />
                                     </div>
                                   </td>
@@ -967,11 +848,44 @@ const RunningReport = () => {
                             </tbody>
                           </table>
                         </div>
+                        <table className="production-table">
+                          <thead>
+                            <tr>
+                              <th>Inspection done by</th>
+                              <th>Checking together with (Customer/Manufacturer representative)</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td style={{ width: '50%' }}>
+                                <input
+                                  type="text"
+                                  name="inspection_done_by"
+                                  placeholder="Inspection done by"
+                                  className="input-field"
+                                  value={submitsectionby}
+                                  onChange={(e) => setSubmitsectionby(e.target.value)}
+                                />
+                              </td>
+                              <td>
+                                <input
+                                  type="text"
+                                  name="checking_together"
+                                  placeholder="Checking together with"
+                                  className="input-field"
+                                  value={checkingtogether}
+                                  onChange={(e) => setCheckingtogether(e.target.value)}
+                                />
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+
                       </div>
                       : ""
             }
           </div>
-        ) : data.reportType === "BOM" && selectedSection ?
+        ) : data.reporttype === "BOM" && selectedSection ?
           <div className="border border-stroke bg-white shadow-default">
             <div className="flex justify-between items-center border-b border-stroke mt-5 px-6.5 dark:border-strokedark">
               <h3 className="font-medium text-black dark:text-white">
@@ -2291,7 +2205,7 @@ const RunningReport = () => {
       <div className="right-container">
         <h2>Sections</h2>
         <div className="sections">
-          {viewSections.map((section, index) => {
+          {viewSections.map((section: any, index: any) => {
             const isActive = selectedSection?.section === section.title;
             return (
               <div key={index} className="section">

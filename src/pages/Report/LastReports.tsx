@@ -1,9 +1,9 @@
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 import Breadcrumb from '../../components/Breadcrumb';
 import { LIST_REPORTS_API } from '../../Api/api';
 import moment from "moment";
 import { useNavigate } from 'react-router-dom';
-import { FaEye } from "react-icons/fa";     
+import { FaEye } from "react-icons/fa";
 
 const LastForms = () => {
   const navigate = useNavigate();
@@ -14,6 +14,18 @@ const LastForms = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
   const [isLoaded, setLoaded] = useState(false);
+
+  const tableHeaders = [
+    { label: "Report ID", key: "submission_id" },
+    { label: "Client", key: "customer_name" },
+    { label: "Report Type", key: "form_name" },
+    { label: "Status", key: "submission_status" },
+    { label: "Inspection Eng-1", key: "employee_name" },
+    { label: "Inspection Eng-2", key: "" }, // No sorting for this column
+    { label: "Date", key: "created_at" },
+    { label: "Actions", key: "" }, // No sorting for actions
+  ];
+
 
   // Pagination logic
   const lastItemIndex = currentPage * itemsPerPage;
@@ -59,42 +71,42 @@ const LastForms = () => {
     setCurrentPage(1); // Reset to the first page after search
   };
 
-    useEffect(() => {
-      setLoaded(true);
-      listReports();
-    }, []);
-  
-    // Function to fetch sections
-    const listReports = async () => {
-      const params = new URLSearchParams({
-        pageNo: '1',
-        report_type: 'All'
+  useEffect(() => {
+    setLoaded(true);
+    listReports();
+  }, []);
+
+  // Function to fetch sections
+  const listReports = async () => {
+    const params = new URLSearchParams({
+      pageNo: '1',
+      report_type: 'All'
+    });
+
+    try {
+      const response = await fetch(`${LIST_REPORTS_API}?${params.toString()}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${utoken}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
       });
-  
-      try {
-        const response = await fetch(`${LIST_REPORTS_API}?${params.toString()}`, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${utoken}`,
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-        });
-  
-        const data = await response.json();
-  
-        if (data.Status === 0) {
-          setLoaded(false);
-        } else if (data.Status === 1) {
-          console.log("data ->>>",data.info.data);
-          setReportData(data.info.data);
-          setLoaded(false);
-        }
-      } catch (error) {
-        console.error("Error fetching sections:", error);
+
+      const data = await response.json();
+
+      if (data.Status === 0) {
+        setLoaded(false);
+      } else if (data.Status === 1) {
+        console.log("data ->>>", data.info.data);
+        setReportData(data.info.data);
         setLoaded(false);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching sections:", error);
+      setLoaded(false);
+    }
+  };
 
   return (
     <>
@@ -102,19 +114,7 @@ const LastForms = () => {
 
       <div className="flex flex-col">
         {/* Search bar and Add button */}
-        <div className="flex justify-end items-center mb-4">
-          {/* <button
-            onClick={() => { }}
-            className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-2 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-          >
-            New Report
-          </button>
-          <button
-            onClick={() => { }}
-            className="inline-flex items-center justify-center rounded-md bg-primary py-2 mx-2 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-          >
-            Running Report
-          </button> */}
+        <div className="flex justify-end items-center mb-2">
           <div className="relative mx-2">
             <button className="absolute top-1/2 left-0 -translate-y-1/2">
               <svg
@@ -151,57 +151,55 @@ const LastForms = () => {
         </div>
 
         {/* Table */}
-        <div className="rounded-sm border border-stroke bg-white pb-2.5 shadow-default dark:border-strokedark dark:bg-boxdark sm:px-1.5">
+        <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
           <div className="max-w-full overflow-x-auto">
             <table className="w-full table-auto">
               <thead>
                 <tr className="bg-gray-2 text-left dark:bg-meta-4">
-                  {["Report id", "Client", "Report Type", "Status", "Inpection Eng-1", "Inpection Eng-2","Date", "Actions"].map(
-                    (col) => (
-                      <th
-                        key={col}
-                        className="min-w-[100px] py-4 px-4 font-medium text-black dark:text-white cursor-pointer"
-                        onClick={() => handleSort(col.replace(" ", "_").toLowerCase())}
-                      >
-                        {col}{" "}
-                        {sortConfig.key === col.replace(" ", "_").toLowerCase() && (
-                          <span>{sortConfig.direction === "asc" ? "↑" : "↓"}</span>
-                        )}
-                      </th>
-                    )
-                  )}
+                  {tableHeaders.map(({ label, key }) => (
+                    <th
+                      key={label}
+                      className="min-w-[100px] py-3 px-4 font-medium text-sm text-black dark:text-white cursor-pointer"
+                      onClick={key ? () => handleSort(key) : undefined} // Only sort if key exists
+                    >
+                       <b>{label}</b>{" "}
+                      {sortConfig.key === key && key && (
+                        <span>{sortConfig.direction === "asc" ? "↑" : "↓"}</span>
+                      )}
+                    </th>
+                  ))}
                 </tr>
               </thead>
               <tbody>
-               {reportData.map((item:any, i:any) => (
-                                 <tr key={i}>
-                                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark text-center">
-                                     <p className="text-black dark:text-white">{item.submission_id}</p>
-                                   </td>
-                                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                     <p className="text-black dark:text-white">{item.customer_name}</p>
-                                   </td>
-                                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                     <p className="text-black dark:text-white">{item.form_name}</p>
-                                   </td>
-                                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                   <p className="inline-flex rounded-full bg-success bg-opacity-10 py-1 px-3 text-sm font-medium text-success">
-                                     {item.submission_status}</p>
-                                   </td>
-                                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                     <p className="text-black dark:text-white">{item.employee_name}</p>
-                                   </td>
-                                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                     <p className="text-black dark:text-white">{'-'}</p>
-                                   </td>
-                                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                     <p className="text-black dark:text-white">{moment(item.created_at).format("YYYY-MM-DD")}</p>
-                                   </td>
-                                   <td className="border-b border-[#eee] py-5 px-4 dark:border-strokedark">
-                                                         <div onClick={()=>navigate("/reports/view_report/1")}><FaEye className="w-5 h-5" /></div>
-                                                       </td>
-                                 </tr>
-                               ))}
+                {reportData.map((item: any, i: any) => (
+                  <tr key={i}>
+                    <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark text-center" style={{ width: 20 }}>
+                      <p className="text-sm text-black dark:text-white">{item.submission_id}</p>
+                    </td>
+                    <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
+                      <p className="text-sm text-black dark:text-white">{item.customer_name}</p>
+                    </td>
+                    <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
+                      <p className="text-sm text-black dark:text-white">{item.form_name}</p>
+                    </td>
+                    <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
+                      <p className="inline-flex bg-opacity-10 text-sm text-success">
+                        {item.submission_status}</p>
+                    </td>
+                    <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
+                      <p className="text-sm text-black dark:text-white">{item.employee_name}</p>
+                    </td>
+                    <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
+                      <p className="text-sm text-black dark:text-white">{'-'}</p>
+                    </td>
+                    <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
+                      <p className="text-sm text-black dark:text-white">{moment(item.created_at).format("DD-MM-YYYY")}</p>
+                    </td>
+                    <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
+                      <div onClick={() => navigate("/reports/view_report/1", { state: { submissionID: item.submission_id, reporttype: item.form_name, formId: item.form_id } })}><FaEye className="w-5 h-5" /></div>
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>

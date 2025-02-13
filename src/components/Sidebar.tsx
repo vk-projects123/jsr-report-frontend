@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 // import Logo from '../images/logo/logo.svg';
-import Logo from '../images/logo.svg';
+import Logo from '../images/logo/jsrlogo.png';
 import SidebarLinkGroup from './SidebarLinkGroup';
 
 interface SidebarProps {
@@ -65,7 +65,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
       className={`absolute left-0 top-0 z-9999 flex h-screen w-72.5 flex-col overflow-y-hidden bg-black duration-300 ease-linear dark:bg-boxdark lg:static lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
     >
-      <div className="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-1.5">
+      <div className="flex items-center justify-between gap-2 px-6 ">
         <NavLink to="/">
           <img src={Logo} alt="Logo" style={{ height: 80, width: 200 }} />
         </NavLink>
@@ -96,7 +96,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
       <div className="no-scrollbar flex flex-col overflow-y-auto duration-300 ease-linear">
         <nav className="mt-5 px-4 lg:mt-9 lg:px-6">
           <div>
-            <h3 className="mb-4 ml-4 text-sm font-semibold text-bodydark2">
+            <h3 className="mb-2 ml-4 text-sm font-semibold text-bodydark2">
               MENU
             </h3>
 

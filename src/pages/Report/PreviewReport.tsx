@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import html2pdf from 'html2pdf.js';
-import pdflogo from "../../images/pdflogo.jpg";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+import pdflogo from "../../images/pdflogo_transparent.png";
 import { FaDownload } from 'react-icons/fa';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { VIEW_REPORTS_API, SUBMIT_REPORT_API, imgUrl } from "../../Api/api.tsx";
@@ -29,9 +30,8 @@ border: 1px solid black;
 
 const LogoContainer = styled.div`
 border-right: 1px solid black;
-  width: 150px; /* Default width */
   margin-right: 20px;
-  height: 100%;
+  height: 100px;
 
   @media (max-width: 1200px) {
     width: 120px; /* Adjust for medium screens */
@@ -47,6 +47,7 @@ border-right: 1px solid black;
 `;
 
 const TitleContainer = styled.div`
+  color:#000;
   flex: 1;
   text-align: center;
   font-size: 18px;
@@ -65,23 +66,26 @@ const TitleContainer = styled.div`
 `;
 
 const ReportDetails = styled.div`
+color:#000;
 height:100%;
 padding:16px;
   border-left: 1px solid black;
   display: flex;
   justify-content: center;
-  align-items: center;
-  text-align: center;
+  align-items: baseline;
+  text-align: text-start;
   flex-direction: column; 
 `;
 
 const Table = styled.table`
+color:#000;
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
 `;
 
 const TableCell = styled.td`
+color:#000;
   border: 1px solid black;
   padding-left:5px;
   text-align: left;
@@ -96,7 +100,8 @@ const TableCell = styled.td`
 
 const HeaderCell = styled(TableCell)`
 padding-left:5px;
-  background: rgb(216, 216, 216);
+  background: #D8D8D8;
+  color:#000;
   font-weight: bold;
   max-width: 50%; /* Set maximum width to 50% */
   overflow: hidden; /* Hide overflow content */
@@ -107,6 +112,7 @@ padding-left:5px;
 const Title = styled.p`
   margin: 0;
   font-size: 15px;
+  color:'#000';
   font-family: "Carlito", sans-serif;
   font-weight: bold;
   margin-top: 0;
@@ -143,35 +149,942 @@ const PreviewReport = () => {
   const location = useLocation();
   const Datas = location.state;
   const data = Datas.data;
+
   var reporttype: any;
   var submissionID: any;
   var formId: any;
+  var selectedSection: any;
+
   try {
     reporttype = Datas.reporttype;
     submissionID = Datas.submissionID;
     formId = Datas.formId;
+    selectedSection = Datas.selectedSection;
   } catch (e) {
     reporttype = "IPQC";
     submissionID = 0;
     formId = 1;
+    selectedSection = { section: 'Report Details', section_id: 1, section_type: 'inputField' };
   }
 
   const handleBackButton = () => {
     console.log("back button pressed!");
-    navigate('/reports/running_report/1', { state: { formId:formId,reporttype: reporttype, submissionID: submissionID } });
+    navigate('/reports/running_report/1', { state: { formId: formId, reporttype: reporttype, submissionID: submissionID, selectedSection: selectedSection } });
   };
 
   var utoken = localStorage.getItem('userToken');
-  const [isLoaded, setLoaded] = useState(false);
-  var [reportData, setReportdata] = useState([]);
+  const [isLoaded, setLoaded] = useState<any>(false);
+  var [reportData, setReportdata] = useState<any>([]);
+  var [lastsection, setLastsection] = useState<any>({});
 
   useEffect(() => {
+    console.log("reportData", reportData);
     setLoaded(true);
     listsectiondatas();
-  }, []);
+  }, [data]);
+
+
+  const Header = ({ reportData, isClick }) => {
+    console.log("reportData, isClick", reportData, isClick);
+    return (
+      !reportData ? <></> :
+        <HeaderRow
+          id="pdfheader"
+          className="pdf-header"
+          style={{
+            marginTop: "10px",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            textAlign: "center",
+            width: "100%",
+            height: "80px"
+          }}
+        >
+          <LogoContainer
+            style={{
+              flex: 1,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              height: "80px"
+            }}
+          >
+            <img src={pdflogo} alt="PDF Logo" style={{ width: '180px', height: "80px" }} />
+          </LogoContainer>
+
+          <TitleContainer
+            style={{
+              flex: 1,
+              display: "flex",
+              alignItems: "center",
+              height: "80px"
+            }}
+          >
+            <strong className={isClick ? "pdf-span" : ""}>
+              In Process Inspection Daily Report
+            </strong>
+          </TitleContainer>
+
+          <ReportDetails
+            style={{
+              flex: 1,
+              display: "flex",
+              alignItems: "baseline",
+              justifyContent: "center",
+              height: "80px",
+              flexDirection: "column", // Ensures proper stacking of text
+            }}
+          >
+            <div className={isClick ? "pdf-span" : ""}>
+              Report Date:{" "}
+              {moment(
+                reportData[0].value.find((item) => item.param_name === "Date")?.value
+              ).format("DD-MM-YYYY")}
+            </div>
+            <div>
+              Report No:{" "}
+              {reportData[0].value.find((item) => item.param_name === "Report No")
+                ?.value}
+            </div>
+          </ReportDetails>
+        </HeaderRow>
+
+    );
+  };
+
+  const Footer = ({ reportData, isClick }) => {
+    return (
+      !reportData ? <></> :
+        <div id="pdffooter" style={{ width: '100%' }}>
+          <Table style={{ width: '100%' }}>
+            <tbody>
+              <tr style={{ margin: 0, padding: 0 }}>
+                <TableCell style={{ width: '33.33%' }}>
+                  <span className="pdf-span">Format No: JSR/SI</span>
+                </TableCell>
+                <TableCell style={{ width: '33.33%' }}>
+                  <span className="pdf-span">Rev Date and No: 00</span>
+                </TableCell>
+                <TableCell style={{ width: '33.33%' }}>
+                  <span className="pdf-span">Compiled By: Sanket Thakkar</span>
+                </TableCell>
+              </tr>
+            </tbody>
+          </Table>
+        </div>
+    );
+  };
+
+  const ReportDetailsSection = ({ reportData, isClick }) => {
+    return (
+      <div className="content" id="ReportDetailsSection">
+        <p className={isClick ? "pdf-span " : ""} style={{ fontWeight: 'bold', fontSize: 16, color: '#000' }}>Report Details –</p>
+        <Table>
+          <tbody>
+            {reportData[0].value.map((item: any, index: any) => {
+              // Skip "Shift" as it's being merged with "Date"
+              if (item.param_name === "Shift") return null;
+
+              // Find the "Shift" value
+              const shiftItem = reportData[0].value.find((i: any) => i.param_name === "Shift");
+
+              // Check if the index is even to start a new row
+              if (index % 2 === 0) {
+                return (
+                  <tr key={index}>
+                    {/* Special case for Date - Merge with Shift */}
+                    {item.param_name === "Date" ? (
+                      <>
+                        <HeaderCell style={{ width: '25%' }}>
+                          <span>Date / Shift</span>
+                        </HeaderCell>
+                        <TableCell style={{ width: '25%' }}>
+                          <span>{moment(item.value).format("DD-MM-YYYY")} / {shiftItem ? shiftItem.value : ''}</span>
+                        </TableCell>
+                      </>
+                    ) : (
+                      <>
+                        <HeaderCell style={{ width: '25%' }}>
+                          <span>{item.param_name}</span>
+                        </HeaderCell>
+                        <TableCell style={{ width: '25%' }}>
+                          <span>{item.value}</span>
+                        </TableCell>
+                      </>
+                    )}
+
+                    {/* Check for next item and ensure it's not "Shift" or "Report No" */}
+                    {reportData[0].value[index + 1] && reportData[0].value[index + 1].param_name !== "Shift" && reportData[0].value[index + 1].param_name !== "Report No" && (
+                      <>
+                        <HeaderCell style={{ width: '25%' }}>
+                          <span>{reportData[0].value[index + 1].param_name}</span>
+                        </HeaderCell>
+                        <TableCell style={{ width: '25%' }}>
+                          <span>{reportData[0].value[index + 1].value}</span>
+                        </TableCell>
+                      </>
+                    )}
+                  </tr>
+                );
+              }
+              return null;
+            })}
+
+          </tbody>
+        </Table>
+      </div>
+    );
+  };
+
+  const ProductStageWise = ({ reportData, isClick }) => {
+    return (
+      <div className="content" id="ProductStageWise">
+        <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Production Stage Wise -</p>
+        <Table>
+          <tbody style={{ margin: 0, padding: 0 }}>
+            {reportData[1].value.map((item: any, index: any) => (
+              <tr key={index}>
+                <HeaderCell style={{ width: "50%" }}><span>{item.param_name}</span></HeaderCell>
+                <TableCell><span>{item.value}</span></TableCell>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
+    );
+  };
+
+  const MajorObservations = ({ reportData, isClick, value1, value2 }) => {
+    return (
+      reportData[2].value.slice(value1, value2).length <= 0 ? "" :
+        <div className="content" id={"MajorObservations" + value2}>
+          {value1 == 0 ? <Title className={isClick ? "pdf-span" : ""} style={{ color: '#000' }}>Major Observations of the Day –</Title> : ""}
+          <Table>
+            <tbody className="srno" style={{ margin: 0, padding: 0 }}>
+              <tr style={{ margin: 0, padding: 0 }}>
+                <HeaderCell style={{ textAlign: 'center', width: '5%' }}>
+                  <span>Sr No</span>
+                </HeaderCell>
+                <HeaderCell colSpan={2}>
+                  <span>Observations / Deficiency Details</span>
+                </HeaderCell>
+              </tr>
+              {reportData[2].value.slice(value1, value2).map((observation: any, index: any) => (
+                <>
+                  {/* Row for Observation Text */}
+                  <tr className="avoid-break">
+                    <TableCell style={{ textAlign: 'center' }} rowSpan={Math.ceil(observation.images.length / 2) + 1}>
+                      <span>{index + (value1 + 1)}</span> {/* Adjust index to match the skipped first item */}
+                    </TableCell>
+                    {observation.observations_text ? (
+                      <TableCell colSpan={2}>
+                        <span>{observation.observations_text}</span>
+                      </TableCell>
+                    ) : (
+                      ""
+                    )}
+                  </tr>
+
+                  {/* Rows for Images */}
+                  {observation.images
+                    .reduce((rows: any[], image: any, idx: number) => {
+                      if (idx % 2 === 0) rows.push([]);
+                      rows[rows.length - 1].push(image);
+                      return rows;
+                    }, [])
+                    .map((rowImages: any[], rowIndex: number) => (
+                      <tr key={rowIndex} id="avoid-break">
+                        {rowImages.map((image: any, imgIdx: number) => (
+                          <TableCell
+                            key={imgIdx}
+                            style={{
+                              textAlign: "center",
+                              width: rowImages.length % 2 === 0 ? "45%" : "93%",
+                            }}
+                          >
+                            <img
+                              src={`${imgUrl}${image.image}`}
+                              alt="PDF Sub"
+                              style={{
+                                padding: 5,
+                                height: 250,
+                                width: rowImages.length % 2 === 0 ? "100%" : "45%",
+                              }}
+                            />
+                          </TableCell>
+                        ))}
+                        {/* Fill empty cell if only one image in row */}
+                        {rowImages.length === 1 && ""}
+                      </tr>
+                    ))}
+                </>
+              ))}
+
+            </tbody>
+          </Table>
+        </div>
+    );
+  };
+
+  const FilmCutting = ({ reportData, isClick }) => {
+    return (
+      <div className="content" id="FilmCutting">
+        <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', fontSize: 16, color: '#000' }}>In Process Inspection Report –</p>
+        <br />
+        <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Process – Film Cutting</p>
+        <Table>
+          <tbody style={{ margin: 0, padding: 0 }}>
+            <tr>
+              <HeaderCell><span>Parameters</span></HeaderCell>
+              {/* Dynamically render round columns based on data */}
+              {Object.keys(reportData[3].value[0].value).map((round, index) => {
+                // Check if any row has data for this round
+                const hasData = reportData[3].value.some(item => item.value[round] !== "");
+                if (hasData) {
+                  return (
+                    <TableCell style={{ background: "#D8D8D8", fontWeight: 'bold' }} key={index}><span>{`Round ${index + 1}`}</span></TableCell>
+                  );
+                }
+                return null; // Skip rendering if no data for this round
+              })}
+            </tr>
+            {reportData[3].value.map((item, index) => (
+              <tr key={index}>
+                <HeaderCell style={{ width: '40%' }}><span>{item.param_name}</span></HeaderCell>
+                {Object.keys(item.value).map((round, idx) => {
+                  // Check if this round has data
+                  if (item.value[round] !== "") {
+                    return (
+                      <TableCell key={idx}><span>{item.value[round]}</span></TableCell>
+                    );
+                  }
+                  return null; // Skip rendering if no data for this round
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
+    );
+  };
+
+  const FilmCuttingobservations = ({ reportData, isClick }) => {
+    return (
+      reportData[3].observations.length <= 0 ? "" :
+        <div className="content" id="FilmCuttingobservations">
+          <Table>
+            <tbody className="srno" style={{ margin: 0, padding: 0 }}>
+              <tr style={{ margin: 0, padding: 0 }}>
+                <HeaderCell style={{ textAlign: 'center', width: '5%' }}>
+                  <span>Sr No</span>
+                </HeaderCell>
+                <HeaderCell colSpan={2}>
+                  <span>Observations / Deficiency Details</span>
+                </HeaderCell>
+              </tr>
+
+              {reportData[3].observations.map((observation: any, index: any) => (
+                <>
+                  {/* Row for Observation Text */}
+                  <tr className="content">
+                    <TableCell style={{ textAlign: 'center' }} rowSpan={Math.ceil(observation.images.length / 2) + 1}>
+                      <span>{index + 1}</span>
+                    </TableCell>
+                    {observation.observations_text ? <TableCell colSpan={2}>
+                      <span>{observation.observations_text}</span>
+                    </TableCell> : ""}
+                  </tr>
+
+                  {/* Rows for Images */}
+                  {observation.images.reduce((rows: any[], image: any, idx: number) => {
+                    if (idx % 2 === 0) rows.push([]);
+                    rows[rows.length - 1].push(image);
+                    return rows;
+                  }, []).map((rowImages: any[], rowIndex: number) => (
+                    <tr key={rowIndex}>
+                      {rowImages.map((image: any, imgIdx: number) => (
+                        <TableCell key={imgIdx} style={{ textAlign: 'center', width: rowImages.length % 2 === 0 ? "45%" : "93%" }}>
+                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{ padding: 5, height: 250, width: rowImages.length % 2 === 0 ? '100%' : "45%" }} />
+                        </TableCell>
+                      ))}
+                      {/* Fill empty cell if only one image in row */}
+                      {rowImages.length === 1 && ""}
+                    </tr>
+                  ))}
+                </>
+              ))}
+            </tbody>
+          </Table>
+        </div>
+    );
+  };
+
+  const TabberAndStringer = ({ reportData, isClick }) => {
+    return (
+      <div className="content">
+        <div className="content" id="TabberAndStringer">
+          <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Process – Tabber & Stringer</p>
+          <Table>
+            <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
+              <tr>
+                <th style={{ background: "#D8D8D8", border: '1px solid black', padding: '5px' }}><span>Parameters</span></th>
+                {/* Dynamically render round columns based on data */}
+                {Object.keys(reportData[4].value[0].value).map((round, index) => {
+                  // Check if any row has data for this round
+                  const hasData = reportData[4].value.some(item => item.value[round] !== "");
+                  if (hasData) {
+                    return (
+                      <th key={index} style={{ background: "#D8D8D8", border: '1px solid black', padding: '5px' }}>
+                        <span>{`Round ${index + 1}`}</span>
+                      </th>
+                    );
+                  }
+                  return null; // Skip rendering if no data for this round
+                })}
+              </tr>
+              {reportData[4].value.map((row, rowIndex) => (
+                <tr key={rowIndex}>
+                  <td style={{ width: '40%', background: "#D8D8D8", border: '1px solid black', padding: '5px', fontWeight: 'bold' }}><span>{row.param_name}</span></td>
+                  {Object.keys(row.value).map((round, index) => {
+                    // Check if this round has data
+                    if (row.value[round] !== "") {
+                      return (
+                        <td key={index} style={{ border: '1px solid black', padding: '5px' }}>
+                          <span>{row.value[round]}</span>
+                        </td>
+                      );
+                    }
+                    return null; // Skip rendering if no data for this round
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
+      </div>
+    );
+  };
+
+  const TabberAndStringerObservations = ({ reportData, isClick }) => {
+    return (
+      reportData[4].observations.length <= 0 ? "" :
+        <div className="content" id="TabberAndStringerObservations">
+          <Table>
+            <tbody className="srno" style={{ margin: 0, padding: 0 }}>
+              <tr style={{ margin: 0, padding: 0 }}>
+                <HeaderCell style={{ textAlign: 'center', width: '5%' }}>
+                  <span>Sr No</span>
+                </HeaderCell>
+                <HeaderCell colSpan={2}>
+                  <span>Observations / Deficiency Details</span>
+                </HeaderCell>
+              </tr>
+
+              {reportData[4].observations.map((observation: any, index: any) => (
+                <>
+                  {/* Row for Observation Text */}
+                  <tr>
+                    <TableCell style={{ textAlign: 'center' }} rowSpan={Math.ceil(observation.images.length / 2) + 1}>
+                      <span>{index + 1}</span>
+                    </TableCell>
+                    {observation.observations_text ? <TableCell colSpan={2}>
+                      <span>{observation.observations_text}</span>
+                    </TableCell> : ""}
+                  </tr>
+
+                  {/* Rows for Images */}
+                  {observation.images.reduce((rows: any[], image: any, idx: number) => {
+                    if (idx % 2 === 0) rows.push([]);
+                    rows[rows.length - 1].push(image);
+                    return rows;
+                  }, []).map((rowImages: any[], rowIndex: number) => (
+                    <tr key={rowIndex}>
+                      {rowImages.map((image: any, imgIdx: number) => (
+                        <TableCell key={imgIdx} style={{
+                          textAlign: 'center',
+                          width: rowImages.length % 2 === 0 ? "45%" : "93%"
+                        }}>
+                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{ padding: 5, height: 250, width: rowImages.length % 2 === 0 ? '100%' : "45%" }} />
+                        </TableCell>
+                      ))}
+                      {/* Fill empty cell if only one image in row */}
+                      {rowImages.length === 1 && ""}
+                    </tr>
+                  ))}
+                </>
+              ))}
+            </tbody>
+          </Table>
+        </div>
+    );
+  };
+
+  const Layup = ({ reportData, isClick }) => {
+    return (
+      <div className="content" id="Layup">
+        <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Process – Layup</p>
+        <Table>
+          <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
+            <tr>
+              <th style={{ background: "#D8D8D8", border: '1px solid black', padding: '5px' }}><span>Parameters</span></th>
+              {/* Dynamically render round columns based on data */}
+              {Object.keys(reportData[5].value[0].value).map((round, index) => {
+                // Check if any row has data for this round
+                const hasData = reportData[5].value.some(item => item.value[round] !== "");
+                if (hasData) {
+                  return (
+                    <th key={index} style={{ background: "#D8D8D8", border: '1px solid black', padding: '5px' }}>
+                      <span>{`Round ${index + 1}`}</span>
+                    </th>
+                  );
+                }
+                return null; // Skip rendering if no data for this round
+              })}
+            </tr>
+            {reportData[5].value.map((row, rowIndex) => (
+              <tr key={rowIndex}>
+                <td style={{ fontWeight: 'bold', width: '40%', background: "#D8D8D8", border: '1px solid black', padding: '5px' }}><span>{row.param_name}</span></td>
+                {Object.keys(row.value).map((round, index) => {
+                  // Check if this round has data
+                  if (row.value[round] !== "") {
+                    return (
+                      <td key={index} style={{ border: '1px solid black', padding: '5px' }}>
+                        <span>{row.value[round]}</span>
+                      </td>
+                    );
+                  }
+                  return null; // Skip rendering if no data for this round
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
+    );
+  };
+
+  const LayupObservations = ({ reportData, isClick }) => {
+    return (
+      reportData[5].observations.length <= 0 ? "" :
+        <div className="content" id="LayupObservations">
+          <Table>
+            <tbody className="srno" style={{ margin: 0, padding: 0 }}>
+              <tr style={{ margin: 0, padding: 0 }}>
+                <HeaderCell style={{ textAlign: 'center', width: '5%' }}>
+                  <span>Sr No</span>
+                </HeaderCell>
+                <HeaderCell colSpan={2}>
+                  <span>Observations / Deficiency Details</span>
+                </HeaderCell>
+              </tr>
+
+              {reportData[5].observations.map((observation: any, index: any) => (
+                <>
+                  {/* Row for Observation Text */}
+                  <tr>
+                    <TableCell style={{ textAlign: 'center' }} rowSpan={Math.ceil(observation.images.length / 2) + 1}>
+                      <span>{index + 1}</span>
+                    </TableCell>
+                    {observation.observations_text ? <TableCell colSpan={2}>
+                      <span>{observation.observations_text}</span>
+                    </TableCell> : ""}
+                  </tr>
+
+                  {/* Rows for Images */}
+                  {observation.images.reduce((rows: any[], image: any, idx: number) => {
+                    if (idx % 2 === 0) rows.push([]);
+                    rows[rows.length - 1].push(image);
+                    return rows;
+                  }, []).map((rowImages: any[], rowIndex: number) => (
+                    <tr key={rowIndex}>
+                      {rowImages.map((image: any, imgIdx: number) => (
+                        <TableCell key={imgIdx} style={{ textAlign: 'center', width: rowImages.length % 2 === 0 ? "45%" : "93%" }}>
+                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{ padding: 5, height: 250, width: rowImages.length % 2 === 0 ? '100%' : "45%" }} />
+                        </TableCell>
+                      ))}
+                      {/* Fill empty cell if only one image in row */}
+                      {rowImages.length === 1 && ""}
+                    </tr>
+                  ))}
+                </>
+              ))}
+            </tbody>
+          </Table>
+        </div>
+    );
+  };
+
+  const Lamination = ({ reportData, isClick }) => {
+    return (
+      <div className="content" id="Lamination">
+        <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Process – Lamination</p>
+        <Table>
+          <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
+            <tr>
+              <th style={{ background: "#D8D8D8", border: '1px solid black', padding: '5px' }}><span>Parameters</span></th>
+              {/* Dynamically render round columns based on data */}
+              {Object.keys(reportData[6].value[0].value).map((round, index) => {
+                // Check if any row has data for this round
+                const hasData = reportData[6].value.some(item => item.value[round] !== "");
+                if (hasData) {
+                  return (
+                    <th key={index} style={{ background: "#D8D8D8", border: '1px solid black', padding: '5px' }}>
+                      <span>{`Round ${index + 1}`}</span>
+                    </th>
+                  );
+                }
+                return null; // Skip rendering if no data for this round
+              })}
+            </tr>
+            {reportData[6].value.map((row, rowIndex) => (
+              <tr key={rowIndex}>
+                <td style={{ fontWeight: 'bold', width: '40%', background: "#D8D8D8", border: '1px solid black', padding: '5px' }}><span>{row.param_name}</span></td>
+                {Object.keys(row.value).map((round, index) => {
+                  // Check if this round has data
+                  if (row.value[round] !== "") {
+                    return (
+                      <td key={index} style={{ border: '1px solid black', padding: '5px' }}>
+                        <span>{row.value[round]}</span>
+                      </td>
+                    );
+                  }
+                  return null; // Skip rendering if no data for this round
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
+    );
+  };
+
+  const LaminationObservations = ({ reportData, isClick }) => {
+    return (
+      reportData[6].observations.length <= 0 ? "" :
+        <div className="content" id="LaminationObservations">
+          <Table>
+            <tbody className="srno" style={{ margin: 0, padding: 0 }}>
+              <tr style={{ margin: 0, padding: 0 }}>
+                <HeaderCell style={{ textAlign: 'center', width: '5%' }}>
+                  <span>Sr No</span>
+                </HeaderCell>
+                <HeaderCell colSpan={2}>
+                  <span>Observations / Deficiency Details</span>
+                </HeaderCell>
+              </tr>
+
+              {reportData[6].observations.map((observation: any, index: any) => (
+                <>
+                  {/* Row for Observation Text */}
+                  <tr>
+                    <TableCell style={{ textAlign: 'center' }} rowSpan={Math.ceil(observation.images.length / 2) + 1}>
+                      <span>{index + 1}</span>
+                    </TableCell>
+                    {observation.observations_text ? <TableCell colSpan={2}>
+                      <span>{observation.observations_text}</span>
+                    </TableCell> : ""}
+                  </tr>
+
+                  {/* Rows for Images */}
+                  {observation.images.reduce((rows: any[], image: any, idx: number) => {
+                    if (idx % 2 === 0) rows.push([]);
+                    rows[rows.length - 1].push(image);
+                    return rows;
+                  }, []).map((rowImages: any[], rowIndex: number) => (
+                    <tr key={rowIndex}>
+                      {rowImages.map((image: any, imgIdx: number) => (
+                        <TableCell key={imgIdx} style={{ textAlign: 'center', width: rowImages.length % 2 === 0 ? "45%" : "90%" }}>
+                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{ padding: 5, height: 250, width: rowImages.length % 2 === 0 ? '100%' : "45%" }} />
+                        </TableCell>
+                      ))}
+                      {/* Fill empty cell if only one image in row */}
+                      {rowImages.length === 1 && ""}
+                    </tr>
+                  ))}
+                </>
+              ))}
+            </tbody>
+          </Table>
+        </div>
+    );
+  };
+
+  const Framing = ({ reportData, isClick }) => {
+    return (
+      <div className="content" id="Framing">
+        <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Process – Framing</p>
+        <Table>
+          <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
+            <tr>
+              <th style={{ background: "#D8D8D8", border: '1px solid black', padding: '5px' }}><span>Parameters</span></th>
+              {/* Dynamically render round columns based on data */}
+              {Object.keys(reportData[7].value[0].value).map((round, index) => {
+                // Check if any row has data for this round
+                const hasData = reportData[7].value.some(item => item.value[round] !== "");
+                if (hasData) {
+                  return (
+                    <th key={index} style={{ background: "#D8D8D8", border: '1px solid black', padding: '5px' }}>
+                      <span>{`Round ${index + 1}`}</span>
+                    </th>
+                  );
+                }
+                return null; // Skip rendering if no data for this round
+              })}
+            </tr>
+            {reportData[7].value.map((row, rowIndex) => (
+              <tr key={rowIndex}>
+                <td style={{ fontWeight: 'bold', width: '40%', background: "#D8D8D8", border: '1px solid black', padding: '5px' }}><span>{row.param_name}</span></td>
+                {Object.keys(row.value).map((round, index) => {
+                  // Check if this round has data
+                  if (row.value[round] !== "") {
+                    return (
+                      <td key={index} style={{ border: '1px solid black', padding: '5px' }}>
+                        <span>{row.value[round]}</span>
+                      </td>
+                    );
+                  }
+                  return null; // Skip rendering if no data for this round
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
+    );
+  };
+
+  const FramingObservation = ({ reportData, isClick }) => {
+    return (
+      reportData[7].observations.length <= 0 ? "" :
+        <div className="content" id="FramingObservation">
+          <Table>
+            <tbody className="srno" style={{ margin: 0, padding: 0 }}>
+              <tr style={{ margin: 0, padding: 0 }}>
+                <HeaderCell style={{ textAlign: 'center', width: '5%' }}>
+                  <span>Sr No</span>
+                </HeaderCell>
+                <HeaderCell colSpan={2}>
+                  <span>Observations / Deficiency Details</span>
+                </HeaderCell>
+              </tr>
+
+              {reportData[7].observations.map((observation: any, index: any) => (
+                <>
+                  {/* Row for Observation Text */}
+                  <tr>
+                    <TableCell style={{ textAlign: 'center' }} rowSpan={Math.ceil(observation.images.length / 2) + 1}>
+                      <span>{index + 1}</span>
+                    </TableCell>
+                    {observation.observations_text ? <TableCell colSpan={2}>
+                      <span>{observation.observations_text}</span>
+                    </TableCell> : ""}
+                  </tr>
+
+                  {/* Rows for Images */}
+                  {observation.images.reduce((rows: any[], image: any, idx: number) => {
+                    if (idx % 2 === 0) rows.push([]);
+                    rows[rows.length - 1].push(image);
+                    return rows;
+                  }, []).map((rowImages: any[], rowIndex: number) => (
+                    <tr key={rowIndex}>
+                      {rowImages.map((image: any, imgIdx: number) => (
+                        <TableCell key={imgIdx} style={{ textAlign: 'center', width: rowImages.length % 2 === 0 ? "45%" : "93%" }}>
+                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{ padding: 5, height: 250, width: rowImages.length % 2 === 0 ? '100%' : "45%" }} />
+                        </TableCell>
+                      ))}
+                      {/* Fill empty cell if only one image in row */}
+                      {rowImages.length === 1 && ""}
+                    </tr>
+                  ))}
+                </>
+              ))}
+            </tbody>
+          </Table>
+        </div>
+    );
+  };
+
+  const FlasherTesting = ({ reportData, isClick }) => {
+    return (
+      <div className="content" id="FlasherTesting">
+        <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Process – Flasher Testing</p>
+        <Table>
+          <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
+            <tr>
+              <th style={{ background: "#D8D8D8", border: '1px solid black', padding: '5px' }}><span>Parameters</span></th>
+              {/* Dynamically render round columns based on data */}
+              {Object.keys(reportData[8].value[0].value).map((round, index) => {
+                // Check if any row has data for this round
+                const hasData = reportData[8].value.some(item => item.value[round] !== "");
+                if (hasData) {
+                  return (
+                    <th key={index} style={{ background: "#D8D8D8", border: '1px solid black', padding: '5px' }}>
+                      <span>{`Round ${index + 1}`}</span>
+                    </th>
+                  );
+                }
+                return null; // Skip rendering if no data for this round
+              })}
+            </tr>
+            {reportData[8].value.map((row, rowIndex) => (
+              <tr key={rowIndex}>
+                <td style={{ fontWeight: 'bold', width: '40%', background: "#D8D8D8", border: '1px solid black', padding: '5px' }}><span>{row.param_name}</span></td>
+                {Object.keys(row.value).map((round, index) => {
+                  // Check if this round has data
+                  if (row.value[round] !== "") {
+                    return (
+                      <td key={index} style={{ border: '1px solid black', padding: '5px' }}>
+                        <span>{row.value[round]}</span>
+                      </td>
+                    );
+                  }
+                  return null; // Skip rendering if no data for this round
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
+    );
+  };
+
+  const FlasherTestingObservations = ({ reportData, isClick }) => {
+    return (
+      reportData[8].observations.length <= 0 ? "" :
+        <div className="content" id="FlasherTestingObservations">
+          <Table>
+            <tbody className="srno" style={{ margin: 0, padding: 0 }}>
+              <tr style={{ margin: 0, padding: 0 }}>
+                <HeaderCell style={{ textAlign: 'center', width: '5%' }}>
+                  <span>Sr No</span>
+                </HeaderCell>
+                <HeaderCell colSpan={2}>
+                  <span>Observations / Deficiency Details</span>
+                </HeaderCell>
+              </tr>
+
+              {reportData[8].observations.map((observation: any, index: any) => (
+                <>
+                  {/* Row for Observation Text */}
+                  <tr>
+                    <TableCell style={{ textAlign: 'center' }} rowSpan={Math.ceil(observation.images.length / 2) + 1}>
+                      <span>{index + 1}</span>
+                    </TableCell>
+                    {observation.observations_text ? <TableCell colSpan={2}>
+                      <span>{observation.observations_text}</span>
+                    </TableCell> : ""}
+                  </tr>
+
+                  {/* Rows for Images */}
+                  {observation.images.reduce((rows: any[], image: any, idx: number) => {
+                    if (idx % 2 === 0) rows.push([]);
+                    rows[rows.length - 1].push(image);
+                    return rows;
+                  }, []).map((rowImages: any[], rowIndex: number) => (
+                    <tr key={rowIndex}>
+                      {rowImages.map((image: any, imgIdx: number) => (
+                        <TableCell key={imgIdx} style={{ textAlign: 'center', width: rowImages.length % 2 === 0 ? "45%" : "93%" }}>
+                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{ padding: 5, height: 250, width: rowImages.length % 2 === 0 ? '100%' : "45%" }} />
+                        </TableCell>
+                      ))}
+                      {/* Fill empty cell if only one image in row */}
+                      {rowImages.length === 1 && ""}
+                    </tr>
+                  ))}
+                </>
+              ))}
+            </tbody>
+          </Table>
+        </div>
+    );
+  };
+
+  const RandomSampleCheck = ({ reportData, isClick }) => {
+    return (
+      <div className="content" id="RandomSampleCheck">
+        <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Random Sample Check</p>
+        <Table>
+          <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
+            <tr style={{ background: "#D8D8D8" }}>
+              <th className="srno" style={{ border: '1px solid black', padding: '5px', width: '5%' }}><span>Sr No</span></th>
+              <th style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold' }}><span>Test</span></th>
+              <th style={{ border: '1px solid black', padding: '5px' }}><span>Module Sr. No.</span></th>
+              <th style={{ border: '1px solid black', padding: '5px' }}><span>Results</span></th>
+            </tr>
+            {reportData[9].value.map((item, index) => (
+              <tr key={index}>
+                <td className="srno" style={{ border: '1px solid black', padding: '5px' }}><span>{index + 1}</span></td>
+                <td style={{ border: '1px solid black', padding: '5px', fontWeight: 'bold' }}><span>{item.test}</span></td>
+                <td style={{ border: '1px solid black', padding: '5px' }}><span>{item.module_sr_no}</span></td>
+                <td style={{ border: '1px solid black', padding: '5px' }}><span>{item.result}</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
+    );
+  };
+
+  const RandomSampleCheckObservations = ({ reportData, isClick }) => {
+    return (
+      reportData[9].observations.length <= 0 ? "" :
+        <div className="content" id="RandomSampleCheckObservations">
+          <Table>
+            <tbody className="srno" style={{ margin: 0, padding: 0 }}>
+              <tr style={{ margin: 0, padding: 0 }}>
+                <HeaderCell style={{ textAlign: 'center', width: '5%' }}>
+                  <span>Sr No</span>
+                </HeaderCell>
+                <HeaderCell colSpan={2}>
+                  <span>Observations / Deficiency Details</span>
+                </HeaderCell>
+              </tr>
+
+              {reportData[9].observations.map((observation: any, index: any) => (
+                <>
+                  {/* Row for Observation Text */}
+                  <tr>
+                    <TableCell style={{ textAlign: 'center' }} rowSpan={Math.ceil(observation.images.length / 2) + 1}>
+                      <span>{index + 1}</span>
+                    </TableCell>
+                    {observation.observations_text ? <TableCell colSpan={2}>
+                      <span>{observation.observations_text}</span>
+                    </TableCell> : ""}
+                  </tr>
+
+                  {/* Rows for Images */}
+                  {observation.images.reduce((rows: any[], image: any, idx: number) => {
+                    if (idx % 2 === 0) rows.push([]);
+                    rows[rows.length - 1].push(image);
+                    return rows;
+                  }, []).map((rowImages: any[], rowIndex: number) => (
+                    <tr key={rowIndex}>
+                      {rowImages.map((image: any, imgIdx: number) => (
+                        <TableCell key={imgIdx} style={{ textAlign: 'center', width: rowImages.length % 2 === 0 ? "45%" : "93%" }}>
+                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{ padding: 5, height: 250, width: rowImages.length % 2 === 0 ? '100%' : "45%" }} />
+                        </TableCell>
+                      ))}
+                      {/* Fill empty cell if only one image in row */}
+                      {rowImages.length === 1 && ""}
+                    </tr>
+                  ))}
+                </>
+              ))}
+            </tbody>
+          </Table>
+        </div>
+    );
+  };
 
   // Function to fetch sections
   const listsectiondatas = async () => {
+
+    console.log("data ->>", {
+      form_id: formId,
+      report_type: reporttype,
+      submission_id: submissionID
+    });
 
     const params = new URLSearchParams({
       form_id: formId,
@@ -196,6 +1109,7 @@ const PreviewReport = () => {
       } else if (data.Status === 1) {
         console.log(data.info);
         setReportdata(data.info || []);
+        setLastsection(data.submission[0]);
         setLoaded(false);
       }
     } catch (error) {
@@ -208,63 +1122,146 @@ const PreviewReport = () => {
 
   const generatePDF = async () => {
     setIsclick(true);
-    const input = document.getElementById('report') as HTMLElement;
 
-    // Apply styles to all spans within tables
-    const spans = document.querySelectorAll('table span');
-    spans.forEach((text) => {
-      text.classList.add('pdf-span'); // Add the class
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // Allow DOM updates
+
+    const input = document.getElementById("report");
+    const header = document.getElementById("pdfheader");
+    const footer = document.getElementById("pdffooter");
+
+    if (!input || !header || !footer) {
+      console.error("Missing required sections for PDF generation.");
+      setIsclick(false);
+      return;
+    }
+
+    const sections = [
+      "ReportDetailsSection",
+      "ProductStageWise",
+      "MajorObservations",
+      "MajorObservations1",
+      "MajorObservations2",
+      "MajorObservations3",
+      "MajorObservations4",
+      "MajorObservations5",
+      "MajorObservations6",
+      "MajorObservations7",
+      "MajorObservations8",
+      "MajorObservations9",
+      "FilmCutting",
+      "FilmCuttingobservations",
+      "TabberAndStringer",
+      "TabberAndStringerObservations",
+      "Layup",
+      "LayupObservations",
+      "Lamination",
+      "LaminationObservations",
+      "Framing",
+      "FramingObservation",
+      "FlasherTesting",
+      "FlasherTestingObservations",
+      "RandomSampleCheck",
+      "RandomSampleCheckObservations",
+      "report_completed"
+    ];
+
+    const spans = document.querySelectorAll("table span");
+    spans.forEach((text) => text.classList.add("pdf-span"));
+
+    const pdf = new jsPDF({
+      orientation: "p",
+      unit: "mm",
+      format: "a4",
+      compress: true // Enable PDF compression
     });
 
-    if (input) {
-      const options = {
-        filename: 'inspection_report.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-          scale: 2, // Improves quality
-          useCORS: true, // Fix cross-origin issues for images
-          scrollX: 0, scrollY: 0,  // Avoid scroll offsets
-        },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    const pageHeight = 297;
+    const margin = 10;
+    const headerHeight = 20;
+    const footerHeight = 10;
+    const pageNumberOffset = 10;
+    let yOffset = margin + headerHeight + 5;
+    let pageNumber = 1;
+    let totalPages = 1; // Placeholder for total pages
+
+    const convertToImage = async (element) => {
+      return html2canvas(element, {
+        scale: 1, useCORS: true, logging: false,
+        allowTaint: true,
+      })
+        .then((canvas) => canvas.toDataURL("image/png", 0.8))
+        .catch((error) => {
+          console.error("Error capturing element:", element.id, error);
+          return null;
+        });
+    };
+
+    try {
+      const headerImage = await convertToImage(header);
+      const footerImage = await convertToImage(footer);
+
+      if (!headerImage || !footerImage) {
+        throw new Error("Header/Footer image conversion failed.");
+      }
+
+      const addFooter = (currentPage, totalPages) => {
+        const paddingTop = 2;
+        pdf.addImage(footerImage, "PNG", margin, pageHeight - footerHeight - margin - pageNumberOffset, 190, footerHeight + paddingTop);
+        pdf.setFontSize(10);
+        pdf.text(`Page No: ${currentPage} / ${totalPages}`, 160, pageHeight - margin - 5);
       };
 
-      // Wait for all images to load
-      const images = input.getElementsByTagName('img');
-      const imagePromises = Array.from(images).map((img) => {
-        if (img.complete) {
-          return Promise.resolve();
-        } else {
-          return new Promise((resolve, reject) => {
-            img.onload = resolve;
-            img.onerror = reject;
-          });
+      pdf.addImage(headerImage, "PNG", margin, margin, 190, headerHeight);
+
+      let pageIndexes = [];
+
+      for (const sectionId of sections) {
+        const section = document.getElementById(sectionId);
+        if (!section) {
+          console.warn(`Skipping missing section: ${sectionId}`);
+          continue;
         }
-      });
 
-      try {
-        // Wait for all images to load
-        await Promise.all(imagePromises);
-
-        // Add a small delay (e.g., 500ms) to ensure rendering is complete
         await new Promise((resolve) => setTimeout(resolve, 500));
 
-        // Generate the PDF
-        await html2pdf().set(options).from(input).save();
+        const sectionImage = await convertToImage(section);
+        const sectionHeight = (section.clientHeight * 210) / input.clientWidth;
 
-        // Remove the class after PDF generation is complete
-        spans.forEach((text) => {
-          text.classList.remove('pdf-span'); // Remove the class
-        });
-      } catch (error) {
-        console.error("Error generating PDF:", error);
-        // Optionally, remove the class even if there's an error
-        spans.forEach((text) => {
-          text.classList.remove('pdf-span'); // Remove the class
-        });
-      } finally {
-        setIsclick(false);
+        if (!sectionImage) {
+          console.warn(`Skipping section due to rendering error: ${sectionId}`);
+          continue;
+        }
+
+        if (yOffset + sectionHeight + footerHeight > pageHeight - margin) {
+          pageIndexes.push(pageNumber);
+          pdf.addPage();
+          pageNumber++;
+          yOffset = margin;
+
+          pdf.addImage(headerImage, "PNG", margin, margin, 190, headerHeight);
+          yOffset = margin + headerHeight + 5;
+        }
+
+        pdf.addImage(sectionImage, "PNG", margin, yOffset, 190, sectionHeight);
+        yOffset += sectionHeight + 5;
       }
+
+      totalPages = pdf.internal.getNumberOfPages(); // Get total pages
+
+      // Update footers with total page count
+      for (let i = 1; i <= totalPages; i++) {
+        pdf.setPage(i);
+        addFooter(i, totalPages);
+      }
+
+      pdf.save("inspection_report.pdf");
+      spans.forEach((text) => text.classList.remove("pdf-span"));
+    } catch (error) {
+      console.error("PDF generation failed:", error);
+      spans.forEach((text) => text.classList.remove("pdf-span"));
     }
+
+    setIsclick(false);
   };
 
   const submitReport = async (e: any) => {
@@ -280,7 +1277,7 @@ const PreviewReport = () => {
             "Content-Type": "application/json",
             Accept: "application/json",
           },
-          body:JSON.stringify({
+          body: JSON.stringify({
             submission_id: submissionID
           })
         });
@@ -304,611 +1301,130 @@ const PreviewReport = () => {
   return (
     <>
       <div style={{ height: 40 }}></div>
-      <DownloadButton onClick={generatePDF}><FaDownload />PDF</DownloadButton>
+      <DownloadButton onClick={generatePDF}><FaDownload /> {isClick ? (
+        <svg
+          className="w-5 h-5 animate-spin text-white"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            className="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            strokeWidth="4"
+          ></circle>
+          <path
+            className="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8v8H4z"
+          ></path>
+        </svg>
+      ) : (
+        'PDF'
+      )}</DownloadButton>
       <button className="add-btn mx-2" onClick={handleBackButton}>
         Back
       </button>
       {submissionID != 0 ? <button className="add-btn mx-2" onClick={submitReport}>
         Submit Report
       </button> : ""}
-      {reporttype === "IPQC" ?
-        <div>
-          {/* content */}
-          {reportData.length <= 0 ? "Report Empty" : <Container id="report">
-            {/* page 1 start */}
-            <div className="content" style={{ height: isClick ? '150vh' : "" }}>
-              {/* header */}
-              <HeaderRow id="header" className="pdf-header">
-                <LogoContainer>
-                  <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
-                </LogoContainer>
-                <TitleContainer>
-                  <strong className={isClick ? 'pdf-span' : ""}>In Process Inspection Daily Report</strong>
-                </TitleContainer>
-                <ReportDetails>
-                  <div>Report Date: {moment(reportData[0].value.find(item => item.param_name === "Date")?.value).format('DD-MM-YYYY')}</div>
-                  <div>Report No: {reportData[0].value.find(item => item.param_name === "Report No")?.value}</div>
-                </ReportDetails>
-              </HeaderRow>
 
+      {reporttype === "IPQC" ?
+        <div style={{
+          flex: 1,
+          alignItems: 'center'
+        }}>
+          {isClick ? 
+          <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="flex flex-col items-center">
+            {/* Loader Spinner */}
+            <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+            <p className="text-white text-lg mt-4">Generating PDF, please wait...</p>
+          </div>
+        </div>
+          : ""}
+          {/* content */}
+          {reportData.length <= 0 ? "Loading ..." :
+            <Container id="report" style={{ width: isClick ? 900 : "100%" }}>
+              <Header reportData={reportData} isClick={isClick} />
               {/* Report Details */}
-              <div className="avoid-break" id="reportDetails">
-                <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Report Details –</p>
-                <Table>
-                  <tbody>
-                    {reportData[0].value.map((item, index) => {
-                      // Check if the index is even to start a new row
-                      if (index % 2 === 0) {
-                        return (
-                          <tr key={index}>
-                            {/* First column */}
-                            <HeaderCell style={{ width: '25%' }}><span><strong>{reportData[0].value[index].param_name}</strong></span></HeaderCell>
-                            <TableCell style={{ width: '25%' }}><span>{reportData[0].value[index].value}</span></TableCell>
-                            {/* Second column */}
-                            {reportData[0].value[index + 1] && (
-                              <>
-                                <HeaderCell style={{ width: '25%' }}><span><strong>{reportData[0].value[index + 1].param_name}</strong></span></HeaderCell>
-                                <TableCell style={{ width: '25%' }}><span>{reportData[0].value[index + 1].value}</span></TableCell>
-                              </>
-                            )}
-                          </tr>
-                        );
-                      }
-                      return null; // Skip odd indices since they are handled in the previous iteration
-                    })}
-                  </tbody>
-                </Table>
-              </div>
+              <ReportDetailsSection reportData={reportData} isClick={isClick} />
 
               {/* Production Stage Wise */}
-              <div className="avoid-break" id="productionStageWise">
-                <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Production Stage Wise -</p>
-                <Table>
-                  <tbody style={{ margin: 0, padding: 0 }}>
-                    {reportData[1].value.map((item, index) => (
-                      <tr key={index}>
-                        <HeaderCell style={{ width: "50%" }}><span><strong>{item.param_name}</strong></span></HeaderCell>
-                        <TableCell><span>{item.value}</span></TableCell>
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
-              </div>
-            </div>
-
-            {/* Footer */}
-            {isClick ? <div id="footer" style={{ width: '100%' }}>
-              <Table style={{ width: '100%' }}>
-                <tbody>
-                  <tr style={{ margin: 0, padding: 0 }}>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Format No: JSR/SI</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Rev Date and No: 00</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                    </TableCell>
-                  </tr>
-                </tbody>
-              </Table>
-            </div> : ""}
-
-            {/* page 1 end */}
-
-            {/* page 2 start */}
-            <div className="page-break"></div>
-
-            {/* header */}
-            <div className="content" style={{ height: isClick ? '157vh' : "" }}>
-              {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
-                <LogoContainer>
-                  <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
-                </LogoContainer>
-                <TitleContainer>
-                  <strong className='pdf-span'>In Process Inspection Daily Report</strong>
-                </TitleContainer>
-                <ReportDetails>
-                  <div className='pdf-span'>Report Date: {moment(reportData[0].value.find(item => item.param_name === "Date")?.value).format('DD-MM-YYYY')}</div>
-                  <div className='pdf-span'>Report No: {reportData[0].value.find(item => item.param_name === "Report No")?.value}</div>
-                </ReportDetails>
-              </HeaderRow> : ""}
+              <ProductStageWise reportData={reportData} isClick={isClick} />
 
               {/* Major Observations of the Day */}
-              <div className="avoid-break" id="majorObservations">
-                <Title className={isClick ? "pdf-span" : ""}>Major Observations of the Day –</Title>
-                <Table>
-                  <tbody style={{ margin: 0, padding: 0 }}>
-                    <tr style={{ margin: 0, padding: 0 }}>
-                      <HeaderCell><span><strong>Sr No</strong></span></HeaderCell>
-                      <HeaderCell colSpan={2}><span><strong>Observations / Deficiency Details</strong></span></HeaderCell>
-                    </tr>
-                    {reportData[2].value.map((observation: any, index: any) => (
-                      <>
-                        <tr key={index}>
-                          <TableCell rowSpan={2}><span><strong>{index + 1}</strong></span></TableCell>
-                          <TableCell colSpan={2}><span>{observation.observations_text}</span></TableCell>
-                        </tr>
-                        <tr>
-                          {observation.images.map((image: any, idx: any) => (
-                            <TableCell key={idx}>
-                              {/* Correctly concatenate imgUrl with image.image */}
-                              <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{ padding: 5, height: 300 }} />
-                            </TableCell>
-                          ))}
-                        </tr>
-                      </>
-                    ))}
-                  </tbody>
-                </Table>
-              </div>
-            </div>
-
-            {/* footer */}
-            {isClick ? <div id="footer" style={{ width: '100%' }}>
-              <Table style={{ width: '100%' }}>
-                <tbody>
-                  <tr style={{ margin: 0, padding: 0 }}>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Format No: JSR/SI</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Rev Date and No: 00</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                    </TableCell>
-                  </tr>
-                </tbody>
-              </Table>
-            </div> : ""}
-            {/* page 2 end */}
-
-            {/* page 3 start */}
-            <div className="page-break"></div>
-
-            {/* header */}
-            <div className="content" style={{ height: isClick ? '157vh' : "" }}>
-              {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
-                <LogoContainer>
-                  <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
-                </LogoContainer>
-                <TitleContainer>
-                  <strong className='pdf-span'>In Process Inspection Daily Report</strong>
-                </TitleContainer>
-                <ReportDetails>
-                  <div className='pdf-span'>Report Date: {moment(reportData[0].value.find(item => item.param_name === "Date")?.value).format('DD-MM-YYYY')}</div>
-                  <div className='pdf-span'>Report No: {reportData[0].value.find(item => item.param_name === "Report No")?.value}</div>
-                </ReportDetails>
-              </HeaderRow> : ""}
+              <MajorObservations reportData={reportData} isClick={isClick} value1={0} value2={1} />
+              <MajorObservations reportData={reportData} isClick={isClick} value1={1} value2={2} />
+              <MajorObservations reportData={reportData} isClick={isClick} value1={2} value2={3} />
+              <MajorObservations reportData={reportData} isClick={isClick} value1={3} value2={4} />
+              <MajorObservations reportData={reportData} isClick={isClick} value1={4} value2={5} />
+              <MajorObservations reportData={reportData} isClick={isClick} value1={5} value2={6} />
+              <MajorObservations reportData={reportData} isClick={isClick} value1={6} value2={7} />
+              <MajorObservations reportData={reportData} isClick={isClick} value1={7} value2={8} />
+              <MajorObservations reportData={reportData} isClick={isClick} value1={8} value2={9} />
+              <MajorObservations reportData={reportData} isClick={isClick} value1={9} value2={10} />
 
               {/* Process – Film Cutting */}
-              <div className="avoid-break" id="productionDetails">
-                <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', fontSize: 18 }}>In Process Inspection Report –</p>
-                <br />
-                <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Film Cutting</p>
-                <Table>
-                  <tbody style={{ margin: 0, padding: 0 }}>
-                    <tr>
-                      <HeaderCell><span><strong>Parameters</strong></span></HeaderCell>
-                      {/* Dynamically render round columns based on data */}
-                      {Object.keys(reportData[3].value[0].value).map((round, index) => {
-                        // Check if any row has data for this round
-                        const hasData = reportData[3].value.some(item => item.value[round] !== "");
-                        if (hasData) {
-                          return (
-                            <TableCell key={index}><span><strong>{`Round ${index + 1}`}</strong></span></TableCell>
-                          );
-                        }
-                        return null; // Skip rendering if no data for this round
-                      })}
-                    </tr>
-                    {reportData[3].value.map((item, index) => (
-                      <tr key={index}>
-                        <HeaderCell><span><strong>{item.param_name}</strong></span></HeaderCell>
-                        {Object.keys(item.value).map((round, idx) => {
-                          // Check if this round has data
-                          if (item.value[round] !== "") {
-                            return (
-                              <TableCell key={idx}><span>{item.value[round]}</span></TableCell>
-                            );
-                          }
-                          return null; // Skip rendering if no data for this round
-                        })}
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
-              </div>
+              <FilmCutting reportData={reportData} isClick={isClick} />
+
+              {/* film cutting observatios */}
+              <FilmCuttingobservations reportData={reportData} isClick={isClick} />
 
               {/* Process – Tabber & Stringer */}
-              <div className="avoid-break">
-                <div className="avoid-break" id="productionDetails">
-                  <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Tabber & Stringer</p>
-                  <Table>
-                    <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
-                      <tr>
-                        <th style={{ border: '1px solid black', padding: '5px' }}><strong>Parameters</strong></th>
-                        {/* Dynamically render round columns based on data */}
-                        {Object.keys(reportData[4].value[0].value).map((round, index) => {
-                          // Check if any row has data for this round
-                          const hasData = reportData[4].value.some(item => item.value[round] !== "");
-                          if (hasData) {
-                            return (
-                              <th key={index} style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}>
-                                <strong>{`Round ${index + 1}`}</strong>
-                              </th>
-                            );
-                          }
-                          return null; // Skip rendering if no data for this round
-                        })}
-                      </tr>
-                      {reportData[4].value.map((row, rowIndex) => (
-                        <tr key={rowIndex}>
-                          <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>{row.param_name}</strong></span></td>
-                          {Object.keys(row.value).map((round, index) => {
-                            // Check if this round has data
-                            if (row.value[round] !== "") {
-                              return (
-                                <td key={index} style={{ border: '1px solid black', padding: '5px' }}>
-                                  <span>{row.value[round]}</span>
-                                </td>
-                              );
-                            }
-                            return null; // Skip rendering if no data for this round
-                          })}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                </div>
-              </div>
+              <TabberAndStringer reportData={reportData} isClick={isClick} />
+
+              {/* Tabber & Stringer observatios */}
+              <TabberAndStringerObservations reportData={reportData} isClick={isClick} />
 
               {/* Process – Layup */}
-              <div className="avoid-break" id="productionDetails">
-                <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Layup</p>
-                <Table>
-                  <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
-                    <tr>
-                      <th style={{ border: '1px solid black', padding: '5px' }}><strong>Parameters</strong></th>
-                      {/* Dynamically render round columns based on data */}
-                      {Object.keys(reportData[5].value[0].value).map((round, index) => {
-                        // Check if any row has data for this round
-                        const hasData = reportData[5].value.some(item => item.value[round] !== "");
-                        if (hasData) {
-                          return (
-                            <th key={index} style={{ border: '1px solid black', padding: '5px' }}>
-                              <strong>{`Round ${index + 1}`}</strong>
-                            </th>
-                          );
-                        }
-                        return null; // Skip rendering if no data for this round
-                      })}
-                    </tr>
-                    {reportData[5].value.map((row, rowIndex) => (
-                      <tr key={rowIndex}>
-                        <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>{row.param_name}</strong></span></td>
-                        {Object.keys(row.value).map((round, index) => {
-                          // Check if this round has data
-                          if (row.value[round] !== "") {
-                            return (
-                              <td key={index} style={{ border: '1px solid black', padding: '5px' }}>
-                                <span>{row.value[round]}</span>
-                              </td>
-                            );
-                          }
-                          return null; // Skip rendering if no data for this round
-                        })}
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
-              </div>
-            </div>
+              <Layup reportData={reportData} isClick={isClick} />
 
-            {/* footer */}
-            {isClick ? <div id="footer" style={{ width: '100%' }}>
-              <Table style={{ width: '100%' }}>
-                <tbody>
-                  <tr style={{ margin: 0, padding: 0 }}>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Format No: JSR/SI</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Rev Date and No: 00</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                    </TableCell>
+              {/* Layup observatios */}
+              <LayupObservations reportData={reportData} isClick={isClick} />
+
+              {/* Process – Lamination */}
+              <Lamination reportData={reportData} isClick={isClick} />
+
+              {/* Lamination observatios */}
+              <LaminationObservations reportData={reportData} isClick={isClick} />
+
+              {/* Process – Framing */}
+              <Framing reportData={reportData} isClick={isClick} />
+
+              {/* Framing observatios */}
+              <FramingObservation reportData={reportData} isClick={isClick} />
+
+              {/* Process – Flasher Testing */}
+              <FlasherTesting reportData={reportData} isClick={isClick} />
+
+              {/* Flasher Testing observatios */}
+              <FlasherTestingObservations reportData={reportData} isClick={isClick} />
+
+              {/* Random Sample Check */}
+              <RandomSampleCheck reportData={reportData} isClick={isClick} />
+
+              {/* Random Sample Check observatios */}
+              <RandomSampleCheckObservations reportData={reportData} isClick={isClick} />
+
+              <Table id="report_completed">
+                <tbody style={{ margin: 0, padding: 0 }}>
+                  <tr>
+                    <HeaderCell style={{ width: "50%" }}><span>Inspection done by</span></HeaderCell>
+                    <TableCell><span>{lastsection.inspection_done_by}</span></TableCell>
+                  </tr>
+                  <tr>
+                    <HeaderCell><span>Checking together with (Customer/Manufacturer representative)</span></HeaderCell>
+                    <TableCell><span>{lastsection.checking_together}</span></TableCell>
                   </tr>
                 </tbody>
               </Table>
-            </div> : ""}
-            {/* page 3 end */}
-
-            {/* page 4 start */}
-            <div className="page-break"></div>
-
-            {/* header */}
-            <div className="content" style={{ height: isClick ? '157vh' : "" }}>
-              <div className="content">
-                {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
-                  <LogoContainer>
-                    <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
-                  </LogoContainer>
-                  <TitleContainer>
-                    <strong className='pdf-span'>In Process Inspection Daily Report</strong>
-                  </TitleContainer>
-                  <ReportDetails>
-                    <div className='pdf-span'>Report Date: {moment(reportData[0].value.find(item => item.param_name === "Date")?.value).format('DD-MM-YYYY')}</div>
-                    <div className='pdf-span'>Report No: {reportData[0].value.find(item => item.param_name === "Report No")?.value}</div>
-                  </ReportDetails>
-                </HeaderRow> : ""}
-
-                {/* Process – Lamination */}
-                <div className="avoid-break" id="productionDetails">
-                  <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Lamination</p>
-                  <Table>
-                    <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
-                      <tr>
-                        <th style={{ border: '1px solid black', padding: '5px' }}><strong>Parameters</strong></th>
-                        {/* Dynamically render round columns based on data */}
-                        {Object.keys(reportData[6].value[0].value).map((round, index) => {
-                          // Check if any row has data for this round
-                          const hasData = reportData[6].value.some(item => item.value[round] !== "");
-                          if (hasData) {
-                            return (
-                              <th key={index} style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}>
-                                <strong>{`Round ${index + 1}`}</strong>
-                              </th>
-                            );
-                          }
-                          return null; // Skip rendering if no data for this round
-                        })}
-                      </tr>
-                      {reportData[6].value.map((row, rowIndex) => (
-                        <tr key={rowIndex}>
-                          <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>{row.param_name}</strong></span></td>
-                          {Object.keys(row.value).map((round, index) => {
-                            // Check if this round has data
-                            if (row.value[round] !== "") {
-                              return (
-                                <td key={index} style={{ border: '1px solid black', padding: '5px' }}>
-                                  <span>{row.value[round]}</span>
-                                </td>
-                              );
-                            }
-                            return null; // Skip rendering if no data for this round
-                          })}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                </div>
-              </div>
-            </div>
-
-            {/* footer */}
-            {isClick ? <div id="footer" style={{ width: '100%' }}>
-              <Table style={{ width: '100%' }}>
-                <tbody>
-                  <tr style={{ margin: 0, padding: 0 }}>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Format No: JSR/SI</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Rev Date and No: 00</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                    </TableCell>
-                  </tr>
-                </tbody>
-              </Table>
-            </div> : ""}
-            {/* page 4 end */}
-
-            {/* page 5 start */}
-            <div className="page-break"></div>
-
-            {/* header */}
-            <div className="content" style={{ height: isClick ? '157vh' : "" }}>
-              <div className="content">
-                {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
-                  <LogoContainer>
-                    <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
-                  </LogoContainer>
-                  <TitleContainer>
-                    <strong className='pdf-span'>In Process Inspection Daily Report</strong>
-                  </TitleContainer>
-                  <ReportDetails>
-                    <div className='pdf-span'>Report Date: {moment(reportData[0].value.find(item => item.param_name === "Date")?.value).format('DD-MM-YYYY')}</div>
-                    <div className='pdf-span'>Report No: {reportData[0].value.find(item => item.param_name === "Report No")?.value}</div>
-                  </ReportDetails>
-                </HeaderRow> : ""}
-
-                {/* Process – Framing */}
-                <div className="avoid-break" id="productionDetails">
-                  <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Framing</p>
-                  <Table>
-                    <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
-                      <tr>
-                        <th style={{ border: '1px solid black', padding: '5px' }}><strong>Parameters</strong></th>
-                        {/* Dynamically render round columns based on data */}
-                        {Object.keys(reportData[7].value[0].value).map((round, index) => {
-                          // Check if any row has data for this round
-                          const hasData = reportData[7].value.some(item => item.value[round] !== "");
-                          if (hasData) {
-                            return (
-                              <th key={index} style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}>
-                                <strong>{`Round ${index + 1}`}</strong>
-                              </th>
-                            );
-                          }
-                          return null; // Skip rendering if no data for this round
-                        })}
-                      </tr>
-                      {reportData[7].value.map((row, rowIndex) => (
-                        <tr key={rowIndex}>
-                          <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>{row.param_name}</strong></span></td>
-                          {Object.keys(row.value).map((round, index) => {
-                            // Check if this round has data
-                            if (row.value[round] !== "") {
-                              return (
-                                <td key={index} style={{ border: '1px solid black', padding: '5px' }}>
-                                  <span>{row.value[round]}</span>
-                                </td>
-                              );
-                            }
-                            return null; // Skip rendering if no data for this round
-                          })}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                </div>
-              </div>
-            </div>
-
-            {/* footer */}
-            {isClick ? <div id="footer" style={{ width: '100%' }}>
-              <Table style={{ width: '100%' }}>
-                <tbody>
-                  <tr style={{ margin: 0, padding: 0 }}>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Format No: JSR/SI</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Rev Date and No: 00</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                    </TableCell>
-                  </tr>
-                </tbody>
-              </Table>
-            </div> : ""}
-            {/* page 5 end */}
-
-            {/* page 6 start */}
-            <div className="page-break"></div>
-
-            {/* header */}
-            <div className="content" style={{ height: isClick ? '157vh' : "" }}>
-              <div className="content">
-                {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
-                  <LogoContainer>
-                    <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
-                  </LogoContainer>
-                  <TitleContainer>
-                    <strong className='pdf-span'>In Process Inspection Daily Report</strong>
-                  </TitleContainer>
-                  <ReportDetails>
-                    <div className='pdf-span'>Report Date: {moment(reportData[0].value.find(item => item.param_name === "Date")?.value).format('DD-MM-YYYY')}</div>
-                    <div className='pdf-span'>Report No: {reportData[0].value.find(item => item.param_name === "Report No")?.value}</div>
-                  </ReportDetails>
-                </HeaderRow> : ""}
-
-                {/* Process – Flasher Testing */}
-                <div className="avoid-break" id="productionDetails">
-                  <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Process – Flasher Testing</p>
-                  <Table>
-                    <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
-                      <tr>
-                        <th style={{ border: '1px solid black', padding: '5px' }}><strong>Parameters</strong></th>
-                        {/* Dynamically render round columns based on data */}
-                        {Object.keys(reportData[8].value[0].value).map((round, index) => {
-                          // Check if any row has data for this round
-                          const hasData = reportData[8].value.some(item => item.value[round] !== "");
-                          if (hasData) {
-                            return (
-                              <th key={index} style={{ border: '1px solid black', padding: '5px', textAlign: 'center' }}>
-                                <strong>{`Round ${index + 1}`}</strong>
-                              </th>
-                            );
-                          }
-                          return null; // Skip rendering if no data for this round
-                        })}
-                      </tr>
-                      {reportData[8].value.map((row, rowIndex) => (
-                        <tr key={rowIndex}>
-                          <td style={{ border: '1px solid black', padding: '5px' }}><span><strong>{row.param_name}</strong></span></td>
-                          {Object.keys(row.value).map((round, index) => {
-                            // Check if this round has data
-                            if (row.value[round] !== "") {
-                              return (
-                                <td key={index} style={{ border: '1px solid black', padding: '5px' }}>
-                                  <span>{row.value[round]}</span>
-                                </td>
-                              );
-                            }
-                            return null; // Skip rendering if no data for this round
-                          })}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                </div>
-
-                {/* Random Sample Check */}
-                <div className="avoid-break" id="productionDetails">
-                  <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Random Sample Check</p>
-                  <Table>
-                    <tbody style={{ margin: 0, padding: 0, border: '1px solid black' }}>
-                      <tr>
-                        <th style={{ border: '1px solid black', padding: '5px' }}><strong>Sr No</strong></th>
-                        <th style={{ border: '1px solid black', padding: '5px' }}><strong>Test</strong></th>
-                        <th style={{ border: '1px solid black', padding: '5px' }}><strong>Module Sr. No.</strong></th>
-                        <th style={{ border: '1px solid black', padding: '5px' }}><strong>Results</strong></th>
-                      </tr>
-                      {reportData[9].value.map((item, index) => (
-                        <tr key={index}>
-                          <td style={{ border: '1px solid black', padding: '5px' }}><span>{index + 1}</span></td>
-                          <td style={{ border: '1px solid black', padding: '5px' }}><span>{item.test}</span></td>
-                          <td style={{ border: '1px solid black', padding: '5px' }}><span>{item.module_sr_no}</span></td>
-                          <td style={{ border: '1px solid black', padding: '5px' }}><span>{item.result}</span></td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </Table>
-                </div>
-
-                <Table>
-                  <tbody style={{ margin: 0, padding: 0 }}>
-                    <tr>
-                      <HeaderCell style={{ width: "50%" }}><span><strong>Inspection done by</strong></span></HeaderCell>
-                      <TableCell><span>{reportData[0].value.find(item => item.param_name === "Report Created By")?.value}</span></TableCell>
-                    </tr>
-                    <tr>
-                      <HeaderCell><span><strong>Checking together with (Customer/Manufacturer representative)</strong></span></HeaderCell>
-                      <TableCell><span>{reportData[0].value.find(item => item.param_name === "Customer Name")?.value}</span></TableCell>
-                    </tr>
-                  </tbody>
-                </Table>
-              </div>
-            </div>
-
-            {/* footer */}
-            {isClick ? <div id="footer" style={{ width: '100%' }}>
-              <Table style={{ width: '100%' }}>
-                <tbody>
-                  <tr style={{ margin: 0, padding: 0 }}>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Format No: JSR/SI</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Rev Date and No: 00</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                    </TableCell>
-                  </tr>
-                </tbody>
-              </Table>
-            </div> : ""}
-            {/* page 6 end */}
-          </Container>}
+              <Footer reportData={reportData} isClick={isClick} />
+            </Container>
+          }
         </div>
         :
         <>
@@ -916,7 +1432,7 @@ const PreviewReport = () => {
           <Container id="report">
 
             {/* page 1 start */}
-            <div className="content" style={{ height: isClick ? '157vh' : "" }}>
+            <div className="content a4-page" style={{ height: isClick ? '157vh' : "" }}>
               {/* header */}
               <HeaderRow id="header" className="pdf-header">
                 <LogoContainer>
@@ -932,30 +1448,30 @@ const PreviewReport = () => {
               </HeaderRow>
 
               {/* Report Details */}
-              <div className="avoid-break" id="reportDetails">
+              <div className="content" id="reportDetails">
                 <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Report Details –</p>
                 <Table>
                   <tbody>
                     <tr>
-                      <HeaderCell style={{ width: '25%' }}><span><strong>OA No</strong></span></HeaderCell>
+                      <HeaderCell style={{ width: '25%' }}><span>OA No</span></HeaderCell>
                       <TableCell style={{ width: '25%' }}><span>{data.oaNo}</span></TableCell>
-                      <HeaderCell style={{ width: '25%' }}><span><strong>Date</strong></span></HeaderCell>
+                      <HeaderCell style={{ width: '25%' }}><span>Date</span></HeaderCell>
                       <TableCell style={{ width: '25%' }}><span>{moment(data.date).format('DD-MM-YYYY')}</span></TableCell>
                     </tr>
                     <tr>
-                      <HeaderCell><span><strong>Manufacturer</strong></span></HeaderCell>
+                      <HeaderCell><span>Manufacturer</span></HeaderCell>
                       <TableCell><span>{data.manufacturer}</span></TableCell>
-                      <HeaderCell><span><strong>Shift</strong></span></HeaderCell>
+                      <HeaderCell><span>Shift</span></HeaderCell>
                       <TableCell><span>{data.shift}</span></TableCell>
                     </tr>
                     <tr>
-                      <HeaderCell><span><strong>Place of Inspection</strong></span></HeaderCell>
+                      <HeaderCell><span>Place of Inspection</span></HeaderCell>
                       <TableCell><span>{data.placeOfInspection}</span></TableCell>
-                      <HeaderCell><span><strong>Customer name</strong></span></HeaderCell>
+                      <HeaderCell><span>Customer name</span></HeaderCell>
                       <TableCell><span>{data.customerName}</span></TableCell>
                     </tr>
                     <tr>
-                      <HeaderCell><span><strong>Report created by</strong></span></HeaderCell>
+                      <HeaderCell><span>Report created by</span></HeaderCell>
                       <TableCell><span>{data.reportCreatedBy}</span></TableCell>
                     </tr>
                   </tbody>
@@ -963,15 +1479,15 @@ const PreviewReport = () => {
               </div>
 
               {/* OTHER DETAILS */}
-              <div className="avoid-break" id="productionDetails">
+              <div className="content" id="productionDetails">
                 <Table>
                   <tbody style={{ margin: 0, padding: 0 }}>
                     {/* Header Row */}
                     <tr>
-                      <HeaderCell style={{ width: '80px' }}><span><strong>Sr. No.</strong></span></HeaderCell>
-                      <HeaderCell style={{ width: '150px' }}><span><strong>Component</strong></span></HeaderCell>
-                      <HeaderCell><span><strong>Description Field</strong></span></HeaderCell>
-                      <HeaderCell><span><strong>Value</strong></span></HeaderCell>
+                      <HeaderCell style={{ width: '80px' }}><span>Sr. No.</span></HeaderCell>
+                      <HeaderCell style={{ width: '150px' }}><span>Component</span></HeaderCell>
+                      <HeaderCell><span>Description Field</span></HeaderCell>
+                      <HeaderCell><span>Value</span></HeaderCell>
                     </tr>
 
                     {/* Solar Cell Data */}
@@ -1168,7 +1684,7 @@ const PreviewReport = () => {
             {/* <div className="page-break"></div> */}
 
             {/* header */}
-            <div className="content" style={{ height: isClick ? '157vh' : "" }}>
+            <div className="content a4-page" style={{ height: isClick ? '157vh' : "" }}>
               {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
                 <LogoContainer>
                   <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
@@ -1183,7 +1699,7 @@ const PreviewReport = () => {
               </HeaderRow> : ""}
 
               {/* OTHER DETAILS */}
-              <div className="avoid-break" id="productionDetails">
+              <div className="content" id="productionDetails">
                 <Table>
                   <tbody style={{ margin: 0, padding: 0 }}>
                     {/* Back Sheet */}
