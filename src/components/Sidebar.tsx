@@ -221,6 +221,17 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                                 BOM
                               </NavLink>
                             </li>
+                            <li>
+                              <NavLink
+                                to="/reports/DPR"
+                                className={({ isActive }) =>
+                                  'group relative flex items-center gap-2.5 rounded-md px-4 font-medium text-bodydark2 duration-300 ease-in-out hover:text-white ' +
+                                  (isActive && '!text-white')
+                                }
+                              >
+                                DPR
+                              </NavLink>
+                            </li>
                             {/* <li>
                             <NavLink
                               to="/reports/Rejection"

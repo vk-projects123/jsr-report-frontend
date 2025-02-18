@@ -8,6 +8,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { VIEW_REPORTS_API, SUBMIT_REPORT_API, imgUrl } from "../../Api/api.tsx";
 import moment from 'moment';
 import { toast } from "react-toastify";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, LineChart, Line, CartesianGrid, ResponsiveContainer } from "recharts";
 
 const Container = styled.div`
   display: flex;
@@ -66,6 +67,7 @@ const TitleContainer = styled.div`
 `;
 
 const ReportDetails = styled.div`
+ font-size: 16px;
 color:#000;
 height:100%;
 padding:16px;
@@ -86,6 +88,7 @@ color:#000;
 
 const TableCell = styled.td`
 color:#000;
+ font-size: 16px;
   border: 1px solid black;
   padding-left:5px;
   text-align: left;
@@ -100,6 +103,7 @@ color:#000;
 
 const HeaderCell = styled(TableCell)`
 padding-left:5px;
+ font-size: 16px;
   background: #D8D8D8;
   color:#000;
   font-weight: bold;
@@ -222,7 +226,7 @@ const PreviewReport = () => {
             }}
           >
             <strong className={isClick ? "pdf-span" : ""}>
-              In Process Inspection Daily Report
+              {reporttype == "IPQC" ? "In Process Inspection Daily Report" : "In Process Raw material verification"}
             </strong>
           </TitleContainer>
 
@@ -430,9 +434,9 @@ const PreviewReport = () => {
   const FilmCutting = ({ reportData, isClick }) => {
     return (
       <div className="content" id="FilmCutting">
-        <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', fontSize: 16, color: '#000' }}>In Process Inspection Report –</p>
+        <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', fontSize: 18, color: '#000' }}>In Process Inspection Report –</p>
         <br />
-        <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Process – Film Cutting</p>
+        <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000', fontSize: 16 }}>Process – Film Cutting</p>
         <Table>
           <tbody style={{ margin: 0, padding: 0 }}>
             <tr>
@@ -1077,6 +1081,52 @@ const PreviewReport = () => {
     );
   };
 
+  const BomTableData = ({ reportData,id, value1, value2, isClick }) => {
+    return (
+      reportData.length <= 0 ? "" :
+        <div className="content" id={id}>
+          <Table>
+            <tbody style={{ margin: 0, padding: 0 }}>
+              {/* Header Row */}
+              <tr>
+                <HeaderCell style={{ width: '80px' }}><span>Sr. No.</span></HeaderCell>
+                <HeaderCell style={{ width: '150px' }}><span>Component</span></HeaderCell>
+                <HeaderCell style={{ width: '300px' }}><span>Description as per BOM</span></HeaderCell>
+                <HeaderCell><span>Verification Results</span></HeaderCell>
+              </tr>
+
+
+              {reportData.slice(value1, value2).map((section, sectionIndex) => (
+                <>
+                  {section.value.map((param, paramIndex) => (
+                    <tr key={`${section.section_id}-${param.param_id}`}>
+                      {paramIndex === 0 && (
+                        <>
+                          <TableCell style={{textAlign:'center'}} rowSpan={section.value.length}>
+                            <span>{sectionIndex + (value1)}</span>
+                          </TableCell>
+                          <TableCell rowSpan={section.value.length}>
+                            <span>{section.section_name}</span>
+                          </TableCell>
+                        </>
+                      )}
+                      <TableCell>
+                        <span>{param.param_name}</span>
+                      </TableCell>
+                      <TableCell>
+                        <span>{param.value}</span>
+                      </TableCell>
+                    </tr>
+                  ))}
+                </>
+              ))}
+
+            </tbody>
+          </Table>
+        </div>
+    );
+  };
+
   // Function to fetch sections
   const listsectiondatas = async () => {
 
@@ -1137,6 +1187,8 @@ const PreviewReport = () => {
 
     const sections = [
       "ReportDetailsSection",
+      "bomdetails",
+      "bomdetails1",
       "ProductStageWise",
       "MajorObservations",
       "MajorObservations1",
@@ -1172,12 +1224,12 @@ const PreviewReport = () => {
       orientation: "p",
       unit: "mm",
       format: "a4",
-      compress: true // Enable PDF compression
+      compress: true
     });
 
     const pageHeight = 297;
     const margin = 10;
-    const headerHeight = 20;
+    const headerHeight = 15;
     const footerHeight = 10;
     const pageNumberOffset = 10;
     let yOffset = margin + headerHeight + 5;
@@ -1186,10 +1238,10 @@ const PreviewReport = () => {
 
     const convertToImage = async (element) => {
       return html2canvas(element, {
-        scale: 1, useCORS: true, logging: false,
+        scale: 2.5, useCORS: true, logging: false,
         allowTaint: true,
       })
-        .then((canvas) => canvas.toDataURL("image/png", 0.8))
+        .then((canvas) => canvas.toDataURL("image/png", 1))
         .catch((error) => {
           console.error("Error capturing element:", element.id, error);
           return null;
@@ -1298,6 +1350,15 @@ const PreviewReport = () => {
     }
   };
 
+
+  const ChartData = [
+    { date: "12/25/2024", dayProduction: 120, nightProduction: 222, totalRejection: 50 },
+    { date: "12/26/2024", dayProduction: 350, nightProduction: 334, totalRejection: 70 },
+    { date: "12/27/2024", dayProduction: 300, nightProduction: 335, totalRejection: 50 },
+    { date: "12/28/2024", dayProduction: 133, nightProduction: 145, totalRejection: 51 },
+  ];
+
+
   return (
     <>
       <div style={{ height: 40 }}></div>
@@ -1325,27 +1386,30 @@ const PreviewReport = () => {
       ) : (
         'PDF'
       )}</DownloadButton>
+
       <button className="add-btn mx-2" onClick={handleBackButton}>
         Back
       </button>
-      {submissionID != 0 ? <button className="add-btn mx-2" onClick={submitReport}>
-        Submit Report
-      </button> : ""}
+      {submissionID != 0 ?
+        <button className="add-btn mx-2" onClick={submitReport}>
+          Submit Report
+        </button>
+        : ""}
 
       {reporttype === "IPQC" ?
         <div style={{
           flex: 1,
           alignItems: 'center'
         }}>
-          {isClick ? 
-          <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className="flex flex-col items-center">
-            {/* Loader Spinner */}
-            <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-white text-lg mt-4">Generating PDF, please wait...</p>
-          </div>
-        </div>
-          : ""}
+          {isClick ?
+            <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50">
+              <div className="flex flex-col items-center">
+                {/* Loader Spinner */}
+                <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+                <p className="text-white text-lg mt-4">Generating PDF, please wait...</p>
+              </div>
+            </div>
+            : ""}
           {/* content */}
           {reportData.length <= 0 ? "Loading ..." :
             <Container id="report" style={{ width: isClick ? 900 : "100%" }}>
@@ -1426,639 +1490,47 @@ const PreviewReport = () => {
             </Container>
           }
         </div>
-        :
-        <>
-          {/* content */}
-          <Container id="report">
-
-            {/* page 1 start */}
-            <div className="content a4-page" style={{ height: isClick ? '157vh' : "" }}>
-              {/* header */}
-              <HeaderRow id="header" className="pdf-header">
-                <LogoContainer>
-                  <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
-                </LogoContainer>
-                <TitleContainer>
-                  <strong className={isClick ? 'pdf-span' : ""}>In Process Inspection Daily Report</strong>
-                </TitleContainer>
-                <ReportDetails>
-                  <div>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                  <div>Report No:  {data.reportNo}</div>
-                </ReportDetails>
-              </HeaderRow>
-
+        : reporttype === "BOM" ?
+          reportData.length <= 0 ? "Loading ..." :
+            <Container id="report" style={{ width: isClick ? 900 : "100%" }}>
+              <Header reportData={reportData} isClick={isClick} />
               {/* Report Details */}
-              <div className="content" id="reportDetails">
-                <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold' }}>Report Details –</p>
-                <Table>
-                  <tbody>
-                    <tr>
-                      <HeaderCell style={{ width: '25%' }}><span>OA No</span></HeaderCell>
-                      <TableCell style={{ width: '25%' }}><span>{data.oaNo}</span></TableCell>
-                      <HeaderCell style={{ width: '25%' }}><span>Date</span></HeaderCell>
-                      <TableCell style={{ width: '25%' }}><span>{moment(data.date).format('DD-MM-YYYY')}</span></TableCell>
-                    </tr>
-                    <tr>
-                      <HeaderCell><span>Manufacturer</span></HeaderCell>
-                      <TableCell><span>{data.manufacturer}</span></TableCell>
-                      <HeaderCell><span>Shift</span></HeaderCell>
-                      <TableCell><span>{data.shift}</span></TableCell>
-                    </tr>
-                    <tr>
-                      <HeaderCell><span>Place of Inspection</span></HeaderCell>
-                      <TableCell><span>{data.placeOfInspection}</span></TableCell>
-                      <HeaderCell><span>Customer name</span></HeaderCell>
-                      <TableCell><span>{data.customerName}</span></TableCell>
-                    </tr>
-                    <tr>
-                      <HeaderCell><span>Report created by</span></HeaderCell>
-                      <TableCell><span>{data.reportCreatedBy}</span></TableCell>
-                    </tr>
-                  </tbody>
-                </Table>
-              </div>
+              <ReportDetailsSection reportData={reportData} isClick={isClick} />
 
-              {/* OTHER DETAILS */}
-              <div className="content" id="productionDetails">
-                <Table>
-                  <tbody style={{ margin: 0, padding: 0 }}>
-                    {/* Header Row */}
-                    <tr>
-                      <HeaderCell style={{ width: '80px' }}><span>Sr. No.</span></HeaderCell>
-                      <HeaderCell style={{ width: '150px' }}><span>Component</span></HeaderCell>
-                      <HeaderCell><span>Description Field</span></HeaderCell>
-                      <HeaderCell><span>Value</span></HeaderCell>
-                    </tr>
+              {/* Other Details */}
+              <BomTableData reportData={reportData} isClick={isClick} id={"bomdetails"} value1={1} value2={8} />
 
-                    {/* Solar Cell Data */}
-                    <tr>
-                      <TableCell rowSpan="6"><span>1</span></TableCell>
-                      <TableCell rowSpan="6"><span>Solar Cell</span></TableCell>
-                      <TableCell><span>MBB Cells</span></TableCell>
-                      <TableCell><span>{data.solar_cell.bb_cells}</span></TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell><span>Eff %</span></TableCell>
-                      <TableCell><span>{data.solar_cell.efficiency}</span></TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell><span>Size</span></TableCell>
-                      <TableCell><span>{data.solar_cell.size}</span></TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell><span>Product Name</span></TableCell>
-                      <TableCell><span>{data.solar_cell.product_name}</span></TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell><span>Batch of Manufacturer</span></TableCell>
-                      <TableCell><span>{data.solar_cell.batch}</span></TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell><span>Company Make</span></TableCell>
-                      <TableCell><span>{data.solar_cell.company_make}</span></TableCell>
-                    </tr>
+              <BomTableData reportData={reportData} isClick={isClick} id={"bomdetails1"} value1={8} value2={19} />
 
-                    {/* Cell Connector Data */}
-                    <tr>
-                      <TableCell rowSpan="3"><span>2</span></TableCell>
-                      <TableCell rowSpan="3"><span>Cell Connector (Ribbon)</span></TableCell>
-                      <TableCell><span>Make</span></TableCell>
-                      <TableCell><span>{data.cell_connector.make}</span></TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell><span>Diameter / Size</span></TableCell>
-                      <TableCell><span>{data.cell_connector.diameter}</span></TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell><span>Batch of Manufacturer</span></TableCell>
-                      <TableCell><span>{data.cell_connector.batch}</span></TableCell>
-                    </tr>
-
-                    {/* Soldering Flux Data */}
-                    <tr>
-                      <TableCell rowSpan="4"><span>3</span></TableCell>
-                      <TableCell rowSpan="4"><span>Soldering Flux</span></TableCell>
-                      <TableCell><span>Make</span></TableCell>
-                      <TableCell><span>{data.soldering_flux.make}</span></TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell><span>Model</span></TableCell>
-                      <TableCell><span>{data.soldering_flux.model}</span></TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell><span>Batch of Manufacturer</span></TableCell>
-                      <TableCell><span>{data.soldering_flux.batch}</span></TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell><span>Date of Manufacturing</span></TableCell>
-                      <TableCell><span>{data.soldering_flux.manufacturing_date}</span></TableCell>
-                    </tr>
-
-                    {/* Glass Section */}
-                    <tr>
-                      <TableCell rowSpan="5"><span>4</span></TableCell>
-                      <TableCell rowSpan="5"><span>Glass</span></TableCell>
-                      <TableCell><span>Make</span></TableCell>
-                      <TableCell><span>{data.glass.make}</span></TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell><span>Dimension</span></TableCell>
-                      <TableCell><span>{data.glass.dimension}</span></TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell><span>AR Coated Glass</span></TableCell>
-                      <TableCell><span>{data.glass.ar_coated}</span></TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell><span>Batch of Manufacturer</span></TableCell>
-                      <TableCell><span>{data.glass.batch}</span></TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell><span>Manufacturing Date</span></TableCell>
-                      <TableCell><span>{data.glass.manufacturing_date}</span></TableCell>
-                    </tr>
-
-
-                    {/* EVA Section */}
-                    <tr>
-                      <TableCell rowSpan="4">
-                        <span>5</span>
-                      </TableCell>
-                      <TableCell rowSpan="4">
-                        <span>EVA (Front or Back)</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>Make</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.eva.make}</span>
-                      </TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell>
-                        <span>Model</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.eva.model}</span>
-                      </TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell>
-                        <span>Batch of Manufacturer</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.eva.batch}</span>
-                      </TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell>
-                        <span>Manufacturing Date</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.eva.manufacturing_date}</span>
-                      </TableCell>
-                    </tr>
-
-
-                    {/* String Connector */}
-                    <tr>
-                      <TableCell rowSpan="3">
-                        <span>6</span>
-                      </TableCell>
-                      <TableCell rowSpan="3">
-                        <span>String Connector (Busbar)</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>Make</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.string_connector.make}</span>
-                      </TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell>
-                        <span>Dimension</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.string_connector.dimension}</span>
-                      </TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell>
-                        <span>Batch of Manufacturer</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.string_connector.batch}</span>
-                      </TableCell>
-                    </tr>
-
-                  </tbody>
-                </Table>
-              </div>
-
-            </div>
-
-            {/* Footer */}
-            {isClick ? <div id="footer" style={{ width: '100%' }}>
-              <Table style={{ width: '100%' }}>
-                <tbody>
-                  <tr style={{ margin: 0, padding: 0 }}>
-                    {/* Ensure all cells have equal width */}
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Format No: JSR/SI</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Rev Date and No: 00</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                    </TableCell>
+              <Table id="report_completed">
+                <tbody style={{ margin: 0, padding: 0 }}>
+                  <tr>
+                    <HeaderCell style={{ width: "50%" }}><span>Verification done by</span></HeaderCell>
+                    <TableCell><span>{lastsection.inspection_done_by}</span></TableCell>
                   </tr>
                 </tbody>
               </Table>
-            </div> : ""}
-
-            {/* page 1 end */}
-
-            {/* page 2 start */}
-            {/* <div className="page-break"></div> */}
-
-            {/* header */}
-            <div className="content a4-page" style={{ height: isClick ? '157vh' : "" }}>
-              {isClick ? <HeaderRow id="header" className="pdf-header" style={{ marginTop: 20 }}>
-                <LogoContainer>
-                  <img src={pdflogo} alt="PDF Logo" style={{ padding: 5, margin: 5 }} />
-                </LogoContainer>
-                <TitleContainer>
-                  <strong className='pdf-span'>In Process Inspection Daily Report</strong>
-                </TitleContainer>
-                <ReportDetails>
-                  <div className='pdf-span'>Report Date:  {moment(data.date).format('DD-MM-YYYY')}</div>
-                  <div className='pdf-span'>Report No:  {data.reportNo}</div>
-                </ReportDetails>
-              </HeaderRow> : ""}
-
-              {/* OTHER DETAILS */}
-              <div className="content" id="productionDetails">
-                <Table>
-                  <tbody style={{ margin: 0, padding: 0 }}>
-                    {/* Back Sheet */}
-                    <tr>
-                      <TableCell rowSpan="4" style={{ width: '80px' }}>
-                        <span>7</span>
-                      </TableCell>
-                      <TableCell rowSpan="4" style={{ width: '150px' }}>
-                        <span>Back Sheet</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>Make</span>
-                      </TableCell>
-                      <TableCell style={{ minWidth: '53px' }}>
-                        <span>{data.back_sheet.make}</span>
-                      </TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell>
-                        <span>Model</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.back_sheet.model}</span>
-                      </TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell>
-                        <span>Batch of Manufacturer</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.back_sheet.batch}</span>
-                      </TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell>
-                        <span>Manufacturing Date</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.back_sheet.manufacturing_date}</span>
-                      </TableCell>
-                    </tr>
-
-                    {/* Frame */}
-                    <tr>
-                      <TableCell rowSpan="6">
-                        <span>8</span>
-                      </TableCell>
-                      <TableCell rowSpan="6">
-                        <span>Frame</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>Make</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.frame.make}</span>
-                      </TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell>
-                        <span>Dimension of Long Side</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.frame.long_side_dimension}</span>
-                      </TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell>
-                        <span>Dimension of Short Side</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.frame.short_side_dimension}</span>
-                      </TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell>
-                        <span>Punching Location</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.frame.punching_location}</span>
-                      </TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell>
-                        <span>Model</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.frame.model}</span>
-                      </TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell>
-                        <span>Batch of Manufacturer</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.frame.batch}</span>
-                      </TableCell>
-                    </tr>
-
-                    {/* Junction Box */}
-                    <tr>
-                      <TableCell rowSpan="2">
-                        <span>9</span>
-                      </TableCell>
-                      <TableCell rowSpan="2">
-                        <span>Junction Box</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>Company Make</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.junction_box.company_make}</span>
-                      </TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell>
-                        <span>Batch of Manufacturer</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.junction_box.batch}</span>
-                      </TableCell>
-                    </tr>
-
-                    {/* Connector */}
-                    <tr>
-                      <TableCell>
-                        <span>10</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>Connector</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>Type</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.connector.type}</span>
-                      </TableCell>
-                    </tr>
-
-                    {/* Potting for JB */}
-                    <tr>
-                      <TableCell rowSpan="4">
-                        <span>11</span>
-                      </TableCell>
-                      <TableCell rowSpan="4">
-                        <span>Potting for JB</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>Make</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.potting_for_jb.make}</span>
-                      </TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell>
-                        <span>Model</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.potting_for_jb.model}</span>
-                      </TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell>
-                        <span>Batch of Manufacturer</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.potting_for_jb.batch}</span>
-                      </TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell>
-                        <span>Manufacturing Date</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.potting_for_jb.manufacturing_date}</span>
-                      </TableCell>
-                    </tr>
-
-                    {/* Adhesive for Junction Box */}
-                    <tr>
-                      <TableCell rowSpan="4">
-                        <span>12</span>
-                      </TableCell>
-                      <TableCell rowSpan="4">
-                        <span>Adhesive for Junction Box</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>Make</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.adhesive_for_jb.make}</span>
-                      </TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell>
-                        <span>Model</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.adhesive_for_jb.model}</span>
-                      </TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell>
-                        <span>Batch of Manufacturer</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.adhesive_for_jb.batch}</span>
-                      </TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell>
-                        <span>Manufacturing Date</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.adhesive_for_jb.manufacturing_date}</span>
-                      </TableCell>
-                    </tr>
-
-                    {/* Insulation Layer Sealant */}
-                    <tr>
-                      <TableCell rowSpan="2">
-                        <span>13</span>
-                      </TableCell>
-                      <TableCell rowSpan="2">
-                        <span>Insulation Layer Sealant</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>Make</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.insulation_layer_sealant.make}</span>
-                      </TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell>
-                        <span>Model</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.insulation_layer_sealant.model}</span>
-                      </TableCell>
-                    </tr>
-
-                    {/* Bypass Diode */}
-                    <tr>
-                      <TableCell rowSpan="2">
-                        <span>14</span>
-                      </TableCell>
-                      <TableCell rowSpan="2">
-                        <span>Bypass Diode</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>Make</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.bypass_diode.make}</span>
-                      </TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell>
-                        <span>Model</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.bypass_diode.model}</span>
-                      </TableCell>
-                    </tr>
-
-                    {/* Fixing Tape */}
-                    <tr>
-                      <TableCell rowSpan="2">
-                        <span>15</span>
-                      </TableCell>
-                      <TableCell rowSpan="2">
-                        <span>Fixing Tape</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>Make</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.fixing_tape.make}</span>
-                      </TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell>
-                        <span>Model</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.fixing_tape.model}</span>
-                      </TableCell>
-                    </tr>
-
-                    {/* Cable */}
-                    <tr>
-                      <TableCell>
-                        <span>16</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>Cable</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>Make & Dimension</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.cable.make_dimension}</span>
-                      </TableCell>
-                    </tr>
-
-                    {/* RFID */}
-                    <tr>
-                      <TableCell rowSpan={2}>
-                        <span>17</span>
-                      </TableCell>
-                      <TableCell rowSpan={2}>
-                        <span>RFID</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>Company Make</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.rfid.company_make}</span>
-                      </TableCell>
-                    </tr>
-                    <tr>
-                      <TableCell>
-                        <span>Model No</span>
-                      </TableCell>
-                      <TableCell>
-                        <span>{data.rfid.model_no}</span>
-                      </TableCell>
-                    </tr>
-
-                  </tbody>
-                </Table>
-              </div>
-
-
-            </div>
-
-            {/* footer */}
-            {isClick ? <div id="footer" style={{ width: '100%' }}>
-              <Table style={{ width: '100%' }}>
-                <tbody>
-                  <tr style={{ margin: 0, padding: 0 }}>
-                    {/* Ensure all cells have equal width */}
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Format No: JSR/SI</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Rev Date and No: 00</span>
-                    </TableCell>
-                    <TableCell style={{ width: '33.33%' }}>
-                      <span className="pdf-span">Compiled By: Sanket Thakkar</span>
-                    </TableCell>
-                  </tr>
-                </tbody>
-              </Table>
-            </div> : ""}
-            {/* page 2 end */}
-          </Container>
-        </>
+              <Footer reportData={reportData} isClick={isClick} />
+            </Container>
+          :
+          reportData.length <= 0 ? "Loading ..." :
+          <ResponsiveContainer width="100%" height={400}>
+          <BarChart data={ChartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="date" />
+            <YAxis yAxisId="left" />
+            <YAxis yAxisId="right" orientation="right" />
+            <Tooltip />
+            <Legend />
+            {/* Stacked Bars */}
+            <Bar yAxisId="left" dataKey="dayProduction" stackId="a" fill="#28a745" name="Day Production" />
+            <Bar yAxisId="left" dataKey="nightProduction" stackId="a" fill="#f4c542" name="Night Production" />
+            {/* Line for Total Rejection */}
+            <LineChart data={ChartData}>
+              <Line yAxisId="right" type="monotone" dataKey="totalRejection" stroke="red" strokeWidth={3} dot={{ fill: "red", r: 5 }} name="Total Rejection" />
+            </LineChart>
+          </BarChart>
+        </ResponsiveContainer>
       }
     </>
   );

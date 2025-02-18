@@ -295,9 +295,9 @@ form button:hover {
   margin-bottom: 20px;
 }
 
-.right-container .sections {
+/* .right-container .sections {
   margin-top: 20px;
-}
+} */
 
 .section {
   margin-bottom: 10px;
@@ -643,7 +643,23 @@ table {
 
 
 body {
-  font-family: 'Arial', sans-serif; /* Use system fonts */
+  /* font-family: 'Arial', sans-serif; */
+  font-family: 'Calibri', sans-serif;
+  font-size: 14px;
+}
+
+table tr, 
+table td {
+  font-family: 'Calibri', sans-serif;
+  font-size: 16px;
+  line-height: 1.4; /* Improves readability */
+}
+
+p {
+  font-family: 'Calibri', sans-serif;
+  font-size: 16px;
+  line-height: 1.5; 
+  color: #333;
 }
 
 /* 
@@ -702,3 +718,25 @@ body {
   100% { transform: rotate(360deg); }
 }
 
+.right-container {
+  display: flex;
+  flex-direction: column;
+  height: 85vh; /* Full viewport height */
+}
+
+.sections {
+  max-height: 100vh; /* Full screen height */
+  overflow-y: scroll; /* Enables scrolling */
+  -ms-overflow-style: none; /* Hide scrollbar in Internet Explorer/Edge */
+  scrollbar-width: none; /* Hide scrollbar in Firefox */
+}
+
+/* Hide scrollbar for Webkit browsers (Chrome, Safari) */
+.sections::-webkit-scrollbar {
+  display: none;
+}
+
+.sections::-webkit-scrollbar-thumb {
+  background-color: #ccc;
+  border-radius: 4px;
+}

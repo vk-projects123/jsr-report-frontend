@@ -126,12 +126,12 @@ const Forms = () => {
           >
             New Report
           </button> */}
-          {reportType == "BOM" ? "" : <button
-            onClick={() => navigate('/reports/running_report/1', { state: { reporttype: reportType, formId: 1, submissionID: submissionId } })}
+          <button
+            onClick={() => navigate('/reports/running_report/1', { state: { reporttype: reportType, formId: reportType == "IPQC" ? 1 : 3, submissionID: submissionId } })}
             className="inline-flex items-center justify-center rounded-md bg-primary py-2 mx-2 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
           >
             {reportStatus} Report
-          </button>}
+          </button>
           <div className="relative mx-2">
             <button className="absolute top-1/2 left-0 -translate-y-1/2">
               <svg
