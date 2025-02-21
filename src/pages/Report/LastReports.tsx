@@ -16,7 +16,7 @@ const LastForms = () => {
   const [isLoaded, setLoaded] = useState(false);
 
   const tableHeaders = [
-    { label: "Report ID", key: "submission_id" },
+    { label: "Report ID", key: "report_no" },
     { label: "Client", key: "customer_name" },
     { label: "Report Type", key: "form_name" },
     { label: "Status", key: "submission_status" },
@@ -174,7 +174,7 @@ const LastForms = () => {
                 {reportData.map((item: any, i: any) => (
                   <tr key={i}>
                     <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark text-center" style={{ width: 20 }}>
-                      <p className="text-sm text-black dark:text-white">{item.submission_id}</p>
+                      <p className="text-sm text-black dark:text-white">{item.report_no}</p>
                     </td>
                     <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
                       <p className="text-sm text-black dark:text-white">{item.customer_name}</p>

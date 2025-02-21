@@ -213,7 +213,7 @@ const ViewReport = () => {
             }}
           >
             <strong className={isClick ? "pdf-span" : ""}>
-            {reporttype == "IPQC" ? "In Process Inspection Daily Report" : "In Process Raw material verification"}
+              {reporttype == "IPQC" ? "In Process Inspection Daily Report" : "In Process Raw material verification"}
             </strong>
           </TitleContainer>
 
@@ -1429,10 +1429,14 @@ const ViewReport = () => {
               {/* Other Details */}
               <BomTableData reportData={reportData} isClick={isClick} id={"bomdetails"} value1={1} value2={8} />
 
-              <BomTableData reportData={reportData} isClick={isClick} id={"bomdetails1"} value1={8} value2={19} />
+              <BomTableData reportData={reportData} isClick={isClick} id={"bomdetails1"} value1={8} value2={18} />
 
               <Table id="report_completed">
                 <tbody style={{ margin: 0, padding: 0 }}>
+                  <tr>
+                    <HeaderCell style={{ width: "50%" }}><span>Remarks</span></HeaderCell>
+                    <TableCell><span>{reportData.length <= 0 ? "" : reportData[18]["value"][0]["value"]}</span></TableCell>
+                  </tr>
                   <tr>
                     <HeaderCell style={{ width: "50%" }}><span>Verification done by</span></HeaderCell>
                     <TableCell><span>{lastsection.inspection_done_by}</span></TableCell>

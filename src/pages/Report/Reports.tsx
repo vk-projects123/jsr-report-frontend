@@ -19,12 +19,23 @@ const Forms = () => {
   var utoken = localStorage.getItem('userToken');
 
   const tableHeaders = [
-    { label: "Report ID", key: "submission_id" },
+    { label: "Report ID", key: "report_no" },
     { label: "Client", key: "customer_name" },
     { label: "Status", key: "submission_status" },
     { label: "Inspection Eng-1", key: "employee_name" },
     { label: "Inspection Eng-2", key: "" }, // No sorting for this column
     { label: "Date", key: "created_at" },
+    { label: "Actions", key: "" }, // No sorting for actions
+  ];
+
+  const tableHeadersbom = [
+    { label: "Report ID", key: "report_no" },
+    { label: "Client", key: "customer_name" },
+    { label: "Status", key: "submission_status" },
+    { label: "Inspection Eng-1", key: "employee_name" },
+    { label: "Inspection Eng-2", key: "" }, // No sorting for this column
+    { label: "Date", key: "created_at" },
+    { label: "Images", key: "" },
     { label: "Actions", key: "" }, // No sorting for actions
   ];
 
@@ -173,7 +184,7 @@ const Forms = () => {
             <table className="w-full table-auto">
               <thead>
                 <tr className="bg-gray-2 text-left dark:bg-meta-4">
-                  {tableHeaders.map(({ label, key }) => (
+                  {(reportType == "BOM" ? tableHeadersbom : tableHeaders).map(({ label, key }) => (
                     <th
                       key={label}
                       className="min-w-[100px] py-3 px-4 font-medium text-sm text-black dark:text-white cursor-pointer"
@@ -191,7 +202,7 @@ const Forms = () => {
                 {reportData.map((item: any, i: any) => (
                   <tr key={i}>
                     <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark text-center" style={{ width: 20 }}>
-                      <p className="text-sm text-black dark:text-white">{item.submission_id}</p>
+                      <p className="text-sm text-black dark:text-white">{item.report_no}</p>
                     </td>
                     <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
                       <p className="text-sm text-black dark:text-white">{item.customer_name}</p>
@@ -209,6 +220,9 @@ const Forms = () => {
                     <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
                       <p className="text-sm text-black dark:text-white">{moment(item.created_at).format("DD-MM-YYYY")}</p>
                     </td>
+                    {reportType == "BOM" ? <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
+                      <div onClick={() => navigate("/reports/view_images", { state: { submissionID: item.submission_id, reporttype: item.form_name, formId: item.form_id } })}><FaEye className="w-5 h-5" /></div>
+                    </td> : ""}
                     <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
                       <div onClick={() => navigate("/reports/view_report/1", { state: { submissionID: item.submission_id, reporttype: item.form_name, formId: item.form_id } })}><FaEye className="w-5 h-5" /></div>
                     </td>

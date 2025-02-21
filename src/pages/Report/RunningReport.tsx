@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
-import { FaChevronDown, FaRegTrashAlt } from "react-icons/fa";
-import { LIST_FORM_SECTIONS_API, LIST_SECTION_PARAMS_API, LIST_CUSTOMER_API, SUBMIT_SECTION_API, ADD_OBSERVATIONS_API, GET_OBSERVATIONS_API, UPLOAD_IMAGE_API, DELETE_IMAGE_API, imgUrl } from "../../Api/api.tsx";
+import { FaChevronDown, FaTimes  } from "react-icons/fa";
+import { LIST_FORM_SECTIONS_API, LIST_SECTION_PARAMS_API, LIST_CUSTOMER_API, SUBMIT_SECTION_API, ADD_OBSERVATIONS_API, GET_OBSERVATIONS_API, UPLOAD_IMAGE_API, DELETE_IMAGE_API,LIST_BOM_REPORTS_API, imgUrl } from "../../Api/api.tsx";
 import { toast } from "react-toastify";
 import {
   ComposedChart,
@@ -48,6 +48,9 @@ const RunningReport = () => {
   const [sections, setSections] = useState<any>([]);
   const [observations, setObservations] = useState<any>([]);
   const [submissionID, setsubmissionID] = useState<any>(0);
+  const [imageuploading, setimageuploading] = useState<any>(false);
+  const [bomreports, setBomreports] = useState<any>([]);
+  const [attech_submission_id, setAttech_submission_id] = useState<any>(0);
 
   useEffect(() => {
     setLoaded(true);
@@ -59,6 +62,7 @@ const RunningReport = () => {
       listSectionParams(selectedSection.section_id);
       listobservations(selectedSection.section_id);
     }
+    listbomreports();
     listSections();
     listCustomer();
   }, [data]);
@@ -134,10 +138,12 @@ const RunningReport = () => {
   };
 
   const listobservations = async (e: any) => {
+    var FORMID = data.formId;
     console.log("list observation called", {
       form_id: data.formId,
       section_id: e
     });
+
     if (data.submissionID === 0 || !data.submissionID) {
       console.log("no observation found");
     } else {
@@ -163,8 +169,25 @@ const RunningReport = () => {
         if (data.Status === 0) {
           setLoaded(false);
         } else if (data.Status === 1) {
-          //console.log("observations", data.info);
-          setObservations(data.info);
+          console.log("observations", data.info);
+          // if (FORMID == 3 && data.info.length != 0) {
+          //   console.log("get data.info.length",data.info.length);
+          //   setObservations([]);
+          // }
+          console.log("add extra obj",data.info.length);
+          if (FORMID == 3 && data.info.length == 0) {
+            console.log("add extra obj");
+            var extraObj = {
+              "observations_id": 0,
+              "observations_text": "-",
+              "is_major": "No",
+              "images": []
+            };
+            setObservations([extraObj]);
+          } else {
+            setObservations(data.info);
+          }
+
           setsubmissionID(data.submission_id);
           setLoaded(false);
         }
@@ -201,6 +224,36 @@ const RunningReport = () => {
     }
   };
 
+  const listbomreports = async () => {
+    var FORMID = data.formId;
+    try {
+      const params = new URLSearchParams({
+        form_id: FORMID
+      });
+      const response = await fetch(`${LIST_BOM_REPORTS_API}?${params.toString()}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${utoken}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.Status === 0) {
+        setLoaded(false);
+      } else if (data.Status === 1) {
+        console.log("bom report",data.info);
+        setBomreports(data.info);
+        setLoaded(false);
+      }
+    } catch (error) {
+      console.error("Error fetching sections:", error);
+      setLoaded(false);
+    }
+  };
+
   const submitSection = async (e: any) => {
     e.preventDefault();
     setIsLoading(true);
@@ -225,7 +278,8 @@ const RunningReport = () => {
           section_id: selectedSection.section_id,
           inspection_done_by: submitsectionby,
           checking_together: checkingtogether,
-          jsonData: JSON.stringify(sectionparams)
+          jsonData: JSON.stringify(sectionparams),
+          attech_submission_id : attech_submission_id
         })
       });
 
@@ -245,7 +299,12 @@ const RunningReport = () => {
 
   const addobservations = async (e: any) => {
     e.preventDefault();
+    var FORMID = data.formId;
     setIsLoading(true);
+
+    console.log("observations ->>", observations);
+
+
     try {
       const response = await fetch(ADD_OBSERVATIONS_API, {
         method: "POST",
@@ -255,7 +314,7 @@ const RunningReport = () => {
           Accept: "application/json",
         },
         body: JSON.stringify({
-          form_id: 1,
+          form_id: FORMID,
           section_id: selectedSection.section_id,
           jsonData: JSON.stringify(observations)
         })
@@ -278,7 +337,7 @@ const RunningReport = () => {
 
   const addAndUploadImages = async (index: number, newImages: File[]) => {
     const formData = new FormData();
-    //console.log('newImages', newImages);
+    console.log('newImages', newImages);
     // Append each file to the same parameter
     for (const file of newImages) {
       formData.append('observations', file);
@@ -312,18 +371,21 @@ const RunningReport = () => {
               : obs
           )
         );
-
+        setimageuploading(false);
         // Show success message
         // toast.success(data.Message);
       } else {
         // Handle upload failure
         toast.error("Failed to upload images.");
+        setimageuploading(false);
       }
     } catch (error) {
       console.error("Error uploading images:", error);
       toast.error("An error occurred while uploading images.");
+      setimageuploading(false);
     } finally {
       setIsLoading(false);
+      setimageuploading(false);
     }
   };
 
@@ -422,6 +484,17 @@ const RunningReport = () => {
     }
   };
 
+  const handleFileUpload1 = (event: React.ChangeEvent<HTMLInputElement>, index: any) => {
+    setimageuploading(true);
+    const files = event.target.files;
+    if (files && files.length > 0) {
+      const newImages = Array.from(files);
+      addAndUploadImages(index, newImages);
+    }else{
+      setimageuploading(false);
+    }
+  };
+
   // Add a new observation
   const addObservation = () => {
 
@@ -472,11 +545,13 @@ const RunningReport = () => {
         toast.success(data.Message);
 
         // Update local state without calling API again
-        setObservations((prevObservations: any) => {
-          const updatedObservations = [...prevObservations];
-          updatedObservations[obsIndex].images.splice(imgIndex, 1);
-          return updatedObservations;
-        });
+        // setObservations((prevObservations: any) => {
+        //   const updatedObservations = [...prevObservations];
+        //   updatedObservations[obsIndex].images.splice(imgIndex, 1);
+        //   return updatedObservations;
+        // });
+
+        listobservations(selectedSection.section_id);
 
       } else {
         toast.error("Failed to delete image.");
@@ -512,13 +587,13 @@ const RunningReport = () => {
                     + Add Observation
                   </button>
                 )}
-                <button className="add-btn mx-2" onClick={() => navigate('/reports/preview_report', {
+                {submissionID == 0 ? "" : <button className="add-btn mx-2" onClick={() => navigate('/reports/preview_report', {
                   state: {
                     formId: data.formId, reporttype: data.reporttype, submissionID: submissionID, selectedSection: selectedSection
                   }
                 })}>
                   Preview
-                </button>
+                </button>}
                 <button className="add-btn mx-2" onClick={submitSection}>
                   {isLoading ? (
                     <svg
@@ -614,6 +689,28 @@ const RunningReport = () => {
                         {row.length === 1 && <div className="w-full xl:w-1/2"></div>}
                       </div>
                     ))}
+                     <div className="w-full xl:w-1/2">
+                            <label className="mb-2.5 block text-black dark:text-white">
+                              Bom Report Attechment
+                            </label>
+                              <div className="relative z-20 bg-transparent dark:bg-form-input">
+                                <select
+                                  value={attech_submission_id}
+                                  onChange={(e) => setAttech_submission_id(e.target.value)}
+                                  className="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-1.5 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                >
+                                  <option value="">Select Option</option>
+                                 {bomreports.map((bomItem: any, idx: any) => (
+                                      <option key={idx} value={bomItem.submission_id}>
+                                        {bomItem.report_no}
+                                      </option>
+                                    ))}
+                                </select>
+                                <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2">
+                                  <FaChevronDown className="text-gray-500 dark:text-gray-400" />
+                                </span>
+                              </div>
+                          </div>
                 </div>
               </form>
               : selectedSection.section_type === "table" ?
@@ -673,7 +770,7 @@ const RunningReport = () => {
                                       />
 
                                       {/* Delete Icon in Top-Right Corner */}
-                                      <FaRegTrashAlt
+                                      <FaTimes 
                                         className="delete-icon"
                                         onClick={() => handleDeleteImage(index, imgIdx, image.image_id, image.image)}
                                       />
@@ -765,7 +862,7 @@ const RunningReport = () => {
                                           />
 
                                           {/* Delete Icon in Top-Right Corner */}
-                                          <FaRegTrashAlt
+                                          <FaTimes 
                                             className="delete-icon"
                                             onClick={() => handleDeleteImage(index, imgIdx, image.image_id, image.image)}
                                           />
@@ -1072,48 +1169,58 @@ const RunningReport = () => {
                 : selectedSection.section_type === "imageDescription" ?
                   <div className="observation-container">
                     <table className="observation-table">
-                      <thead>
-                        <tr>
-                          <th>Images</th>
-                        </tr>
-                      </thead>
                       <tbody>
-                        <tr>
-                          <td>
-                            <div className="observation-detail">
-                              {/* Display Images with Delete Icon */}
-                              <div className="image-row">
-                                {images.map((image: any, imgIdx: number) => (
-                                  <div key={imgIdx} className="image-container">
-                                    {/* Observation Image */}
-                                    <img
-                                      className="observation-close-image"
-                                      src={imgUrl + image.image}
-                                      alt={`Observation ${index + 1} - Image ${imgIdx + 1}`}
-                                    />
+                        {observations.map((observation: any, index: any) => (
+                          <tr key={observation.observations_id}>
+                            <td>
+                              <div className="observation-detail">
+                                {/* Image Grid */}
+                                <div
+                                  style={{
+                                    display: "grid",
+                                    gridTemplateColumns: "repeat(5, 1fr)",
+                                    gap: "10px",
+                                    padding: "10px",
+                                  }}
+                                >
+                                  {imageuploading ? "Wait Image is Uploading..." : observation.images.map((image: any, imgIdx: any) => (
+                                    <div
+                                      key={imgIdx}
+                                      style={{ position: "relative", width: "120px", height: "120px" }}
+                                    >
+                                      <img
+                                        style={{
+                                          width: "100%",
+                                          height: "100%",
+                                          objectFit: "cover",
+                                          borderRadius: "5px",
+                                        }}
+                                        src={imgUrl + image.image}
+                                        alt={`Observation ${index + 1} - Image ${imgIdx + 1}`}
+                                      />
+                                       <FaTimes 
+                                        className="delete-icon"
+                                        onClick={() => handleDeleteImage(index, imgIdx, image.image_id, image.image)}
+                                      />
+                                    </div>
+                                  ))}
+                                </div>
 
-                                    {/* Delete Icon in Top-Right Corner */}
-                                    <FaRegTrashAlt
-                                      className="delete-icon"
-                                      onClick={() => handleDeleteImage(index, imgIdx, image.image_id, image.image)}
-                                    />
-                                  </div>
-                                ))}
+                                {/* File Upload */}
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  multiple
+                                  onChange={(e) => handleFileUpload1(e, index)}
+                                />
                               </div>
-
-                              {/* File Upload */}
-                              <input
-                                type="file"
-                                accept="image/*"
-                                multiple
-                                onChange={(e: any) => handleFileUpload(e, index, observation.images.length)}
-                              />
-                            </div>
-                          </td>
-                        </tr>
+                            </td>
+                          </tr>
+                        ))}
                       </tbody>
                     </table>
-                  </div> : ""}
+                  </div>
+                  : ""}
           </div>
           : (
             <ResponsiveContainer width="100%" height={400} style={{ marginTop: 30 }}>

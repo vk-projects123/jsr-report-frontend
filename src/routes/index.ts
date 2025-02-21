@@ -5,6 +5,7 @@ const LastReports = lazy(() => import('../pages/Report/LastReports'));
 const RunningReport = lazy(() => import('../pages/Report/RunningReport'));
 const ViewReport = lazy(() => import('../pages/Report/ViewReport'));
 const PreviewReport = lazy(() => import('../pages/Report/PreviewReport'));
+const ViewImages = lazy(() => import('../pages/Report/ViewImages'));
 // const NewReport = lazy(()=> import('../pages/Report/NewReport'));
 
 const coreRoutes = [
@@ -37,6 +38,11 @@ const coreRoutes = [
     path: '/reports/preview_report',
     title: 'Preview Report',
     component: PreviewReport,
+  },
+  {
+    path: '/reports/view_images',
+    title: 'View Images',
+    component: ViewImages,
   },
 ];
 
