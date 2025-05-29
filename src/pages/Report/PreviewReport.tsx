@@ -379,14 +379,14 @@ const PreviewReport = () => {
 
   const InspectionResults = ({ reportData, isClick }) => {
     return (
-      <div className="content" id="ReportDetailsSection">
+      <div className="content" id="InspectionResults">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Inspection Results -</p>
         <Table>
           <tbody style={{ margin: 0, padding: 0 }}>
             {reportData[3].value.map((item: any, index: any) => (
               <tr key={index}>
                 <HeaderCell style={{ width: "50%" }}><span>{item.param_name}</span></HeaderCell>
-                {index == 1 ? <TableCell><span><a href={item.value ? (imgUrl + item.value) : ""}>{item.value ? <FiPaperclip style={{ marginRight: '5px' }} /> : "-"}</a></span></TableCell> : <TableCell><span>{item.value}</span></TableCell>}
+                {index == 1 ? <TableCell><span><a href={item.value ? (imgUrl + item.value) : ""} target="_blank" rel="noopener noreferrer" >{item.value ? <FiPaperclip style={{ marginRight: '5px' }} /> : "-"}</a></span></TableCell> : <TableCell><span>{item.value}</span></TableCell>}
               </tr>
             ))}
           </tbody>
@@ -481,8 +481,11 @@ const PreviewReport = () => {
                 <HeaderCell style={{ textAlign: 'center', width: '5%' }}>
                   <span>Inspection</span>
                 </HeaderCell>
-                <HeaderCell colSpan={2}>
+                <HeaderCell>
                   <span>Observations / Deficiency Details</span>
+                </HeaderCell>
+                <HeaderCell colSpan={2}>
+                  <span>Image attachment</span>
                 </HeaderCell>
               </tr>
               {reportData[2].value.slice(value1, value2).map((observation: any, index: any) => (
@@ -495,6 +498,9 @@ const PreviewReport = () => {
                     <TableCell style={{ textAlign: 'center' }} rowSpan={Math.ceil(observation.images.length / 2) + 1}>
                       <span>{observation.Inspection}</span>
                     </TableCell>
+                    <TableCell style={{ textAlign: 'center' }} rowSpan={Math.ceil(observation.images.length / 2) + 1}>
+                      <span>{observation.observations_text}</span>
+                    </TableCell>
                     {/* {observation.Inspection ? (
                       <TableCell colSpan={2}>
                         <span>{observation.Inspection}</span>
@@ -502,13 +508,13 @@ const PreviewReport = () => {
                     ) : (
                       ""
                     )} */}
-                    {observation.observations_text ? (
+                    {/* {observation.observations_text ? (
                       <TableCell colSpan={2}>
                         <span>{observation.observations_text}</span>
                       </TableCell>
                     ) : (
                       ""
-                    )}
+                    )} */}
                   </tr>
 
                   {/* Rows for Images */}
@@ -1335,6 +1341,7 @@ const PreviewReport = () => {
       "FlasherTestingObservations",
       "RandomSampleCheck",
       "RandomSampleCheckObservations",
+      "InspectionResults",
       "report_completed"
     ];
 
@@ -1451,7 +1458,8 @@ const PreviewReport = () => {
             Accept: "application/json",
           },
           body: JSON.stringify({
-            submission_id: submissionID
+            submission_id: submissionID,
+            form_id : formId
           })
         });
 
@@ -1470,7 +1478,6 @@ const PreviewReport = () => {
       }
     }
   };
-
 
   const ChartData = [
     { date: "12/25/2024", dayProduction: 120, nightProduction: 222, totalRejection: 50 },

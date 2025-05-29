@@ -32,6 +32,7 @@ export const ADD_DPR_REPORTS_API = baseUrl + "/add_dpr_reports";
 export const GET_OBSERVATIONS_API = baseUrl + "/get_observations";
 export const GET_BOM_IMAGES_API = baseUrl + "/get_bom_images";
 export const UPLOAD_IMAGE_API = baseUrl + "/upload_images";
+export const UPLOAD_ATTECHMENT_API = baseUrl + "/upload_attechment";
 export const DELETE_IMAGE_API = baseUrl + "/delete_image";
 
 //list Reports
@@ -41,3 +42,9 @@ export const VIEW_REPORTS_API = baseUrl + "/view_reports";
 
 //submit report
 export const SUBMIT_REPORT_API = baseUrl + "/submit_report"
+
+//resume report
+export const RESUME_REPORT_API = baseUrl + "/resume_report"
+
+//get report history
+export const GET_REPORT_HISTORY_API = baseUrl + "/get_report_history"

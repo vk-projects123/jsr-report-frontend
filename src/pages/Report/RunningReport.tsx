@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FaChevronDown, FaTimes } from "react-icons/fa";
-import { LIST_FORM_SECTIONS_API, LIST_INSPECTION_OBSERVATIONS_API, LIST_SECTION_PARAMS_API, LIST_CUSTOMER_API, SUBMIT_SECTION_API, ADD_OBSERVATIONS_API, GET_OBSERVATIONS_API, UPLOAD_IMAGE_API, DELETE_IMAGE_API, LIST_BOM_REPORTS_API, imgUrl } from "../../Api/api.tsx";
+import { LIST_FORM_SECTIONS_API, UPLOAD_ATTECHMENT_API, LIST_INSPECTION_OBSERVATIONS_API, LIST_SECTION_PARAMS_API, LIST_CUSTOMER_API, SUBMIT_SECTION_API, ADD_OBSERVATIONS_API, GET_OBSERVATIONS_API, UPLOAD_IMAGE_API, DELETE_IMAGE_API, LIST_BOM_REPORTS_API, imgUrl } from "../../Api/api.tsx";
 import { toast } from "react-toastify";
 import {
   ComposedChart,
@@ -420,6 +420,56 @@ const RunningReport = () => {
     }
   };
 
+  const UploadAttechmentFile = async (newImages: File[]) => {
+    const formData = new FormData();
+
+    // Append each file to the same parameter
+    for (const file of newImages) {
+      formData.append('attechment', file);
+    }
+
+    try {
+      // Upload images to the server
+      const response = await fetch(UPLOAD_ATTECHMENT_API, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${utoken}`,
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (data.Status === 1) {
+        //console.log("images ->> data.info", data.info);
+        // If upload is successful, update the local state with the new image URLs
+        const name = "Attachments if any";
+        const value = data.info;
+
+        console.log("images", data.info);
+        setSectionparams((prevParams: any) =>
+          prevParams.map((param: any) =>
+            param.param_name === name ? { ...param, value } : param
+          )
+        );
+        setimageuploading(false);
+        // Show success message
+        // toast.success(data.Message);
+      } else {
+        // Handle upload failure
+        toast.error("Failed to upload images.");
+        setimageuploading(false);
+      }
+    } catch (error) {
+      console.error("Error uploading images:", error);
+      toast.error("An error occurred while uploading images.");
+      setimageuploading(false);
+    } finally {
+      setIsLoading(false);
+      setimageuploading(false);
+    }
+  };
+
   // Map sections into viewable data
   const viewSections = sections.map((item: any) => ({
     section_id: item.section_id,
@@ -511,6 +561,15 @@ const RunningReport = () => {
     if (files && files.length > 0) {
       const newImages = Array.from(files);
       addAndUploadImages(index, newImages);
+    }
+  };
+
+  const handleattechmentFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+
+    if (files && files.length > 0) {
+      const newImages = Array.from(files);
+      UploadAttechmentFile(newImages);
     }
   };
 
@@ -1400,15 +1459,30 @@ const RunningReport = () => {
                   </div>
                 </form>
                 : selectedSection.section_type === "table" ?
-                    <div className="table-container">
-                      <table className="production-table">
-                        <tbody>
-                          {sectionparams.map((item: any, index: any) =>
-                            <tr key={index}>
-                              <td style={{ width: '50%' }}>{item.param_name}</td>
-                              <td>
-                                {item.param_name == "Attachments if any" ? "" : 
-                                 <input
+                  <div className="table-container">
+                    <table className="production-table">
+                      <tbody>
+                        {sectionparams.map((item: any, index: any) =>
+                          <tr key={index}>
+                            <td style={{ width: '50%' }}>{item.param_name}</td>
+                            <td>
+                              {item.param_name == "Attachments if any" ?
+                                <>
+                                  <input
+                                    type="file"
+                                    name={item.param_name}
+                                    onChange={(e: any) => handleattechmentFileUpload(e)}
+                                  />
+                                  {item.value && (
+                                    <div style={{ marginTop: '10px' }}>
+                                      <a style={{color:'blue'}} href={imgUrl + item.value} target="_blank" rel="noopener noreferrer">
+                                        View PDF
+                                      </a>
+                                    </div>
+                                  )}
+                                </>
+                                :
+                                <input
                                   type={item.inputType}
                                   name={item.param_name}
                                   placeholder={item.param_name}
@@ -1416,13 +1490,13 @@ const RunningReport = () => {
                                   onChange={handleChange}
                                   className="input-field"
                                 />
-                                }
-                              </td>
-                            </tr>
-                          )}
-                        </tbody>
-                      </table>
-                      {selectedSection.section == "Inspection Results" ? <table className="mt-10 production-table">
+                              }
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                    {selectedSection.section == "Inspection Results" ? <table className="mt-10 production-table">
                       <thead>
                         <tr>
                           <th>Inspection done by</th>
@@ -1454,7 +1528,7 @@ const RunningReport = () => {
                         </tr>
                       </tbody>
                     </table> : ""}
-                    </div>
+                  </div>
                   : selectedSection.section_type === "imageDescription" ?
                     <div className="observation-container">
                       <table className="observation-table">

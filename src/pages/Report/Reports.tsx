@@ -1,20 +1,23 @@
 import { useState, useEffect } from "react";
 import Breadcrumb from '../../components/Breadcrumb';
 import { useParams, useNavigate } from 'react-router-dom';
-import { LIST_REPORTS_API } from '../../Api/api';
+import { LIST_REPORTS_API, RESUME_REPORT_API, GET_REPORT_HISTORY_API } from '../../Api/api';
 import moment from "moment";
 import { FaEye } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 const Forms = () => {
   const { reportType } = useParams();
   const navigate = useNavigate();
   const [reportData, setReportData] = useState([]);
+  const [reporthistoryData, setReportHistoryData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [itemsPerPage] = useState(10);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
   const [isLoaded, setLoaded] = useState(false);
+  const [historymodal, setHistorymodal] = useState(false);
   const [reportStatus, setReportstatus] = useState('Running');
   const [submissionId, setSubmissionid] = useState(0);
   var utoken = localStorage.getItem('userToken');
@@ -50,6 +53,17 @@ const Forms = () => {
     { label: "WP Rejection ", key: "rejection_wp" },
     { label: "NOS Rejection", key: "rejection_nos" },
     { label: "Date", key: "created_at" },
+    { label: "Actions", key: "" },
+  ];
+
+  const tableHeaderspdi = [
+    { label: "Report ID", key: "report_no" },
+    { label: "Client", key: "customer_name" },
+    { label: "Status", key: "submission_status" },
+    { label: "Inspection Eng", key: "employee_name" },
+    { label: "Date", key: "created_at" },
+    { label: "Last Action At", key: "last_updated_at" },
+    { label: "Reupdate", key: "" },
     { label: "Actions", key: "" },
   ];
 
@@ -136,6 +150,70 @@ const Forms = () => {
     }
   };
 
+  const listReportsHistory = async (submission_id: string) => {
+    const params = new URLSearchParams({
+      submission_id: submission_id
+    });
+
+    try {
+      const response = await fetch(`${GET_REPORT_HISTORY_API}?${params.toString()}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${utoken}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.Status === 0) {
+        setLoaded(false);
+      } else if (data.Status === 1) {
+        setReportHistoryData(data.info);
+      }
+    } catch (error) {
+      console.error("Error fetching sections:", error);
+      setLoaded(false);
+    }
+  };
+
+  const resumeReport = async (e: any, formId: any, submissionID: any) => {
+    e.preventDefault();
+    try {
+      const response = await fetch(RESUME_REPORT_API, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${utoken}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          submission_id: submissionID,
+          form_id: formId
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.Status === 0) {
+        setLoaded(false);
+        toast.error(data.Message);
+      } else if (data.Status === 1) {
+        toast.success(data.Message);
+        listReports(currentPage);
+        setLoaded(false);
+      }
+    } catch (error) {
+      console.error("Error fetching sections:", error);
+      setLoaded(false);
+    }
+  };
+
+  const openhistorymodal = (submission_id: any) => {
+    listReportsHistory(submission_id);
+    setHistorymodal(true);
+  }
 
   return (
     <>
@@ -191,13 +269,57 @@ const Forms = () => {
           </div>
         </div>
 
+        {historymodal && (
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+            <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold">Data Table</h2>
+                <button
+                  onClick={() => setHistorymodal(false)}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  ✕
+                </button>
+              </div>
+
+              <table className="w-full text-left border border-gray-200">
+                <thead>
+                  <tr className="bg-gray-100">
+                    <th className="p-2 border-b">Sr No</th>
+                    <th className="p-2 border-b">History Type</th>
+                    <th className="p-2 border-b">Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {reporthistoryData.map((row: any, key: any) => (
+                    <tr key={key} className="hover:bg-gray-50">
+                      <td className="p-2 border-b">{key+1}</td>
+                      <td className="p-2 border-b">{row.submission_type}</td>
+                      <td className="p-2 border-b">{moment.utc(row.created_at).local().format("lll")}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              <div className="mt-4 text-right">
+                <button
+                  onClick={() => setHistorymodal(false)}
+                  className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Table */}
         <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
           <div className="max-w-full overflow-x-auto">
             <table className="w-full table-auto">
               <thead>
                 <tr className="bg-gray-2 text-left dark:bg-meta-4">
-                  {(reportType == "BOM" ? tableHeadersbom : reportType == "DPR" ? tableHeadersdpr : tableHeaders).map(({ label, key }) => (
+                  {(reportType == "BOM" ? tableHeadersbom : reportType == "DPR" ? tableHeadersdpr : reportType == "PDI" ? tableHeaderspdi : tableHeaders).map(({ label, key }) => (
                     <th
                       key={label}
                       className="min-w-[100px] py-3 px-4 font-medium text-sm text-black dark:text-white cursor-pointer"
@@ -231,10 +353,16 @@ const Forms = () => {
                       <p className="text-sm text-black dark:text-white">{item.employee_name}</p>
                     </td>
                     <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
-                      <p className="text-sm text-black dark:text-white">{moment(reportType == "BOM" ? item.bom_date : item.ipqc_date).format("DD-MM-YYYY")}</p>
+                      <p className="text-sm text-black dark:text-white">{moment(reportType == "BOM" ? item.bom_date : reportType == "PDI" ? item.created_at : item.ipqc_date).format("DD-MM-YYYY")}</p>
                     </td>
                     {reportType == "BOM" ? <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
                       <div onClick={() => navigate("/reports/view_images", { state: { submissionID: item.submission_id, reporttype: item.form_name, formId: item.form_id } })}><FaEye className="w-5 h-5" /></div>
+                    </td> : ""}
+                    {reportType == "PDI" ? <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
+                      <div onClick={() => openhistorymodal(item.submission_id)}>{moment.utc(item.last_updated_at).local().format("lll")}</div>
+                    </td> : ""}
+                    {reportType == "PDI" ? <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
+                      <button style={{ backgroundColor: '#1C2434', color: 'white', borderRadius: 20, padding: 8 }} onClick={(e) => resumeReport(e, item.form_id, item.submission_id)}>Resume</button>
                     </td> : ""}
                     <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
                       <div onClick={() => navigate("/reports/view_report/1", { state: { submissionID: item.submission_id, reporttype: item.form_name, formId: item.form_id } })}><FaEye className="w-5 h-5" /></div>
