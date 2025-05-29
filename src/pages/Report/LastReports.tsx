@@ -10,6 +10,7 @@ const LastForms = () => {
   var utoken = localStorage.getItem('userToken');
   const [reportData, setReportData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [itemsPerPage] = useState(10);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
@@ -21,25 +22,23 @@ const LastForms = () => {
     { label: "Report Type", key: "form_name" },
     { label: "Status", key: "submission_status" },
     { label: "Inspection Eng-1", key: "employee_name" },
-    { label: "Inspection Eng-2", key: "" }, // No sorting for this column
+    // { label: "Inspection Eng-2", key: "" },
     { label: "Date", key: "created_at" },
     { label: "Actions", key: "" }, // No sorting for actions
   ];
 
-
-  // Pagination logic
-  const lastItemIndex = currentPage * itemsPerPage;
-  const firstItemIndex = lastItemIndex - itemsPerPage;
-  const currentItems = reportData.slice(firstItemIndex, lastItemIndex);
-
-  const totalPages = Math.ceil(reportData.length / itemsPerPage);
-
   const handleNextPage = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+    if (currentPage < totalPages) {
+      listReports((currentPage + 1).toString());
+      setCurrentPage(currentPage + 1)
+    };
   };
 
   const handlePreviousPage = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
+    if (currentPage > 1) {
+      listReports((currentPage - 1).toString());
+      setCurrentPage(currentPage - 1)
+    };
   };
 
   // Sorting function
@@ -73,13 +72,13 @@ const LastForms = () => {
 
   useEffect(() => {
     setLoaded(true);
-    listReports();
+    listReports(currentPage.toString());
   }, []);
 
   // Function to fetch sections
-  const listReports = async () => {
+  const listReports = async (page_no: string) => {
     const params = new URLSearchParams({
-      pageNo: '1',
+      pageNo: page_no,
       report_type: 'All'
     });
 
@@ -100,6 +99,7 @@ const LastForms = () => {
       } else if (data.Status === 1) {
         console.log("data ->>>", data.info.data);
         setReportData(data.info.data);
+        setTotalPages(data.info.pagination.totalPages || 0);
         setLoaded(false);
       }
     } catch (error) {
@@ -162,7 +162,7 @@ const LastForms = () => {
                       className="min-w-[100px] py-3 px-4 font-medium text-sm text-black dark:text-white cursor-pointer"
                       onClick={key ? () => handleSort(key) : undefined} // Only sort if key exists
                     >
-                       <b>{label}</b>{" "}
+                      <b>{label}</b>{" "}
                       {sortConfig.key === key && key && (
                         <span>{sortConfig.direction === "asc" ? "↑" : "↓"}</span>
                       )}
@@ -189,11 +189,11 @@ const LastForms = () => {
                     <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
                       <p className="text-sm text-black dark:text-white">{item.employee_name}</p>
                     </td>
-                    <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
+                    {/* <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
                       <p className="text-sm text-black dark:text-white">{'-'}</p>
-                    </td>
+                    </td> */}
                     <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
-                      <p className="text-sm text-black dark:text-white">{moment(item.created_at).format("DD-MM-YYYY")}</p>
+                      <p className="text-sm text-black dark:text-white">{moment(item.form_name == "BOM" ? item.bom_date : item.ipqc_date).format("DD-MM-YYYY")}</p>
                     </td>
                     <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
                       <div onClick={() => navigate("/reports/view_report/1", { state: { submissionID: item.submission_id, reporttype: item.form_name, formId: item.form_id } })}><FaEye className="w-5 h-5" /></div>

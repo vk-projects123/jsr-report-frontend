@@ -1,5 +1,5 @@
 import { Suspense, lazy, useEffect, useState } from 'react';
-import { BrowserRouter,Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { ToastContainer } from "react-toastify";
 import SignIn from './pages/Authentication/SignIn';
@@ -21,17 +21,17 @@ function App() {
     <Loader />
   ) : (
     <>
-    <ToastContainer
-  position="top-right"
-  autoClose={3000} // 3 seconds
-  hideProgressBar={false}
-  newestOnTop={false}
-  closeOnClick
-  rtl={false}
-  pauseOnFocusLoss
-  draggable
-  pauseOnHover
-/>
+      <ToastContainer
+        position="top-right"
+        autoClose={3000} // 3 seconds
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       <Toaster
         position="top-right"
         reverseOrder={false}

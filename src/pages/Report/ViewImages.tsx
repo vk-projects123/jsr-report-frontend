@@ -102,7 +102,7 @@ const ViewImages = () => {
             ) : imageloading ? <p>Images is Loading...</p> : (
                 <GridContainer>
                     {observations.map((observation, index) =>
-                       observation.images.map((image, imgIdx) => (
+                        observation.images.map((image, imgIdx) => (
                             <ImageItem
                                 key={`${index}-${imgIdx}`}
                                 image={image}
@@ -135,7 +135,7 @@ const ViewImages = () => {
     );
 };
 
-const ImageItem = ({ image: any, imgUrl: any, setSelectedImage: any }) => {
+const ImageItem = ({ image, imgUrl, setSelectedImage }) => {
     const [loading, setLoading] = useState(true);
     const [cachedSrc, setCachedSrc] = useState(imgUrl + image.image);
 

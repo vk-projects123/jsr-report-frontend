@@ -9,6 +9,7 @@ import { VIEW_REPORTS_API, SUBMIT_REPORT_API, imgUrl } from "../../Api/api.tsx";
 import moment from 'moment';
 import { toast } from "react-toastify";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, LineChart, Line, CartesianGrid, ResponsiveContainer } from "recharts";
+import { FiPaperclip } from 'react-icons/fi';
 
 const Container = styled.div`
   display: flex;
@@ -226,7 +227,7 @@ const PreviewReport = () => {
             }}
           >
             <strong className={isClick ? "pdf-span" : ""}>
-              {reporttype == "IPQC" ? "In Process Inspection Daily Report" : "In Process Raw material verification"}
+              {reporttype == "IPQC" ? "In Process Inspection Daily Report" : reporttype == "BOM" ? "In Process Raw Material Verification" : "Pre Dispatch Inspection Report"}
             </strong>
           </TitleContainer>
 
@@ -248,12 +249,11 @@ const PreviewReport = () => {
             </div>
             <div>
               Report No:{" "}
-              {reportData[0].value.find((item) => item.param_name === "Report No")
+              {lastsection ? lastsection.report_no : reportData[0].value.find((item) => item.param_name === "Report No")
                 ?.value}
             </div>
           </ReportDetails>
         </HeaderRow>
-
     );
   };
 
@@ -359,6 +359,42 @@ const PreviewReport = () => {
     );
   };
 
+  const InspectionDetails = ({ reportData, isClick }) => {
+    return (
+      <div className="content" id="ProductStageWise">
+        <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Inspection Details -</p>
+        <Table>
+          <tbody style={{ margin: 0, padding: 0 }}>
+            {reportData[1].value.map((item: any, index: any) => (
+              <tr key={index}>
+                <HeaderCell style={{ width: "50%" }}><span>{item.param_name}</span></HeaderCell>
+                <TableCell><span>{item.value}</span></TableCell>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
+    );
+  };
+
+  const InspectionResults = ({ reportData, isClick }) => {
+    return (
+      <div className="content" id="ReportDetailsSection">
+        <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Inspection Results -</p>
+        <Table>
+          <tbody style={{ margin: 0, padding: 0 }}>
+            {reportData[3].value.map((item: any, index: any) => (
+              <tr key={index}>
+                <HeaderCell style={{ width: "50%" }}><span>{item.param_name}</span></HeaderCell>
+                {index == 1 ? <TableCell><span><a href={item.value ? (imgUrl + item.value) : ""}>{item.value ? <FiPaperclip style={{ marginRight: '5px' }} /> : "-"}</a></span></TableCell> : <TableCell><span>{item.value}</span></TableCell>}
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
+    );
+  };
+
   const MajorObservations = ({ reportData, isClick, value1, value2 }) => {
     return (
       reportData[2].value.slice(value1, value2).length <= 0 ? "" :
@@ -381,6 +417,91 @@ const PreviewReport = () => {
                     <TableCell style={{ textAlign: 'center' }} rowSpan={Math.ceil(observation.images.length / 2) + 1}>
                       <span>{index + (value1 + 1)}</span> {/* Adjust index to match the skipped first item */}
                     </TableCell>
+                    {observation.observations_text ? (
+                      <TableCell colSpan={2}>
+                        <span>{observation.observations_text}</span>
+                      </TableCell>
+                    ) : (
+                      ""
+                    )}
+                  </tr>
+
+                  {/* Rows for Images */}
+                  {observation.images
+                    .reduce((rows: any[], image: any, idx: number) => {
+                      if (idx % 2 === 0) rows.push([]);
+                      rows[rows.length - 1].push(image);
+                      return rows;
+                    }, [])
+                    .map((rowImages: any[], rowIndex: number) => (
+                      <tr key={rowIndex} id="avoid-break">
+                        {rowImages.map((image: any, imgIdx: number) => (
+                          <TableCell
+                            key={imgIdx}
+                            style={{
+                              textAlign: "center",
+                              width: rowImages.length % 2 === 0 ? "45%" : "93%",
+                            }}
+                          >
+                            <img
+                              src={`${imgUrl}${image.image}`}
+                              alt="PDF Sub"
+                              style={{
+                                padding: 5,
+                                height: 250,
+                                width: rowImages.length % 2 === 0 ? "100%" : "45%",
+                              }}
+                            />
+                          </TableCell>
+                        ))}
+                        {/* Fill empty cell if only one image in row */}
+                        {rowImages.length === 1 && ""}
+                      </tr>
+                    ))}
+                </>
+              ))}
+
+            </tbody>
+          </Table>
+        </div>
+    );
+  };
+
+  const InpectionObservations = ({ reportData, isClick, value1, value2 }) => {
+    return (
+      reportData[2].value.slice(value1, value2).length <= 0 ? "" :
+        <div className="content" id={"MajorObservations" + value2}>
+          {value1 == 0 ? <Title className={isClick ? "pdf-span" : ""} style={{ color: '#000' }}>Inpection Observations –</Title> : ""}
+          <Table>
+            <tbody className="srno" style={{ margin: 0, padding: 0 }}>
+              <tr style={{ margin: 0, padding: 0 }}>
+                <HeaderCell style={{ textAlign: 'center', width: '5%' }}>
+                  <span>Sr No</span>
+                </HeaderCell>
+                <HeaderCell style={{ textAlign: 'center', width: '5%' }}>
+                  <span>Inspection</span>
+                </HeaderCell>
+                <HeaderCell colSpan={2}>
+                  <span>Observations / Deficiency Details</span>
+                </HeaderCell>
+              </tr>
+              {reportData[2].value.slice(value1, value2).map((observation: any, index: any) => (
+                <>
+                  {/* Row for Observation Text */}
+                  <tr className="avoid-break">
+                    <TableCell style={{ textAlign: 'center' }} rowSpan={Math.ceil(observation.images.length / 2) + 1}>
+                      <span>{index + (value1 + 1)}</span>
+                    </TableCell>
+                    <TableCell style={{ textAlign: 'center' }} rowSpan={Math.ceil(observation.images.length / 2) + 1}>
+                      <span>{observation.Inspection}</span>
+                    </TableCell>
+                    {/* {observation.Inspection ? (
+                      <TableCell colSpan={2}>
+                        <span>{observation.Inspection}</span>
+                      </TableCell>
+                    ) : (
+                      ""
+                    )} */}
                     {observation.observations_text ? (
                       <TableCell colSpan={2}>
                         <span>{observation.observations_text}</span>
@@ -1081,7 +1202,7 @@ const PreviewReport = () => {
     );
   };
 
-  const BomTableData = ({ reportData,id, value1, value2, isClick }) => {
+  const BomTableData = ({ reportData, id, value1, value2, isClick }) => {
     return (
       reportData.length <= 0 ? "" :
         <div className="content" id={id}>
@@ -1102,7 +1223,7 @@ const PreviewReport = () => {
                     <tr key={`${section.section_id}-${param.param_id}`}>
                       {paramIndex === 0 && (
                         <>
-                          <TableCell style={{textAlign:'center'}} rowSpan={section.value.length}>
+                          <TableCell style={{ textAlign: 'center' }} rowSpan={section.value.length}>
                             <span>{sectionIndex + (value1)}</span>
                           </TableCell>
                           <TableCell rowSpan={section.value.length}>
@@ -1517,24 +1638,80 @@ const PreviewReport = () => {
               <Footer reportData={reportData} isClick={isClick} />
             </Container>
           :
-          reportData.length <= 0 ? "Loading ..." :
-          <ResponsiveContainer width="100%" height={400}>
-          <BarChart data={ChartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" />
-            <YAxis yAxisId="left" />
-            <YAxis yAxisId="right" orientation="right" />
-            <Tooltip />
-            <Legend />
-            {/* Stacked Bars */}
-            <Bar yAxisId="left" dataKey="dayProduction" stackId="a" fill="#28a745" name="Day Production" />
-            <Bar yAxisId="left" dataKey="nightProduction" stackId="a" fill="#f4c542" name="Night Production" />
-            {/* Line for Total Rejection */}
-            <LineChart data={ChartData}>
-              <Line yAxisId="right" type="monotone" dataKey="totalRejection" stroke="red" strokeWidth={3} dot={{ fill: "red", r: 5 }} name="Total Rejection" />
-            </LineChart>
-          </BarChart>
-        </ResponsiveContainer>
+          reporttype === "PDI" ?
+            <div style={{
+              flex: 1,
+              alignItems: 'center'
+            }}>
+              {isClick ?
+                <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50">
+                  <div className="flex flex-col items-center">
+                    {/* Loader Spinner */}
+                    <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <p className="text-white text-lg mt-4">Generating PDF, please wait...</p>
+                  </div>
+                </div>
+                : ""}
+              {/* content */}
+              {reportData.length <= 0 ? "Loading ..." :
+                <Container id="report" style={{ width: isClick ? 900 : "100%" }}>
+                  <Header reportData={reportData} isClick={isClick} />
+                  {/* Report Details */}
+                  <ReportDetailsSection reportData={reportData} isClick={isClick} />
+
+                  {/* Inspection Details */}
+                  <InspectionDetails reportData={reportData} isClick={isClick} />
+
+                  {/* Inpection Observations */}
+                  <InpectionObservations reportData={reportData} isClick={isClick} value1={0} value2={1} />
+                  <InpectionObservations reportData={reportData} isClick={isClick} value1={1} value2={2} />
+                  <InpectionObservations reportData={reportData} isClick={isClick} value1={2} value2={3} />
+                  <InpectionObservations reportData={reportData} isClick={isClick} value1={3} value2={4} />
+                  <InpectionObservations reportData={reportData} isClick={isClick} value1={4} value2={5} />
+                  <InpectionObservations reportData={reportData} isClick={isClick} value1={5} value2={6} />
+                  <InpectionObservations reportData={reportData} isClick={isClick} value1={6} value2={7} />
+                  <InpectionObservations reportData={reportData} isClick={isClick} value1={7} value2={8} />
+                  <InpectionObservations reportData={reportData} isClick={isClick} value1={8} value2={9} />
+                  <InpectionObservations reportData={reportData} isClick={isClick} value1={9} value2={10} />
+
+                  {/* Inspection Results */}
+                  <InspectionResults reportData={reportData} isClick={isClick} />
+
+                  <Table id="report_completed">
+                    <tbody style={{ margin: 0, padding: 0 }}>
+                      <tr>
+                        <HeaderCell style={{ width: "50%" }}><span>Inspection done by</span></HeaderCell>
+                        <TableCell><span>{lastsection.inspection_done_by}</span></TableCell>
+                      </tr>
+                      <tr>
+                        <HeaderCell><span>Checking together with (Customer/Manufacturer representative)</span></HeaderCell>
+                        <TableCell><span>{lastsection.checking_together}</span></TableCell>
+                      </tr>
+                    </tbody>
+                  </Table>
+                  <Footer reportData={reportData} isClick={isClick} />
+                </Container>
+              }
+            </div>
+            :
+            reportData.length <= 0 ? "Loading ..." :
+              <ResponsiveContainer width="100%" height={400}>
+                <BarChart data={ChartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="date" />
+                  <YAxis yAxisId="left" />
+                  <YAxis yAxisId="right" orientation="right" />
+                  <Tooltip />
+                  <Legend />
+                  {/* Stacked Bars */}
+                  <Bar yAxisId="left" dataKey="dayProduction" stackId="a" fill="#28a745" name="Day Production" />
+                  <Bar yAxisId="left" dataKey="nightProduction" stackId="a" fill="#f4c542" name="Night Production" />
+                  {/* Line for Total Rejection */}
+                  <LineChart data={ChartData}>
+                    <Line yAxisId="right" type="monotone" dataKey="totalRejection" stroke="red" strokeWidth={3} dot={{ fill: "red", r: 5 }} name="Total Rejection" />
+                  </LineChart>
+                </BarChart>
+              </ResponsiveContainer>
       }
     </>
   );

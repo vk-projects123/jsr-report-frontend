@@ -1,56 +1,28 @@
 import { useState, useEffect } from "react";
 import Breadcrumb from '../../components/Breadcrumb';
-import { useParams, useNavigate } from 'react-router-dom';
-import { LIST_REPORTS_API } from '../../Api/api';
+import { useNavigate } from 'react-router-dom';
+import { LIST_DPR_REPORTS_API } from '../../Api/api';
 import moment from "moment";
-import { FaEye } from "react-icons/fa";
 
 const Forms = () => {
-  const { reportType } = useParams();
   const navigate = useNavigate();
   const [reportData, setReportData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [itemsPerPage] = useState(10);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortConfig, setSortConfig] = useState({ key: "", direction: "" });
   const [isLoaded, setLoaded] = useState(false);
-  const [reportStatus, setReportstatus] = useState('Running');
-  const [submissionId, setSubmissionid] = useState(0);
   var utoken = localStorage.getItem('userToken');
-
-  const tableHeaders = [
-    { label: "Report ID", key: "report_no" },
-    { label: "Client", key: "customer_name" },
-    { label: "Status", key: "submission_status" },
-    { label: "BOM", key: "attech_report_id" },
-    { label: "Inspection Eng-1", key: "employee_name" },
-    // { label: "Inspection Eng-2", key: "" }, 
-    { label: "Date", key: "created_at" },
-    { label: "Actions", key: "" }, // No sorting for actions
-  ];
-
-  const tableHeadersbom = [
-    { label: "Report ID", key: "report_no" },
-    { label: "Client", key: "customer_name" },
-    { label: "Status", key: "submission_status" },
-    { label: "Inspection Eng-1", key: "employee_name" },
-    // { label: "Inspection Eng-2", key: "" }, 
-    { label: "Date", key: "created_at" },
-    { label: "Images", key: "" },
-    { label: "Actions", key: "" }, // No sorting for actions
-  ];
 
   const tableHeadersdpr = [
     { label: "Report ID", key: "report_no" },
     { label: "Client", key: "customer_name" },
     { label: "Inspection Eng", key: "employee_name" },
-    { label: "WP Production ", key: "production_wp" },
+    { label: "Production Watt Power", key: "production_wp" },
     { label: "NOS Production", key: "production_nos" },
-    { label: "WP Rejection ", key: "rejection_wp" },
+    { label: "Variant", key: "variant" },
     { label: "NOS Rejection", key: "rejection_nos" },
-    { label: "Date", key: "created_at" },
-    { label: "Actions", key: "" },
+    { label: "Date", key: "created_at" }
   ];
 
   const handleNextPage = () => {
@@ -100,17 +72,17 @@ const Forms = () => {
   useEffect(() => {
     setLoaded(true);
     listReports(currentPage.toString());
-  }, [reportType]);
+  }, []);
 
   // Function to fetch sections-
   const listReports = async (page_no: string) => {
     const params = new URLSearchParams({
       pageNo: page_no,
-      report_type: reportType || "IPQC"
+      report_type: "DPR"
     });
 
     try {
-      const response = await fetch(`${LIST_REPORTS_API}?${params.toString()}`, {
+      const response = await fetch(`${LIST_DPR_REPORTS_API}?${params.toString()}`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${utoken}`,
@@ -124,10 +96,8 @@ const Forms = () => {
       if (data.Status === 0) {
         setLoaded(false);
       } else if (data.Status === 1) {
-        setReportData(data.info.data);
-        setReportstatus(data.info.reportStatus);
-        setSubmissionid(data.info.submission_id);
-        setTotalPages(data.info.pagination.totalPages || 0);
+        setReportData(data.info);
+        setTotalPages(data.pagination.totalPages || 0);
         setLoaded(false);
       }
     } catch (error) {
@@ -136,25 +106,18 @@ const Forms = () => {
     }
   };
 
-
   return (
     <>
-      <Breadcrumb pageName={reportType + " Report"} />
+      <Breadcrumb pageName={"DPR Report"} />
 
       <div className="flex flex-col" id="report">
         {/* Search bar and Add button */}
         <div className="flex justify-end items-center mb-4">
-          {/* <button
-            onClick={() => { }}
-            className="inline-flex items-center justify-center rounded-md bg-primary py-2 px-2 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
-          >
-            New Report
-          </button> */}
           <button
-            onClick={() => navigate('/reports/running_report/1', { state: { reporttype: reportType, formId: reportType == "IPQC" ? 1 : reportType == "BOM" ? 3 : reportType == "PDI" ? 4 : 0, submissionID: submissionId } })}
+            onClick={() => navigate('/reports/add_dpr_report')}
             className="inline-flex items-center justify-center rounded-md bg-primary py-2 mx-2 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
           >
-            {reportStatus} Report
+            Add Data
           </button>
           <div className="relative mx-2">
             <button className="absolute top-1/2 left-0 -translate-y-1/2">
@@ -197,7 +160,7 @@ const Forms = () => {
             <table className="w-full table-auto">
               <thead>
                 <tr className="bg-gray-2 text-left dark:bg-meta-4">
-                  {(reportType == "BOM" ? tableHeadersbom : reportType == "DPR" ? tableHeadersdpr : tableHeaders).map(({ label, key }) => (
+                  {tableHeadersdpr.map(({ label, key }) => (
                     <th
                       key={label}
                       className="min-w-[100px] py-3 px-4 font-medium text-sm text-black dark:text-white cursor-pointer"
@@ -218,26 +181,25 @@ const Forms = () => {
                       <p className="text-sm text-black dark:text-white">{item.report_no}</p>
                     </td>
                     <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
-                      <p className="text-sm text-black dark:text-white">{item.customer_name}</p>
+                      <p className="text-sm text-black dark:text-white">{item.company_name}</p>
                     </td>
-                    <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
-                      <p className="inline-flex bg-opacity-10 text-sm text-success">
-                        {item.submission_status}</p>
-                    </td>
-                    {item.form_id == 1 ? <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
-                      {item.attech_report_id ? <p onClick={() => navigate("/reports/view_report/1", { state: { submissionID: item.attech_submission_id, reporttype: 'BOM', formId: 3 } })} className="inline-flex bg-opacity-10 text-sm text-primary">{item.attech_report_id}</p> : <p className="inline-flex bg-opacity-10 text-sm text-danger">not attached</p>}
-                    </td> : ""}
                     <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
                       <p className="text-sm text-black dark:text-white">{item.employee_name}</p>
                     </td>
                     <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
-                      <p className="text-sm text-black dark:text-white">{moment(reportType == "BOM" ? item.bom_date : item.ipqc_date).format("DD-MM-YYYY")}</p>
+                        {item.production_wp}
                     </td>
-                    {reportType == "BOM" ? <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
-                      <div onClick={() => navigate("/reports/view_images", { state: { submissionID: item.submission_id, reporttype: item.form_name, formId: item.form_id } })}><FaEye className="w-5 h-5" /></div>
-                    </td> : ""}
                     <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
-                      <div onClick={() => navigate("/reports/view_report/1", { state: { submissionID: item.submission_id, reporttype: item.form_name, formId: item.form_id } })}><FaEye className="w-5 h-5" /></div>
+                        {item.production_nos}
+                    </td>
+                    <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
+                        {item.variant}
+                    </td>
+                    <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
+                        {item.rejection_nos}
+                    </td>
+                    <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
+                      <p className="text-sm text-black dark:text-white">{moment(item.created_at).format("DD-MM-YYYY")}</p>
                     </td>
                   </tr>
                 ))}
