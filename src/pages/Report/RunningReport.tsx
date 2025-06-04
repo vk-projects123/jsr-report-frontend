@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FaChevronDown, FaTimes } from "react-icons/fa";
-import { LIST_FORM_SECTIONS_API, UPLOAD_ATTECHMENT_API, LIST_INSPECTION_OBSERVATIONS_API, LIST_SECTION_PARAMS_API, LIST_CUSTOMER_API, SUBMIT_SECTION_API, ADD_OBSERVATIONS_API, GET_OBSERVATIONS_API, UPLOAD_IMAGE_API, DELETE_IMAGE_API, LIST_BOM_REPORTS_API, imgUrl } from "../../Api/api.tsx";
+import { LIST_FORM_SECTIONS_API, GET_ATTECHMENT_API, ADD_ATTECHMENT_API, UPLOAD_ATTECHMENT_API, LIST_INSPECTION_OBSERVATIONS_API, LIST_SECTION_PARAMS_API, LIST_CUSTOMER_API, SUBMIT_SECTION_API, ADD_OBSERVATIONS_API, GET_OBSERVATIONS_API, UPLOAD_IMAGE_API, DELETE_IMAGE_API, LIST_BOM_REPORTS_API, imgUrl } from "../../Api/api.tsx";
 import { toast } from "react-toastify";
 import {
   ComposedChart,
@@ -48,6 +48,7 @@ const RunningReport = () => {
   const [checkingtogether, setCheckingtogether] = useState<any>("");
   const [sections, setSections] = useState<any>([]);
   const [observations, setObservations] = useState<any>([]);
+  const [attechments, setAttechments] = useState<any>([]);
   const [submissionID, setsubmissionID] = useState<any>(0);
   const [imageuploading, setimageuploading] = useState<any>(false);
   const [bomreports, setBomreports] = useState<any>([]);
@@ -200,6 +201,59 @@ const RunningReport = () => {
     }
   };
 
+  const listattechments = async (e: any) => {
+    console.log("list listattechments called", {
+      form_id: data.formId,
+      section_id: e
+    });
+
+    if (data.submissionID === 0 || !data.submissionID) {
+      console.log("no observation found");
+    } else {
+      const params = new URLSearchParams({
+        form_id: data.formId,
+        section_id: e
+      });
+
+      //console.log("listSectionParams", params);
+
+      try {
+        const response = await fetch(`${GET_ATTECHMENT_API}?${params.toString()}`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${utoken}`,
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+        });
+
+        const data = await response.json();
+        //console.log("data", data);
+        if (data.Status === 0) {
+          setLoaded(false);
+        } else if (data.Status === 1) {
+          if (data.info.length == 0) {
+            console.log("add extra obj");
+            var extraObj = {
+              "attechment_id": 0,
+              "attechment_title": "",
+              "attechment": ""
+            };
+            setAttechments([extraObj]);
+          } else {
+            setAttechments(data.info);
+          }
+
+          setsubmissionID(data.submission_id);
+          setLoaded(false);
+        }
+      } catch (error) {
+        console.error("Error fetching sections:", error);
+        setLoaded(false);
+      }
+    }
+  };
+
   const listCustomer = async () => {
     try {
       const response = await fetch(LIST_CUSTOMER_API, {
@@ -294,6 +348,7 @@ const RunningReport = () => {
       setSectionparams([]);
     }
     addobservations(e);
+    addattechment(e);
     try {
       const response = await fetch(SUBMIT_SECTION_API, {
         method: "POST",
@@ -320,6 +375,7 @@ const RunningReport = () => {
         toast.success(datas.Message);
         listSectionParams(selectedSection.section_id);
         listobservations(selectedSection.section_id);
+        listattechments(selectedSection.section_id);
         setIsLoading(false);
       }
     } catch (error) {
@@ -358,6 +414,40 @@ const RunningReport = () => {
       } else if (data.Status === 1) {
         // toast.success(data.Message);
         listobservations(selectedSection.section_id);
+        setIsLoading(false);
+      }
+    } catch (error) {
+      console.error("Error fetching sections:", error);
+      setIsLoading(false);
+    }
+  }
+
+  const addattechment = async (e: any) => {
+    e.preventDefault();
+    var FORMID = data.formId;
+    setIsLoading(true);
+    try {
+      const response = await fetch(ADD_ATTECHMENT_API, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${utoken}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          form_id: FORMID,
+          section_id: selectedSection.section_id,
+          jsonData: JSON.stringify(attechments)
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.Status === 0) {
+        setIsLoading(false);
+      } else if (data.Status === 1) {
+        // toast.success(data.Message);
+        listattechments(selectedSection.section_id);
         setIsLoading(false);
       }
     } catch (error) {
@@ -420,7 +510,7 @@ const RunningReport = () => {
     }
   };
 
-  const UploadAttechmentFile = async (newImages: File[]) => {
+  const UploadAttechmentFile = async (newImages: File[],index:any) => {
     const formData = new FormData();
 
     // Append each file to the same parameter
@@ -441,15 +531,15 @@ const RunningReport = () => {
       const data = await response.json();
 
       if (data.Status === 1) {
-        //console.log("images ->> data.info", data.info);
-        // If upload is successful, update the local state with the new image URLs
-        const name = "Attachments if any";
-        const value = data.info;
-
         console.log("images", data.info);
-        setSectionparams((prevParams: any) =>
-          prevParams.map((param: any) =>
-            param.param_name === name ? { ...param, value } : param
+         setAttechments((prevObservations: any) =>
+          prevObservations.map((obs: any, idx: any) =>
+            idx === index
+              ? {
+                ...obs,
+                attechment:data.info[0]
+              }
+              : obs
           )
         );
         setimageuploading(false);
@@ -483,6 +573,7 @@ const RunningReport = () => {
     setSelectedSection({ section, section_id, section_type });
     section_id === 4 ? "" : listSectionParams(section_id);
     listobservations(section_id);
+    listattechments(section_id);
     // //console.log("selected section ->>>", selectedSection, section, section_id,section_type);
   };
 
@@ -542,6 +633,16 @@ const RunningReport = () => {
     );
   };
 
+  const updateAtttechmentDescription = (index: number, attechmentTitle: string, Attechment: any) => {
+    setAttechments((prevObservations: any) =>
+      prevObservations.map((obs: any, i: any) =>
+        i === index
+          ? { ...obs,attechment_title: attechmentTitle, attechment: Attechment }
+          : obs
+      )
+    );
+  };
+
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>, index: any, imageLength: any) => {
     const files = event.target.files;
     if (imageLength >= 2) {
@@ -564,12 +665,12 @@ const RunningReport = () => {
     }
   };
 
-  const handleattechmentFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleattechmentFileUpload = (event: React.ChangeEvent<HTMLInputElement>,index:any) => {
     const files = event.target.files;
 
     if (files && files.length > 0) {
       const newImages = Array.from(files);
-      UploadAttechmentFile(newImages);
+      UploadAttechmentFile(newImages,index);
     }
   };
 
@@ -603,6 +704,33 @@ const RunningReport = () => {
       var lastobservation = observations.length - 1;
       if (observations[lastobservation]["observations_text"] == "") {
         alert("please enter last observations");
+      } else {
+        addData();
+      }
+    } else {
+      addData();
+    }
+
+  };
+
+  const addAttechemnt = () => {
+
+    const addData = () => {
+      const newObservation = {
+        attechemnt_id: 0,
+        attechment_title: "",
+        attechment: ""
+      };
+
+      setAttechments([...attechments, newObservation]);
+    }
+
+    console.log("attechments",attechments.length,attechments);
+
+    if (attechments.length >= 1) {
+      var lastattechemnts = attechments.length - 1;
+      if (attechments[lastattechemnts]["attechment_title"] == "") {
+        alert("please enter last attechment");
       } else {
         addData();
       }
@@ -1352,6 +1480,11 @@ const RunningReport = () => {
                       + Add Observation
                     </button>
                   )}
+                  {selectedSection.section === "Attechment" && (
+                    <button className="add-btn" onClick={addAttechemnt}>
+                      + Add Attechment
+                    </button>
+                  )}
                   {submissionID == 0 ? "" : <button className="add-btn mx-2" onClick={() => navigate('/reports/preview_report', {
                     state: {
                       formId: data.formId, reporttype: data.reporttype, submissionID: submissionID, selectedSection: selectedSection
@@ -1475,7 +1608,7 @@ const RunningReport = () => {
                                   />
                                   {item.value && (
                                     <div style={{ marginTop: '10px' }}>
-                                      <a style={{color:'blue'}} href={imgUrl + item.value} target="_blank" rel="noopener noreferrer">
+                                      <a style={{ color: 'blue' }} href={imgUrl + item.value} target="_blank" rel="noopener noreferrer">
                                         View PDF
                                       </a>
                                     </div>
@@ -1535,73 +1668,96 @@ const RunningReport = () => {
                         <thead>
                           <tr>
                             <th>Sr No</th>
-                            <th>Inspection</th>
-                            <th>Observations / Deficiency Details</th>
+                            {selectedSection.section == "Attechment" ? <th>Attechment Title</th> : <th>Inspection</th>}
+                            <th> {selectedSection.section == "Attechment" ? "Attechment" : "Observations / Deficiency Details"}</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {observations.map((observation: any, index: number) => (
-                            <tr key={observation.observations_id}>
+                          {(selectedSection.section == "Attechment" ? attechments : observations).map((observation: any, index: number) => (
+                            <tr key={selectedSection.section == "Attechment" ?  observation.attechment_id : observation.observations_id}>
                               <td>{index + 1}</td>
                               <td>
-                                <div className="relative z-20 bg-transparent dark:bg-form-input">
-                                  <select
-                                    name={"Inspection"}
-                                    value={observation.Inspection}
-                                    onChange={(e) => updateDescription(index, observation.observations_text, e.target.value)}
-                                    className="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-1.5 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                  >
-                                    <option value="">Select Option</option>
-                                    {InspectionObservations.map((custItem: any, idx: any) => (
-                                      <option key={idx} value={custItem.inspection}>
-                                        {custItem.inspection}
-                                      </option>
-                                    ))
-                                    }
-                                  </select>
-                                  <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2">
-                                    <FaChevronDown className="text-gray-500 dark:text-gray-400" />
-                                  </span>
-                                </div>
-                              </td>
-                              <td>
-                                <div className="observation-detail">
-                                  {/* Editable Description */}
-                                  <textarea
+                                {selectedSection.section == "Attechment" ?
+                                  <input
+                                    type="text"
                                     className="input-field"
-                                    value={observation.observations_text}
-                                    onChange={(e) => updateDescription(index, e.target.value, observation.Inspection)}
+                                    value={observation.attechment_title}
+                                    onChange={(e) => updateAtttechmentDescription(index, e.target.value,observation.attechemnt)}
                                     placeholder="Enter description"
                                   />
-
-                                  {/* Display Images with Delete Icon */}
-                                  <div className="image-row">
-                                    {observation.images.map((image: any, imgIdx: number) => (
-                                      <div key={imgIdx} className="image-container">
-                                        {/* Observation Image */}
-                                        <img
-                                          className="observation-close-image"
-                                          src={imgUrl + image.image}
-                                          alt={`Observation ${index + 1} - Image ${imgIdx + 1}`}
-                                        />
-
-                                        {/* Delete Icon in Top-Right Corner */}
-                                        <FaTimes
-                                          className="delete-icon"
-                                          onClick={() => handleDeleteImage(index, imgIdx, image.image_id, image.image)}
-                                        />
-                                      </div>
-                                    ))}
-                                  </div>
-
-                                  {/* File Upload */}
+                                  :
+                                  <div className="relative z-20 bg-transparent dark:bg-form-input">
+                                    <select
+                                      name={"Inspection"}
+                                      value={observation.Inspection}
+                                      onChange={(e) => updateDescription(index, observation.observations_text, e.target.value)}
+                                      className="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-1.5 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                    >
+                                      <option value="">Select Option</option>
+                                      {InspectionObservations.map((custItem: any, idx: any) => (
+                                        <option key={idx} value={custItem.inspection}>
+                                          {custItem.inspection}
+                                        </option>
+                                      ))
+                                      }
+                                    </select>
+                                    <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2">
+                                      <FaChevronDown className="text-gray-500 dark:text-gray-400" />
+                                    </span>
+                                  </div>}
+                              </td>
+                              <td>
+                                {selectedSection.section == "Attechment" ? <>
                                   <input
                                     type="file"
-                                    accept="image/*"
-                                    multiple
-                                    onChange={(e: any) => handleFileUpload(e, index, observation.images.length)}
+                                    name={observation.attechment_title}
+                                    onChange={(e: any) => handleattechmentFileUpload(e,index)}
                                   />
-                                </div>
+                                  {observation.attechment && (
+                                    <div style={{ marginTop: '10px' }}>
+                                      <a style={{ color: 'blue' }} href={imgUrl + observation.attechment} target="_blank" rel="noopener noreferrer">
+                                        View PDF
+                                      </a>
+                                    </div>
+                                  )}
+                                </> :
+                                  <div className="observation-detail">
+                                    {/* Editable Description */}
+                                    <textarea
+                                      className="input-field"
+                                      value={observation.observations_text}
+                                      onChange={(e) => updateDescription(index, e.target.value, observation.Inspection)}
+                                      placeholder="Enter description"
+                                    />
+
+                                    {/* Display Images with Delete Icon */}
+                                    <div className="image-row">
+                                      {observation.images.map((image: any, imgIdx: number) => (
+                                        <div key={imgIdx} className="image-container">
+                                          {/* Observation Image */}
+                                          <img
+                                            className="observation-close-image"
+                                            src={imgUrl + image.image}
+                                            alt={`Observation ${index + 1} - Image ${imgIdx + 1}`}
+                                          />
+
+                                          {/* Delete Icon in Top-Right Corner */}
+                                          <FaTimes
+                                            className="delete-icon"
+                                            onClick={() => handleDeleteImage(index, imgIdx, image.image_id, image.image)}
+                                          />
+                                        </div>
+                                      ))}
+                                    </div>
+
+                                    {/* File Upload */}
+                                    <input
+                                      type="file"
+                                      accept="image/*"
+                                      multiple
+                                      onChange={(e: any) => handleFileUpload(e, index, observation.images.length)}
+                                    />
+                                  </div>}
                               </td>
                             </tr>
                           ))}

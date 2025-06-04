@@ -3,7 +3,7 @@ import Breadcrumb from '../../components/Breadcrumb';
 import { useParams, useNavigate } from 'react-router-dom';
 import { LIST_REPORTS_API, RESUME_REPORT_API, GET_REPORT_HISTORY_API } from '../../Api/api';
 import moment from "moment";
-import { FaEye } from "react-icons/fa";
+import { FaEye, FaRegEdit } from "react-icons/fa";
 import { toast } from "react-toastify";
 
 const Forms = () => {
@@ -63,7 +63,6 @@ const Forms = () => {
     { label: "Inspection Eng", key: "employee_name" },
     { label: "Date", key: "created_at" },
     { label: "Last Action At", key: "last_updated_at" },
-    { label: "Reupdate", key: "" },
     { label: "Actions", key: "" },
   ];
 
@@ -178,7 +177,7 @@ const Forms = () => {
     }
   };
 
-  const resumeReport = async (e: any, formId: any, submissionID: any) => {
+  const resumeReport = async (e: any, formId: any, submissionID: any,reportType:any) => {
     e.preventDefault();
     try {
       const response = await fetch(RESUME_REPORT_API, {
@@ -201,6 +200,8 @@ const Forms = () => {
         toast.error(data.Message);
       } else if (data.Status === 1) {
         toast.success(data.Message);
+        navigate('/reports/running_report/1',
+        { state: { reporttype: reportType, formId: formId, submissionID: submissionID }});
         listReports(currentPage);
         setLoaded(false);
       }
@@ -293,7 +294,7 @@ const Forms = () => {
                 <tbody>
                   {reporthistoryData.map((row: any, key: any) => (
                     <tr key={key} className="hover:bg-gray-50">
-                      <td className="p-2 border-b">{key+1}</td>
+                      <td className="p-2 border-b">{key + 1}</td>
                       <td className="p-2 border-b">{row.submission_type}</td>
                       <td className="p-2 border-b">{moment.utc(row.created_at).local().format("lll")}</td>
                     </tr>
@@ -361,11 +362,32 @@ const Forms = () => {
                     {reportType == "PDI" ? <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
                       <div onClick={() => openhistorymodal(item.submission_id)}>{moment.utc(item.last_updated_at).local().format("lll")}</div>
                     </td> : ""}
-                    {reportType == "PDI" ? <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
-                      <button style={{ backgroundColor: '#1C2434', color: 'white', borderRadius: 20, padding: 8 }} onClick={(e) => resumeReport(e, item.form_id, item.submission_id)}>Resume</button>
-                    </td> : ""}
                     <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
-                      <div onClick={() => navigate("/reports/view_report/1", { state: { submissionID: item.submission_id, reporttype: item.form_name, formId: item.form_id } })}><FaEye className="w-5 h-5" /></div>
+                      <div className="flex items-center gap-3">
+                        {reportType == "PDI" ?
+                          <div
+                            onClick={(e) => resumeReport(e, item.form_id, item.submission_id,reportType)}
+                            className="cursor-pointer"
+                            title="Edit"
+                          >
+                            <FaRegEdit className="w-5 h-5" />
+                          </div> : ""}
+                        <div
+                          onClick={() =>
+                            navigate("/reports/view_report/1", {
+                              state: {
+                                submissionID: item.submission_id,
+                                reporttype: item.form_name,
+                                formId: item.form_id,
+                              },
+                            })
+                          }
+                          className="cursor-pointer text-gray-600"
+                          title="View"
+                        >
+                          <FaEye className="w-5 h-5" />
+                        </div>
+                      </div>
                     </td>
                   </tr>
                 ))}

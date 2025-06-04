@@ -28,12 +28,16 @@ export const SUBMIT_SECTION_API = baseUrl + "/submit_section";
 
 //observations
 export const ADD_OBSERVATIONS_API = baseUrl + "/add_observations";
-export const ADD_DPR_REPORTS_API = baseUrl + "/add_dpr_reports";
 export const GET_OBSERVATIONS_API = baseUrl + "/get_observations";
+export const ADD_DPR_REPORTS_API = baseUrl + "/add_dpr_reports";
 export const GET_BOM_IMAGES_API = baseUrl + "/get_bom_images";
 export const UPLOAD_IMAGE_API = baseUrl + "/upload_images";
 export const UPLOAD_ATTECHMENT_API = baseUrl + "/upload_attechment";
 export const DELETE_IMAGE_API = baseUrl + "/delete_image";
+
+//attechment
+export const ADD_ATTECHMENT_API = baseUrl + "/add_attechment";
+export const GET_ATTECHMENT_API = baseUrl + "/get_attechment";
 
 //list Reports
 export const LIST_REPORTS_API = baseUrl + "/list_reports";

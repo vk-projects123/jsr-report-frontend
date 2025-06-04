@@ -382,6 +382,24 @@ const ViewReport = () => {
     );
   };
 
+  const Attachment = ({ reportData, isClick }) => {
+    return (
+      <div className="content" id="Attachment">
+        <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Attachment -</p>
+        <Table>
+          <tbody style={{ margin: 0, padding: 0 }}>
+            {reportData[4].value.map((item: any, index: any) => (
+              <tr key={index}>
+                <HeaderCell style={{ width: "50%" }}><span>{item.param_name}</span></HeaderCell>
+                {<TableCell><a href={item.value ? (imgUrl + item.value) : ""} target="_blank" rel="noopener noreferrer" >{item.value ? <FiPaperclip style={{ marginRight: '5px' }} /> : "-"}</a></TableCell>}
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </div>
+    );
+  };
+
   const MajorObservations = ({ reportData, isClick, value1, value2 }) => {
     return (
       reportData[2].value.slice(value1, value2).length <= 0 ? "" :
@@ -468,76 +486,83 @@ const ViewReport = () => {
                 <HeaderCell style={{ textAlign: 'center', width: '5%' }}>
                   <span>Inspection</span>
                 </HeaderCell>
-                <HeaderCell>
+                <HeaderCell style={{ width: 300 }}>
                   <span>Observations / Deficiency Details</span>
                 </HeaderCell>
-                <HeaderCell colSpan={2}>
+                <HeaderCell style={{ textAlign: 'center' }} colSpan={2}>
                   <span>Image attachment</span>
                 </HeaderCell>
               </tr>
-              {reportData[2].value.slice(value1, value2).map((observation: any, index: any) => (
-                <>
-                  {/* Row for Observation Text */}
-                  <tr className="avoid-break">
-                    <TableCell style={{ textAlign: 'center' }} rowSpan={Math.ceil(observation.images.length / 2) + 1}>
-                      <span>{index + (value1 + 1)}</span>
-                    </TableCell>
-                    <TableCell style={{ textAlign: 'center' }} rowSpan={Math.ceil(observation.images.length / 2) + 1}>
-                      <span>{observation.Inspection}</span>
-                    </TableCell>
-                    <TableCell style={{ textAlign: 'center' }} rowSpan={Math.ceil(observation.images.length / 2) + 1}>
-                      <span>{observation.observations_text}</span>
-                    </TableCell>
-                    {/* {observation.Inspection ? (
-                        <TableCell colSpan={2}>
-                          <span>{observation.Inspection}</span>
-                        </TableCell>
-                      ) : (
-                        ""
-                      )} */}
-                    {/* {observation.observations_text ? (
-                        <TableCell colSpan={2}>
-                          <span>{observation.observations_text}</span>
-                        </TableCell>
-                      ) : (
-                        ""
-                      )} */}
-                  </tr>
+              {reportData[2].value.slice(value1, value2).map((observation: any, index: any) => {
+                const imageRows = observation.images.reduce((rows: any[], image: any, idx: number) => {
+                  if (idx % 2 === 0) rows.push([]);
+                  rows[rows.length - 1].push(image);
+                  return rows;
+                }, []);
+                const totalImageRows = imageRows.length || 1;
 
-                  {/* Rows for Images */}
-                  {observation.images
-                    .reduce((rows: any[], image: any, idx: number) => {
-                      if (idx % 2 === 0) rows.push([]);
-                      rows[rows.length - 1].push(image);
-                      return rows;
-                    }, [])
-                    .map((rowImages: any[], rowIndex: number) => (
-                      <tr key={rowIndex} id="avoid-break">
+                return (
+                  <>
+                    <tr className="avoid-break">
+                      <TableCell rowSpan={totalImageRows + 1} style={{ textAlign: "center" }}>
+                        <span>{index + (value1 + 1)}</span>
+                      </TableCell>
+                      <TableCell rowSpan={totalImageRows + 1} style={{ textAlign: "center", fontWeight: 'bold' }}>
+                        <span>{observation.Inspection}</span>
+                      </TableCell>
+                      <TableCell rowSpan={totalImageRows + 1} style={{ textAlign: "center", width: '30%' }}>
+                        <span>{observation.observations_text}</span>
+                      </TableCell>
+                      {/* First image row or "No image attached" */}
+                      {observation.images.length === 0 ? (
+                        <TableCell colSpan={2} style={{ textAlign: "center", fontStyle: "italic", color: "#888" }}>
+                          <span>No image attached</span>
+                        </TableCell>
+                      ) : (
+                        <>
+                          {imageRows[0].map((image: any, imgIdx: number) => (
+                            <TableCell key={imgIdx} style={{ textAlign: "center", width: 300 }}>
+                              <img
+                                src={`${imgUrl}${image.image}`}
+                                alt="PDF Sub"
+                                style={{
+                                  padding: 5,
+                                  height: 250,
+                                  width: 300,
+                                  display: "block",
+                                  margin: "0 auto",
+                                }}
+                              />
+                            </TableCell>
+                          ))}
+                        </>
+                      )}
+                    </tr>
+
+                    {/* Additional image rows (if more than 2 images) */}
+                    {imageRows.slice(1).map((rowImages: any[], rowIndex: number) => (
+                      <tr key={`img-row-${index}-${rowIndex}`} className="avoid-break">
                         {rowImages.map((image: any, imgIdx: number) => (
-                          <TableCell
-                            key={imgIdx}
-                            style={{
-                              textAlign: "center",
-                              width: rowImages.length % 2 === 0 ? "45%" : "93%",
-                            }}
-                          >
+                          <TableCell key={imgIdx} style={{ textAlign: "center", width: 300 }}>
                             <img
                               src={`${imgUrl}${image.image}`}
                               alt="PDF Sub"
                               style={{
                                 padding: 5,
                                 height: 250,
-                                width: rowImages.length % 2 === 0 ? "100%" : "45%",
+                                width: 300,
+                                display: "block",
+                                margin: "0 auto",
                               }}
                             />
                           </TableCell>
                         ))}
-                        {/* Fill empty cell if only one image in row */}
-                        {rowImages.length === 1 && ""}
                       </tr>
                     ))}
-                </>
-              ))}
+                  </>
+                );
+              })}
+
 
             </tbody>
           </Table>
@@ -1613,6 +1638,10 @@ const ViewReport = () => {
                   {/* Inspection Results */}
                   <InspectionResults reportData={reportData} isClick={isClick} />
 
+                  {/* Attachment */}
+                   {reportData[4].value.length == 0  ? "" : 
+                   <Attachment reportData={reportData} isClick={isClick} />} 
+
                   <Table id="report_completed">
                     <tbody style={{ margin: 0, padding: 0 }}>
                       <tr>
@@ -1625,9 +1654,10 @@ const ViewReport = () => {
                       </tr>
                     </tbody>
                   </Table>
+
                   <Footer reportData={reportData} isClick={isClick} />
                 </Container>
-              }
+              }  
             </div>
             :
             <>
