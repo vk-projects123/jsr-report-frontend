@@ -11,7 +11,7 @@ const Forms = () => {
   const navigate = useNavigate();
   const [reportData, setReportData] = useState([]);
   const [reporthistoryData, setReportHistoryData] = useState([]);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState<any>(1);
   const [totalPages, setTotalPages] = useState(1);
   const [itemsPerPage] = useState(10);
   const [searchQuery, setSearchQuery] = useState("");
@@ -100,7 +100,7 @@ const Forms = () => {
   // Search function
   const handleSearch = (e: any) => {
     setSearchQuery(e.target.value);
-    const filteredData = data.filter((item) =>
+    const filteredData = reportData.filter((item:any) =>
       Object.values(item).some((val) =>
         String(val).toLowerCase().includes(e.target.value.toLowerCase())
       )
