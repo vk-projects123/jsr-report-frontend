@@ -325,7 +325,7 @@ const PreviewReport = () => {
                           <span>{reportData[0].value[index + 1].param_name}</span>
                         </HeaderCell>
                         <TableCell style={{ width: '25%' }}>
-                          <span>{reportData[0].value[index + 1].value}</span>
+                          <span>{reportData[0].value[index + 1].param_name === "Date" ? moment(reportData[0].value[index + 1].value).format("DD-MM-YYYY") : reportData[0].value[index + 1].value}</span>
                         </TableCell>
                       </>
                     )}
@@ -398,8 +398,8 @@ const PreviewReport = () => {
   const Attachment = ({ reportData, isClick }) => {
     return (
       <div className="content" id="Attachment">
-       <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Attachment -</p>
-        <Table>          
+        <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Attachment -</p>
+        <Table>
           <tbody style={{ margin: 0, padding: 0 }}>
             {reportData[4].value.map((item: any, index: any) => (
               <tr key={index}>
@@ -466,7 +466,8 @@ const PreviewReport = () => {
                               alt="PDF Sub"
                               style={{
                                 padding: 5,
-                                height: 250,
+                                maxHeight:250,
+                                objectFit: 'contain',
                                 width: rowImages.length % 2 === 0 ? "100%" : "45%",
                               }}
                             />
@@ -499,7 +500,7 @@ const PreviewReport = () => {
                 <HeaderCell style={{ textAlign: 'center', width: '5%' }}>
                   <span>Inspection</span>
                 </HeaderCell>
-                <HeaderCell style={{width:300}}>
+                <HeaderCell style={{ width: 300 }}>
                   <span>Observations / Deficiency Details</span>
                 </HeaderCell>
                 <HeaderCell style={{ textAlign: 'center' }} colSpan={2}>
@@ -520,10 +521,10 @@ const PreviewReport = () => {
                       <TableCell rowSpan={totalImageRows + 1} style={{ textAlign: "center" }}>
                         <span>{index + (value1 + 1)}</span>
                       </TableCell>
-                      <TableCell rowSpan={totalImageRows + 1} style={{ textAlign: "center",fontWeight:'bold' }}>
+                      <TableCell rowSpan={totalImageRows + 1} style={{ textAlign: "center", fontWeight: 'bold' }}>
                         <span>{observation.Inspection}</span>
                       </TableCell>
-                      <TableCell rowSpan={totalImageRows + 1} style={{ textAlign: "center",width:'30%' }}>
+                      <TableCell rowSpan={totalImageRows + 1} style={{ textAlign: "center", width: '30%' }}>
                         <span>{observation.observations_text}</span>
                       </TableCell>
                       {/* First image row or "No image attached" */}
@@ -540,10 +541,11 @@ const PreviewReport = () => {
                                 alt="PDF Sub"
                                 style={{
                                   padding: 5,
-                                  height: 250,
+                                  maxHeight:250,
                                   width: 300,
                                   display: "block",
                                   margin: "0 auto",
+                                  objectFit: 'contain'
                                 }}
                               />
                             </TableCell>
@@ -562,10 +564,11 @@ const PreviewReport = () => {
                               alt="PDF Sub"
                               style={{
                                 padding: 5,
-                                height: 250,
+                                maxHeight:250,
                                 width: 300,
                                 display: "block",
                                 margin: "0 auto",
+                                objectFit: 'contain'
                               }}
                             />
                           </TableCell>
@@ -661,7 +664,10 @@ const PreviewReport = () => {
                     <tr key={rowIndex}>
                       {rowImages.map((image: any, imgIdx: number) => (
                         <TableCell key={imgIdx} style={{ textAlign: 'center', width: rowImages.length % 2 === 0 ? "45%" : "93%" }}>
-                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{ padding: 5, height: 250, width: rowImages.length % 2 === 0 ? '100%' : "45%" }} />
+                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{ padding: 5, 
+                            maxHeight:250, 
+                            objectFit:'contain',
+                            width: rowImages.length % 2 === 0 ? '100%' : "45%" }} />
                         </TableCell>
                       ))}
                       {/* Fill empty cell if only one image in row */}
@@ -761,7 +767,10 @@ const PreviewReport = () => {
                           textAlign: 'center',
                           width: rowImages.length % 2 === 0 ? "45%" : "93%"
                         }}>
-                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{ padding: 5, height: 250, width: rowImages.length % 2 === 0 ? '100%' : "45%" }} />
+                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{ padding: 5, 
+                            maxHeight:250,
+                            objectFit: 'contain',
+                             width: rowImages.length % 2 === 0 ? '100%' : "45%" }} />
                         </TableCell>
                       ))}
                       {/* Fill empty cell if only one image in row */}
@@ -856,7 +865,12 @@ const PreviewReport = () => {
                     <tr key={rowIndex}>
                       {rowImages.map((image: any, imgIdx: number) => (
                         <TableCell key={imgIdx} style={{ textAlign: 'center', width: rowImages.length % 2 === 0 ? "45%" : "93%" }}>
-                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{ padding: 5, height: 250, width: rowImages.length % 2 === 0 ? '100%' : "45%" }} />
+                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{
+                            padding: 5,
+                            //  height: 250, 
+                            objectFit: 'contain',
+                            width: rowImages.length % 2 === 0 ? '100%' : "45%"
+                          }} />
                         </TableCell>
                       ))}
                       {/* Fill empty cell if only one image in row */}
@@ -951,7 +965,12 @@ const PreviewReport = () => {
                     <tr key={rowIndex}>
                       {rowImages.map((image: any, imgIdx: number) => (
                         <TableCell key={imgIdx} style={{ textAlign: 'center', width: rowImages.length % 2 === 0 ? "45%" : "90%" }}>
-                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{ padding: 5, height: 250, width: rowImages.length % 2 === 0 ? '100%' : "45%" }} />
+                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{
+                            padding: 5,
+                            maxHeight:250, 
+                            objectFit: 'contain',
+                            width: rowImages.length % 2 === 0 ? '100%' : "45%"
+                          }} />
                         </TableCell>
                       ))}
                       {/* Fill empty cell if only one image in row */}
@@ -1046,7 +1065,12 @@ const PreviewReport = () => {
                     <tr key={rowIndex}>
                       {rowImages.map((image: any, imgIdx: number) => (
                         <TableCell key={imgIdx} style={{ textAlign: 'center', width: rowImages.length % 2 === 0 ? "45%" : "93%" }}>
-                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{ padding: 5, height: 250, width: rowImages.length % 2 === 0 ? '100%' : "45%" }} />
+                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{
+                            padding: 5,
+                            //  height: 250, 
+                            objectFit: 'contain',
+                            width: rowImages.length % 2 === 0 ? '100%' : "45%"
+                          }} />
                         </TableCell>
                       ))}
                       {/* Fill empty cell if only one image in row */}
@@ -1141,7 +1165,12 @@ const PreviewReport = () => {
                     <tr key={rowIndex}>
                       {rowImages.map((image: any, imgIdx: number) => (
                         <TableCell key={imgIdx} style={{ textAlign: 'center', width: rowImages.length % 2 === 0 ? "45%" : "93%" }}>
-                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{ padding: 5, height: 250, width: rowImages.length % 2 === 0 ? '100%' : "45%" }} />
+                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{
+                            padding: 5,
+                            maxHeight:250, 
+                            objectFit: 'contain',
+                            width: rowImages.length % 2 === 0 ? '100%' : "45%"
+                          }} />
                         </TableCell>
                       ))}
                       {/* Fill empty cell if only one image in row */}
@@ -1218,7 +1247,12 @@ const PreviewReport = () => {
                     <tr key={rowIndex}>
                       {rowImages.map((image: any, imgIdx: number) => (
                         <TableCell key={imgIdx} style={{ textAlign: 'center', width: rowImages.length % 2 === 0 ? "45%" : "93%" }}>
-                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{ padding: 5, height: 250, width: rowImages.length % 2 === 0 ? '100%' : "45%" }} />
+                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{
+                            padding: 5,
+                            maxHeight:250, 
+                            objectFit: 'contain',
+                            width: rowImages.length % 2 === 0 ? '100%' : "45%"
+                          }} />
                         </TableCell>
                       ))}
                       {/* Fill empty cell if only one image in row */}
@@ -1711,8 +1745,8 @@ const PreviewReport = () => {
                   <InspectionResults reportData={reportData} isClick={isClick} />
 
                   {/* Attachment */}
-                   {reportData[4].value.length == 0  ? "" : <Attachment reportData={reportData} isClick={isClick} />}
-                   
+                  {reportData[4].value.length == 0 ? "" : <Attachment reportData={reportData} isClick={isClick} />}
+
                   <Table id="report_completed">
                     <tbody style={{ margin: 0, padding: 0 }}>
                       <tr>
