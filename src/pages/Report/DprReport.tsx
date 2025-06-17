@@ -16,7 +16,7 @@ const Forms = () => {
 
   const tableHeadersdpr = [
     { label: "Report ID", key: "report_no" },
-    { label: "Client", key: "customer_name" },
+    { label: "Client", key: "customer_name" }, 
     { label: "Inspection Eng", key: "employee_name" },
     { label: "Production Watt Power", key: "production_wp" },
     { label: "NOS Production", key: "production_nos" },

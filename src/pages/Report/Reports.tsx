@@ -381,7 +381,7 @@ const Forms = () => {
                                 formId: item.form_id,
                               },
                             })
-                          }
+                          }    
                           className="cursor-pointer text-gray-600"
                           title="View"
                         >
