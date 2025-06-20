@@ -14,6 +14,7 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from "recharts";
+import moment from "moment";
 
 const RunningReport = () => {
   var utoken = localStorage.getItem('userToken');
@@ -510,7 +511,7 @@ const RunningReport = () => {
     }
   };
 
-  const UploadAttechmentFile = async (newImages: File[],index:any) => {
+  const UploadAttechmentFile = async (newImages: File[], index: any) => {
     const formData = new FormData();
 
     // Append each file to the same parameter
@@ -532,12 +533,12 @@ const RunningReport = () => {
 
       if (data.Status === 1) {
         console.log("images", data.info);
-         setAttechments((prevObservations: any) =>
+        setAttechments((prevObservations: any) =>
           prevObservations.map((obs: any, idx: any) =>
             idx === index
               ? {
                 ...obs,
-                attechment:data.info[0]
+                attechment: data.info[0]
               }
               : obs
           )
@@ -637,7 +638,7 @@ const RunningReport = () => {
     setAttechments((prevObservations: any) =>
       prevObservations.map((obs: any, i: any) =>
         i === index
-          ? { ...obs,attechment_title: attechmentTitle, attechment: Attechment }
+          ? { ...obs, attechment_title: attechmentTitle, attechment: Attechment }
           : obs
       )
     );
@@ -665,12 +666,12 @@ const RunningReport = () => {
     }
   };
 
-  const handleattechmentFileUpload = (event: React.ChangeEvent<HTMLInputElement>,index:any) => {
+  const handleattechmentFileUpload = (event: React.ChangeEvent<HTMLInputElement>, index: any) => {
     const files = event.target.files;
 
     if (files && files.length > 0) {
       const newImages = Array.from(files);
-      UploadAttechmentFile(newImages,index);
+      UploadAttechmentFile(newImages, index);
     }
   };
 
@@ -725,7 +726,7 @@ const RunningReport = () => {
       setAttechments([...attechments, newObservation]);
     }
 
-    console.log("attechments",attechments.length,attechments);
+    console.log("attechments", attechments.length, attechments);
 
     if (attechments.length >= 1) {
       var lastattechemnts = attechments.length - 1;
@@ -1614,15 +1615,23 @@ const RunningReport = () => {
                                     </div>
                                   )}
                                 </>
-                                :
-                                <input
-                                  type={item.inputType}
-                                  name={item.param_name}
-                                  placeholder={item.param_name}
-                                  value={item.value}
-                                  onChange={handleChange}
-                                  className="input-field"
-                                />
+                                : item.inputType == "textarea" ?
+                                  <textarea
+                                    className="input-field"
+                                    name={item.param_name}
+                                    placeholder={item.param_name}
+                                    value={item.value}
+                                    onChange={handleChange}
+                                  />
+                                  :
+                                  <input
+                                    type={item.inputType}
+                                    name={item.param_name}
+                                    placeholder={item.param_name}
+                                    value={item.value}
+                                    onChange={handleChange}
+                                    className="input-field"
+                                  />
                               }
                             </td>
                           </tr>
@@ -1674,15 +1683,14 @@ const RunningReport = () => {
                         </thead>
                         <tbody>
                           {(selectedSection.section == "Attechment" ? attechments : observations).map((observation: any, index: number) => (
-                            <tr key={selectedSection.section == "Attechment" ?  observation.attechment_id : observation.observations_id}>
+                            <tr key={selectedSection.section == "Attechment" ? observation.attechment_id : observation.observations_id}>
                               <td>{index + 1}</td>
                               <td>
                                 {selectedSection.section == "Attechment" ?
-                                  <input
-                                    type="text"
+                                  <textarea
                                     className="input-field"
                                     value={observation.attechment_title}
-                                    onChange={(e) => updateAtttechmentDescription(index, e.target.value,observation.attechemnt)}
+                                    onChange={(e) => updateAtttechmentDescription(index, e.target.value, observation.attechemnt)}
                                     placeholder="Enter description"
                                   />
                                   :
@@ -1711,7 +1719,7 @@ const RunningReport = () => {
                                   <input
                                     type="file"
                                     name={observation.attechment_title}
-                                    onChange={(e: any) => handleattechmentFileUpload(e,index)}
+                                    onChange={(e: any) => handleattechmentFileUpload(e, index)}
                                   />
                                   {observation.attechment && (
                                     <div style={{ marginTop: '10px' }}>

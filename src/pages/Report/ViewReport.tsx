@@ -276,9 +276,12 @@ const ViewReport = () => {
             {reportData[0].value.map((item: any, index: any) => {
               // Skip "Shift" as it's being merged with "Date"
               if (item.param_name === "Shift") return null;
+              if (item.param_name === "End Date") return null;
 
+              
               // Find the "Shift" value
               const shiftItem = reportData[0].value.find((i: any) => i.param_name === "Shift");
+              const EnddateItem = reportData[0].value.find((i: any) => i.param_name === "End Date");
 
               // Check if the index is even to start a new row
               if (index % 2 === 0) {
@@ -312,7 +315,7 @@ const ViewReport = () => {
                           <span>{reportData[0].value[index + 1].param_name}</span>
                         </HeaderCell>
                         <TableCell style={{ width: '25%' }}>
-                          <span>{reportData[0].value[index + 1].param_name === "Date" ? moment(reportData[0].value[index + 1].value).format("DD-MM-YYYY") : reportData[0].value[index + 1].value}</span>
+                          <span>{reportData[0].value[index + 1].param_name === "Date" ? moment(reportData[0].value[index + 1].value).format("DD-MM-YYYY") + (EnddateItem.details_id != 0 ? " to " : "") + (EnddateItem.details_id != 0 ? moment(EnddateItem.value).format("DD-MM-YYYY") : '') : reportData[0].value[index + 1].value}</span>
                         </TableCell>
                       </>
                     )}
@@ -453,7 +456,7 @@ const ViewReport = () => {
                               alt="PDF Sub"
                               style={{
                                 padding: 5,
-                                maxHeight:250,
+                                maxHeight: 250,
                                 objectFit: 'contain',
                                 width: rowImages.length % 2 === 0 ? "100%" : "45%",
                               }}
@@ -528,7 +531,7 @@ const ViewReport = () => {
                                 alt="PDF Sub"
                                 style={{
                                   padding: 5,
-                                  maxHeight:250,
+                                  maxHeight: 250,
                                   width: 300,
                                   display: "block",
                                   margin: "0 auto",
@@ -551,7 +554,7 @@ const ViewReport = () => {
                               alt="PDF Sub"
                               style={{
                                 padding: 5,
-                                maxHeight:250,
+                                maxHeight: 250,
                                 width: 300,
                                 display: "block",
                                 margin: "0 auto",
@@ -653,7 +656,7 @@ const ViewReport = () => {
                         <TableCell key={imgIdx} style={{ textAlign: 'center', width: rowImages.length % 2 === 0 ? "45%" : "93%" }}>
                           <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{
                             padding: 5,
-                            maxHeight:250, 
+                            maxHeight: 250,
                             objectFit: 'contain',
                             width: rowImages.length % 2 === 0 ? '100%' : "45%"
                           }} />
@@ -758,7 +761,7 @@ const ViewReport = () => {
                         }}>
                           <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{
                             padding: 5,
-                            maxHeight:250,
+                            maxHeight: 250,
                             objectFit: 'contain',
                             width: rowImages.length % 2 === 0 ? '100%' : "45%"
                           }} />
@@ -958,7 +961,7 @@ const ViewReport = () => {
                         <TableCell key={imgIdx} style={{ textAlign: 'center', width: rowImages.length % 2 === 0 ? "45%" : "90%" }}>
                           <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{
                             padding: 5,
-                            maxHeight:250, 
+                            maxHeight: 250,
                             objectFit: 'contain',
                             width: rowImages.length % 2 === 0 ? '100%' : "45%"
                           }} />
@@ -1158,7 +1161,7 @@ const ViewReport = () => {
                         <TableCell key={imgIdx} style={{ textAlign: 'center', width: rowImages.length % 2 === 0 ? "45%" : "93%" }}>
                           <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{
                             padding: 5,
-                            maxHeight:250, 
+                            maxHeight: 250,
                             objectFit: 'contain',
                             width: rowImages.length % 2 === 0 ? '100%' : "45%"
                           }} />
@@ -1240,7 +1243,7 @@ const ViewReport = () => {
                         <TableCell key={imgIdx} style={{ textAlign: 'center', width: rowImages.length % 2 === 0 ? "45%" : "93%" }}>
                           <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{
                             padding: 5,
-                            maxHeight:250, 
+                            maxHeight: 250,
                             objectFit: 'contain',
                             width: rowImages.length % 2 === 0 ? '100%' : "45%"
                           }} />

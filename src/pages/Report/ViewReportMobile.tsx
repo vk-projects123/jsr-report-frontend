@@ -1,14 +1,13 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import html2pdf from 'html2pdf.js';
+import pdflogo from "../../images/pdflogo_transparent.png";
+import { IoMdDownload  } from 'react-icons/io';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { VIEW_REPORTS_API, imgUrl } from "../../Api/api.tsx";
+import moment from 'moment';
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import pdflogo from "../../images/pdflogo_transparent.png";
-import { FaDownload } from 'react-icons/fa';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { VIEW_REPORTS_API, SUBMIT_REPORT_API, imgUrl } from "../../Api/api.tsx";
-import moment from 'moment';
-import { toast } from "react-toastify";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, LineChart, Line, CartesianGrid, ResponsiveContainer } from "recharts";
 import { FiPaperclip } from 'react-icons/fi';
 
 const Container = styled.div`
@@ -68,7 +67,6 @@ const TitleContainer = styled.div`
 `;
 
 const ReportDetails = styled.div`
- font-size: 16px;
 color:#000;
 height:100%;
 padding:16px;
@@ -89,7 +87,6 @@ color:#000;
 
 const TableCell = styled.td`
 color:#000;
- font-size: 16px;
   border: 1px solid black;
   padding-left:5px;
   text-align: left;
@@ -104,7 +101,6 @@ color:#000;
 
 const HeaderCell = styled(TableCell)`
 padding-left:5px;
- font-size: 16px;
   background: #D8D8D8;
   color:#000;
   font-weight: bold;
@@ -126,12 +122,12 @@ const Title = styled.p`
 `;
 
 const DownloadButton = styled.button`
-  margin: 20px 0;
+  margin: -50px 0;
   padding: 10px 20px;
-  background-color: #007bff;
+  background-color: #274578;
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -149,44 +145,27 @@ const DownloadButton = styled.button`
   }
 `;
 
-const PreviewReport = () => {
-  const navigate = useNavigate();
+const ViewReport = () => {
   const location = useLocation();
-  const Datas = location.state;
-  const data = Datas.data;
 
-  var reporttype: any;
-  var submissionID: any;
-  var formId: any;
-  var selectedSection: any;
+ const queryParams = new URLSearchParams(location.search);
+  const reporttype = queryParams.get('reporttype') || 'IPQC';
+  const submissionID = queryParams.get('submissionID') || '0';
+  const formId = queryParams.get('formId') || '1';
 
-  try {
-    reporttype = Datas.reporttype;
-    submissionID = Datas.submissionID;
-    formId = Datas.formId;
-    selectedSection = Datas.selectedSection;
-  } catch (e) {
-    reporttype = "IPQC";
-    submissionID = 0;
-    formId = 1;
-    selectedSection = { section: 'Report Details', section_id: 1, section_type: 'inputField' };
-  }
+  const utoken = queryParams.get('userToken');
 
-  const handleBackButton = () => {
-    console.log("back button pressed!");
-    navigate('/reports/running_report/1', { state: { formId: formId, reporttype: reporttype, submissionID: submissionID, selectedSection: selectedSection } });
-  };
-
-  var utoken = localStorage.getItem('userToken');
-  const [isLoaded, setLoaded] = useState<any>(false);
-  var [reportData, setReportdata] = useState<any>([]);
+  const [isLoaded, setLoaded] = useState(false);
+  var [reportData, setReportdata] = useState([]);
   var [lastsection, setLastsection] = useState<any>({});
 
   useEffect(() => {
-    console.log("reportData", reportData);
     setLoaded(true);
+    // if(!utoken){
+      // alert("Please Give me a Token");
+    // }
     listsectiondatas();
-  }, [data]);
+  }, []);
 
   const Header = ({ reportData, isClick }) => {
     console.log("reportData, isClick", reportData, isClick);
@@ -290,6 +269,7 @@ const PreviewReport = () => {
               if (item.param_name === "Shift") return null;
               if (item.param_name === "End Date") return null;
 
+              
               // Find the "Shift" value
               const shiftItem = reportData[0].value.find((i: any) => i.param_name === "Shift");
               const EnddateItem = reportData[0].value.find((i: any) => i.param_name === "End Date");
@@ -467,7 +447,7 @@ const PreviewReport = () => {
                               alt="PDF Sub"
                               style={{
                                 padding: 5,
-                                maxHeight:250,
+                                maxHeight: 250,
                                 objectFit: 'contain',
                                 width: rowImages.length % 2 === 0 ? "100%" : "45%",
                               }}
@@ -542,7 +522,7 @@ const PreviewReport = () => {
                                 alt="PDF Sub"
                                 style={{
                                   padding: 5,
-                                  maxHeight:250,
+                                  maxHeight: 250,
                                   width: 300,
                                   display: "block",
                                   margin: "0 auto",
@@ -565,7 +545,7 @@ const PreviewReport = () => {
                               alt="PDF Sub"
                               style={{
                                 padding: 5,
-                                maxHeight:250,
+                                maxHeight: 250,
                                 width: 300,
                                 display: "block",
                                 margin: "0 auto",
@@ -665,10 +645,12 @@ const PreviewReport = () => {
                     <tr key={rowIndex}>
                       {rowImages.map((image: any, imgIdx: number) => (
                         <TableCell key={imgIdx} style={{ textAlign: 'center', width: rowImages.length % 2 === 0 ? "45%" : "93%" }}>
-                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{ padding: 5, 
-                            maxHeight:250, 
-                            objectFit:'contain',
-                            width: rowImages.length % 2 === 0 ? '100%' : "45%" }} />
+                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{
+                            padding: 5,
+                            maxHeight: 250,
+                            objectFit: 'contain',
+                            width: rowImages.length % 2 === 0 ? '100%' : "45%"
+                          }} />
                         </TableCell>
                       ))}
                       {/* Fill empty cell if only one image in row */}
@@ -768,10 +750,12 @@ const PreviewReport = () => {
                           textAlign: 'center',
                           width: rowImages.length % 2 === 0 ? "45%" : "93%"
                         }}>
-                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{ padding: 5, 
-                            maxHeight:250,
+                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{
+                            padding: 5,
+                            maxHeight: 250,
                             objectFit: 'contain',
-                             width: rowImages.length % 2 === 0 ? '100%' : "45%" }} />
+                            width: rowImages.length % 2 === 0 ? '100%' : "45%"
+                          }} />
                         </TableCell>
                       ))}
                       {/* Fill empty cell if only one image in row */}
@@ -968,7 +952,7 @@ const PreviewReport = () => {
                         <TableCell key={imgIdx} style={{ textAlign: 'center', width: rowImages.length % 2 === 0 ? "45%" : "90%" }}>
                           <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{
                             padding: 5,
-                            maxHeight:250, 
+                            maxHeight: 250,
                             objectFit: 'contain',
                             width: rowImages.length % 2 === 0 ? '100%' : "45%"
                           }} />
@@ -1168,7 +1152,7 @@ const PreviewReport = () => {
                         <TableCell key={imgIdx} style={{ textAlign: 'center', width: rowImages.length % 2 === 0 ? "45%" : "93%" }}>
                           <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{
                             padding: 5,
-                            maxHeight:250, 
+                            maxHeight: 250,
                             objectFit: 'contain',
                             width: rowImages.length % 2 === 0 ? '100%' : "45%"
                           }} />
@@ -1250,7 +1234,7 @@ const PreviewReport = () => {
                         <TableCell key={imgIdx} style={{ textAlign: 'center', width: rowImages.length % 2 === 0 ? "45%" : "93%" }}>
                           <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{
                             padding: 5,
-                            maxHeight:250, 
+                            maxHeight: 250,
                             objectFit: 'contain',
                             width: rowImages.length % 2 === 0 ? '100%' : "45%"
                           }} />
@@ -1402,7 +1386,6 @@ const PreviewReport = () => {
       "RandomSampleCheck",
       "RandomSampleCheckObservations",
       "InspectionResults",
-      "Attachment",
       "report_completed"
     ];
 
@@ -1413,12 +1396,12 @@ const PreviewReport = () => {
       orientation: "p",
       unit: "mm",
       format: "a4",
-      compress: true
+      compress: true // Enable PDF compression
     });
 
     const pageHeight = 297;
     const margin = 10;
-    const headerHeight = 15;
+    const headerHeight = 20;
     const footerHeight = 10;
     const pageNumberOffset = 10;
     let yOffset = margin + headerHeight + 5;
@@ -1427,10 +1410,10 @@ const PreviewReport = () => {
 
     const convertToImage = async (element) => {
       return html2canvas(element, {
-        scale: 2.5, useCORS: true, logging: false,
+        scale: 1, useCORS: true, logging: false,
         allowTaint: true,
       })
-        .then((canvas) => canvas.toDataURL("image/png", 1))
+        .then((canvas) => canvas.toDataURL("image/png", 0.8))
         .catch((error) => {
           console.error("Error capturing element:", element.id, error);
           return null;
@@ -1505,53 +1488,11 @@ const PreviewReport = () => {
     setIsclick(false);
   };
 
-  const submitReport = async (e: any) => {
-    e.preventDefault();
-    if (submissionID == 0) {
-      toast.error("please fill atleast one section");
-    } else {
-      try {
-        const response = await fetch(SUBMIT_REPORT_API, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${utoken}`,
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({
-            submission_id: submissionID,
-            form_id: formId
-          })
-        });
-
-        const data = await response.json();
-
-        if (data.Status === 0) {
-          setLoaded(false);
-        } else if (data.Status === 1) {
-          toast.success("Report Submitted Success");
-          navigate(`/reports/${reporttype}`);
-          setLoaded(false);
-        }
-      } catch (error) {
-        console.error("Error fetching sections:", error);
-        setLoaded(false);
-      }
-    }
-  };
-
-  const ChartData = [
-    { date: "12/25/2024", dayProduction: 120, nightProduction: 222, totalRejection: 50 },
-    { date: "12/26/2024", dayProduction: 350, nightProduction: 334, totalRejection: 70 },
-    { date: "12/27/2024", dayProduction: 300, nightProduction: 335, totalRejection: 50 },
-    { date: "12/28/2024", dayProduction: 133, nightProduction: 145, totalRejection: 51 },
-  ];
-
 
   return (
     <>
       <div style={{ height: 40 }}></div>
-      <DownloadButton onClick={generatePDF}><FaDownload /> {isClick ? (
+      <DownloadButton onClick={generatePDF}><IoMdDownload  style={{color:'#fff'}}/> {isClick ? (
         <svg
           className="w-5 h-5 animate-spin text-white"
           xmlns="http://www.w3.org/2000/svg"
@@ -1575,30 +1516,12 @@ const PreviewReport = () => {
       ) : (
         'PDF'
       )}</DownloadButton>
-
-      <button className="add-btn mx-2" onClick={handleBackButton}>
-        Back
-      </button>
-      {submissionID != 0 ?
-        <button className="add-btn mx-2" onClick={submitReport}>
-          Submit Report
-        </button>
-        : ""}
-
+      <div style={{ height: 40 }}></div>
       {reporttype === "IPQC" ?
         <div style={{
           flex: 1,
           alignItems: 'center'
         }}>
-          {isClick ?
-            <div className="fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center z-50">
-              <div className="flex flex-col items-center">
-                {/* Loader Spinner */}
-                <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-                <p className="text-white text-lg mt-4">Generating PDF, please wait...</p>
-              </div>
-            </div>
-            : ""}
           {/* content */}
           {reportData.length <= 0 ? "Loading ..." :
             <Container id="report" style={{ width: isClick ? 900 : "100%" }}>
@@ -1687,9 +1610,9 @@ const PreviewReport = () => {
               <ReportDetailsSection reportData={reportData} isClick={isClick} />
 
               {/* Other Details */}
-              <BomTableData reportData={reportData} isClick={isClick} id={"bomdetails"} value1={1} value2={8} />
+              <BomTableData reportData={reportData} isClick={isClick} id={"bomdetails"} value1={1} value2={isClick ? 8 : 18} />
 
-              <BomTableData reportData={reportData} isClick={isClick} id={"bomdetails1"} value1={8} value2={18} />
+              {isClick ? <BomTableData reportData={reportData} isClick={isClick} id={"bomdetails1"} value1={8} value2={18} /> : ""}
 
               <Table id="report_completed">
                 <tbody style={{ margin: 0, padding: 0 }}>
@@ -1746,7 +1669,8 @@ const PreviewReport = () => {
                   <InspectionResults reportData={reportData} isClick={isClick} />
 
                   {/* Attachment */}
-                  {reportData[4].value.length == 0 ? "" : <Attachment reportData={reportData} isClick={isClick} />}
+                  {reportData[4].value.length == 0 ? "" :
+                    <Attachment reportData={reportData} isClick={isClick} />}
 
                   <Table id="report_completed">
                     <tbody style={{ margin: 0, padding: 0 }}>
@@ -1760,32 +1684,17 @@ const PreviewReport = () => {
                       </tr>
                     </tbody>
                   </Table>
+
                   <Footer reportData={reportData} isClick={isClick} />
                 </Container>
               }
             </div>
             :
-            reportData.length <= 0 ? "Loading ..." :
-              <ResponsiveContainer width="100%" height={400}>
-                <BarChart data={ChartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="date" />
-                  <YAxis yAxisId="left" />
-                  <YAxis yAxisId="right" orientation="right" />
-                  <Tooltip />
-                  <Legend />
-                  {/* Stacked Bars */}
-                  <Bar yAxisId="left" dataKey="dayProduction" stackId="a" fill="#28a745" name="Day Production" />
-                  <Bar yAxisId="left" dataKey="nightProduction" stackId="a" fill="#f4c542" name="Night Production" />
-                  {/* Line for Total Rejection */}
-                  <LineChart data={ChartData}>
-                    <Line yAxisId="right" type="monotone" dataKey="totalRejection" stroke="red" strokeWidth={3} dot={{ fill: "red", r: 5 }} name="Total Rejection" />
-                  </LineChart>
-                </BarChart>
-              </ResponsiveContainer>
+            <>
+            </>
       }
     </>
   );
 };
 
-export default PreviewReport;
+export default ViewReport;

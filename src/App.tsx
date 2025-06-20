@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import { ToastContainer } from "react-toastify";
 import SignIn from './pages/Authentication/SignIn';
 import SignUp from './pages/Authentication/SignUp';
+import ViewReportMobile from "./pages/Report/ViewReportMobile";
 import LastForms from './pages/Report/LastReports';
 import Loader from './common/Loader';
 import routes from './routes';
@@ -40,6 +41,7 @@ function App() {
       <Routes>
         <Route path="/auth/signin" element={<SignIn />} />
         <Route path="/auth/signup" element={<SignUp />} />
+        <Route path="/mobileviewreport" element={<ViewReportMobile />} />
         <Route element={<DefaultLayout />}>
           {/* <Route index element={<ECommerce />} /> */}
           <Route index element={<LastForms />} />

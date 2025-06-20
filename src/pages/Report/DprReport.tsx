@@ -198,7 +198,7 @@ const Forms = () => {
                     <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
                         {item.rejection_nos}
                     </td>
-                    <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
+                    <td className="border-b border-[#eee] py-1 px-4 dark:border-str okedark">
                       <p className="text-sm text-black dark:text-white">{moment(item.created_at).format("DD-MM-YYYY")}</p>
                     </td>
                   </tr>
