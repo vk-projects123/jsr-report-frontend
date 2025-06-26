@@ -525,7 +525,7 @@ const PreviewReport = () => {
                       <TableCell rowSpan={totalImageRows + 1} style={{ textAlign: "center", fontWeight: 'bold' }}>
                         <span>{observation.Inspection}</span>
                       </TableCell>
-                      <TableCell rowSpan={totalImageRows + 1} style={{ textAlign: "center", width: '30%' }}>
+                      <TableCell rowSpan={totalImageRows + 1} style={{ width: '30%' }}>
                         <span>{observation.observations_text}</span>
                       </TableCell>
                       {/* First image row or "No image attached" */}
