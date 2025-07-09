@@ -632,7 +632,7 @@ const RunningReport = () => {
           : obs // Leave other observations unchanged
       )
     );
-  };
+  }; 
 
   const updateAtttechmentDescription = (index: number, attechmentTitle: string, Attechment: any) => {
     setAttechments((prevObservations: any) =>
