@@ -17,7 +17,7 @@ import {
 import moment from "moment";
 
 const RunningReport = () => {
-  var utoken = localStorage.getItem('userToken');
+  var utoken = localStorage.getItem('workspaceuserToken');
   const navigate = useNavigate();
   const location = useLocation();
   var data = location.state;
@@ -94,7 +94,7 @@ const RunningReport = () => {
       if (data.Status === 0) {
         setLoaded(false);
       } else if (data.Status === 1) {
-        //console.log(data.info);
+        ////console.log(data.info);
         setSections(data.info || []);
         setLoaded(false);
       }
@@ -632,7 +632,7 @@ const RunningReport = () => {
           : obs // Leave other observations unchanged
       )
     );
-  }; 
+  };
 
   const updateAtttechmentDescription = (index: number, attechmentTitle: string, Attechment: any) => {
     setAttechments((prevObservations: any) =>

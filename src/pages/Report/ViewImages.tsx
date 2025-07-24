@@ -57,7 +57,7 @@ const ViewImages = () => {
     const [observations, setObservations] = useState([]);
     const [selectedImage, setSelectedImage] = useState(null);
 
-    const utoken = localStorage.getItem("userToken");
+    const utoken = localStorage.getItem("workspaceuserToken");
 
     useEffect(() => {
         listObservations();
@@ -101,8 +101,8 @@ const ViewImages = () => {
                 <p>Images Not Uploaded</p>
             ) : imageloading ? <p>Images is Loading...</p> : (
                 <GridContainer>
-                    {observations.map((observation, index) =>
-                        observation.images.map((image, imgIdx) => (
+                    {observations.map((observation:any, index:any) =>
+                        observation.images.map((image:any, imgIdx:any) => (
                             <ImageItem
                                 key={`${index}-${imgIdx}`}
                                 image={image}
@@ -135,7 +135,7 @@ const ViewImages = () => {
     );
 };
 
-const ImageItem = ({ image, imgUrl, setSelectedImage }) => {
+const ImageItem = ({ image, imgUrl, setSelectedImage }:any) => {
     const [loading, setLoading] = useState(true);
     const [cachedSrc, setCachedSrc] = useState(imgUrl + image.image);
 

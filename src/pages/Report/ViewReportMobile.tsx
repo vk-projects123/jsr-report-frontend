@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import html2pdf from 'html2pdf.js';
 import pdflogo from "../../images/pdflogo_transparent.png";
-import { IoMdDownload  } from 'react-icons/io';
+import { IoMdDownload } from 'react-icons/io';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { VIEW_REPORTS_API, imgUrl } from "../../Api/api.tsx";
+import { VIEW_REPORTS_API, GET_SIGNATURES_API, imgUrl } from "../../Api/api.tsx";
 import moment from 'moment';
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -148,23 +148,25 @@ const DownloadButton = styled.button`
 const ViewReport = () => {
   const location = useLocation();
 
- const queryParams = new URLSearchParams(location.search);
+  const queryParams = new URLSearchParams(location.search);
   const reporttype = queryParams.get('reporttype') || 'IPQC';
   const submissionID = queryParams.get('submissionID') || '0';
   const formId = queryParams.get('formId') || '1';
 
-  const utoken = queryParams.get('userToken');
+  const utoken = queryParams.get('workspaceuserToken');
 
   const [isLoaded, setLoaded] = useState(false);
   var [reportData, setReportdata] = useState([]);
   var [lastsection, setLastsection] = useState<any>({});
+  var [signData, setSignData] = useState([]);
 
   useEffect(() => {
     setLoaded(true);
     // if(!utoken){
-      // alert("Please Give me a Token");
+    // alert("Please Give me a Token");
     // }
     listsectiondatas();
+    getsignatures();
   }, []);
 
   const Header = ({ reportData, isClick }) => {
@@ -269,7 +271,7 @@ const ViewReport = () => {
               if (item.param_name === "Shift") return null;
               if (item.param_name === "End Date") return null;
 
-              
+
               // Find the "Shift" value
               const shiftItem = reportData[0].value.find((i: any) => i.param_name === "Shift");
               const EnddateItem = reportData[0].value.find((i: any) => i.param_name === "End Date");
@@ -1298,6 +1300,57 @@ const ViewReport = () => {
     );
   };
 
+  const SignatureSection = ({ signData, isClick }: any) => {
+    return (
+      <>
+        {signData.map((datas: any, findex: any) => (
+          <div className="content" id={"Signature" + (findex + 1)}>
+            {datas.data.length == 0 ? "" :
+              <div key={findex}>
+                <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>
+                  {datas.sign_role} Signature -
+                </p>
+                <Table>
+                  <tbody>
+                    <tr>
+                      {datas.data.map((item: any, index: number) => (
+                        <TableCell key={index} style={{ verticalAlign: 'top', padding: '10px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div>
+                              <p><strong>Name:</strong> {item.sign_username}</p>
+                              <p><strong>Date & Time:</strong> {moment(item.created_at).format("DD/MM/YYYY hh:mm A")}</p>
+                              <p><strong>Signature:</strong></p>
+                              <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
+                                <img
+                                  src={`${imgUrl}${item.sign}`}
+                                  alt="Signature"
+                                  style={{ width: '150px', height: 'auto' }}
+                                />
+                              </div>
+                            </div>
+                            {!isClick && (
+                              <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+                                <img
+                                  src={`${imgUrl}${item.sign_selfie}`}
+                                  alt="Selfie"
+                                  style={{ width: '150px', height: 'auto' }}
+                                />
+                              </div>
+                            )}
+                          </div>
+                        </TableCell>
+                      ))}
+                    </tr>
+                  </tbody>
+                </Table>
+              </div>
+            }
+          </div>
+        ))}
+      </>
+    );
+  };
+
   // Function to fetch sections
   const listsectiondatas = async () => {
 
@@ -1328,7 +1381,7 @@ const ViewReport = () => {
       if (data.Status === 0) {
         setLoaded(false);
       } else if (data.Status === 1) {
-        console.log(data.info);
+        //console.log(data.info);
         setReportdata(data.info || []);
         setLastsection(data.submission[0]);
         setLoaded(false);
@@ -1488,11 +1541,41 @@ const ViewReport = () => {
     setIsclick(false);
   };
 
+  const getsignatures = async () => {
+
+    const params = new URLSearchParams({
+      submission_id: submissionID
+    });
+
+    try {
+      const response = await fetch(`${GET_SIGNATURES_API}?${params.toString()}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${utoken}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.Status === 0) {
+        setLoaded(false);
+      } else if (data.Status === 1) {
+        //console.log(data.info);
+        setSignData(data.info || []);
+        setLoaded(false);
+      }
+    } catch (error) {
+      console.error("Error fetching sections:", error);
+      setLoaded(false);
+    }
+  };
 
   return (
     <>
       <div style={{ height: 40 }}></div>
-      <DownloadButton onClick={generatePDF}><IoMdDownload  style={{color:'#fff'}}/> {isClick ? (
+      <DownloadButton onClick={generatePDF}><IoMdDownload style={{ color: '#fff' }} /> {isClick ? (
         <svg
           className="w-5 h-5 animate-spin text-white"
           xmlns="http://www.w3.org/2000/svg"
@@ -1598,6 +1681,9 @@ const ViewReport = () => {
                   </tr>
                 </tbody>
               </Table>
+
+              <SignatureSection signData={signData} isClick={isClick} />
+
               <Footer reportData={reportData} isClick={isClick} />
             </Container>
           }
@@ -1626,6 +1712,9 @@ const ViewReport = () => {
                   </tr>
                 </tbody>
               </Table>
+
+              <SignatureSection signData={signData} isClick={isClick} />
+
               <Footer reportData={reportData} isClick={isClick} />
             </Container>
           :
@@ -1684,6 +1773,8 @@ const ViewReport = () => {
                       </tr>
                     </tbody>
                   </Table>
+
+                  <SignatureSection signData={signData} isClick={isClick} />
 
                   <Footer reportData={reportData} isClick={isClick} />
                 </Container>

@@ -16,7 +16,7 @@ useEffect(() => {
   }, []);
 
 
-  var utoken = localStorage.getItem('userToken');
+  var utoken = localStorage.getItem('workspaceuserToken');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errortext, setErrortext] = useState('');
@@ -59,11 +59,11 @@ useEffect(() => {
         setErrortext(data.Message);
         setIsLoading(false);
       } else if (data.Status === 1) {
-        console.log(data.info);
-        localStorage.setItem('userToken', data.UserToken);
-        localStorage.setItem('user_role', data.info.user_role);
-        localStorage.setItem('sub_role', data.info.sub_role);
-        localStorage.setItem('user_name', data.info.user_name);
+        //console.log(data.info);
+        localStorage.setItem('workspaceuserToken', data.UserToken);
+        localStorage.setItem('workspaceuser_role', data.info.user_role);
+        localStorage.setItem('workspacesub_role', data.info.sub_role);
+        localStorage.setItem('workspaceuser_name', data.info.user_name);
         toast.success(data.Message);
         navigate('/');
       }

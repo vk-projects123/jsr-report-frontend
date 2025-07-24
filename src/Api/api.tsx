@@ -43,6 +43,7 @@ export const GET_ATTECHMENT_API = baseUrl + "/get_attechment";
 export const LIST_REPORTS_API = baseUrl + "/list_reports";
 export const LIST_DPR_REPORTS_API = baseUrl + "/list_dpr_reports";
 export const VIEW_REPORTS_API = baseUrl + "/view_reports";
+export const GET_SIGNATURES_API = baseUrl + "/get_pdf_signature";
 
 //submit report
 export const SUBMIT_REPORT_API = baseUrl + "/submit_report"

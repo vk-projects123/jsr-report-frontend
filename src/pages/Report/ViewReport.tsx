@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import html2pdf from 'html2pdf.js';
 import pdflogo from "../../images/pdflogo_transparent.png";
 import { FaDownload } from 'react-icons/fa';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { VIEW_REPORTS_API, imgUrl } from "../../Api/api.tsx";
+import { VIEW_REPORTS_API,GET_SIGNATURES_API, imgUrl } from "../../Api/api.tsx";
 import moment from 'moment';
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -169,10 +168,11 @@ const ViewReport = () => {
   const reporttype = location?.state?.reporttype;
   const formId = location?.state?.formId;
 
-  var utoken = localStorage.getItem('userToken');
+  var utoken = localStorage.getItem('workspaceuserToken');
   const [isLoaded, setLoaded] = useState(false);
   var [reportData, setReportdata] = useState([]);
   var [lastsection, setLastsection] = useState<any>({});
+  var [signData, setSignData] = useState([]);
 
   useEffect(() => {
     if (!submissionID || !reporttype || !formId) {
@@ -181,9 +181,10 @@ const ViewReport = () => {
 
     setLoaded(true);
     listsectiondatas();
+    getsignatures();
   }, [submissionID, reporttype, formId, navigate]);
 
-  const Header = ({ reportData, isClick }) => {
+  const Header = ({ reportData, isClick }:any) => {
     console.log("reportData, isClick", reportData, isClick);
     return (
       !reportData ? <></> :
@@ -251,7 +252,7 @@ const ViewReport = () => {
     );
   };
 
-  const Footer = ({ reportData, isClick }) => {
+  const Footer = ({ reportData, isClick }:any) => {
     return (
       !reportData ? <></> :
         <div id="pdffooter" style={{ width: '100%' }}>
@@ -274,7 +275,7 @@ const ViewReport = () => {
     );
   };
 
-  const ReportDetailsSection = ({ reportData, isClick }) => {
+  const ReportDetailsSection = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="ReportDetailsSection">
         <p className={isClick ? "pdf-span " : ""} style={{ fontWeight: 'bold', fontSize: 16, color: '#000' }}>Report Details –</p>
@@ -338,7 +339,7 @@ const ViewReport = () => {
     );
   };
 
-  const ProductStageWise = ({ reportData, isClick }) => {
+  const ProductStageWise = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="ProductStageWise">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Production Stage Wise -</p>
@@ -356,7 +357,7 @@ const ViewReport = () => {
     );
   };
 
-  const InspectionDetails = ({ reportData, isClick }) => {
+  const InspectionDetails = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="ProductStageWise">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Inspection Details -</p>
@@ -374,7 +375,7 @@ const ViewReport = () => {
     );
   };
 
-  const InspectionResults = ({ reportData, isClick }) => {
+  const InspectionResults = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="InspectionResults">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Inspection Results -</p>
@@ -392,7 +393,7 @@ const ViewReport = () => {
     );
   };
 
-  const Attachment = ({ reportData, isClick }) => {
+  const Attachment = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="Attachment">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Attachment -</p>
@@ -410,7 +411,7 @@ const ViewReport = () => {
     );
   };
 
-  const MajorObservations = ({ reportData, isClick, value1, value2 }) => {
+  const MajorObservations = ({ reportData, isClick, value1, value2 }:any) => {
     return (
       reportData[2].value.slice(value1, value2).length <= 0 ? "" :
         <div className="content" id={"MajorObservations" + value2}>
@@ -483,7 +484,7 @@ const ViewReport = () => {
     );
   };
 
-  const InpectionObservations = ({ reportData, isClick, value1, value2 }) => {
+  const InpectionObservations = ({ reportData, isClick, value1, value2 }:any) => {
     return (
       reportData[2].value.slice(value1, value2).length <= 0 ? "" :
         <div className="content" id={"MajorObservations" + value2}>
@@ -583,7 +584,7 @@ const ViewReport = () => {
     );
   };
 
-  const FilmCutting = ({ reportData, isClick }) => {
+  const FilmCutting = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="FilmCutting">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', fontSize: 18, color: '#000' }}>In Process Inspection Report –</p>
@@ -625,7 +626,7 @@ const ViewReport = () => {
     );
   };
 
-  const FilmCuttingobservations = ({ reportData, isClick }) => {
+  const FilmCuttingobservations = ({ reportData, isClick }:any) => {
     return (
       reportData[3].observations.length <= 0 ? "" :
         <div className="content" id="FilmCuttingobservations">
@@ -681,7 +682,7 @@ const ViewReport = () => {
     );
   };
 
-  const TabberAndStringer = ({ reportData, isClick }) => {
+  const TabberAndStringer = ({ reportData, isClick }:any) => {
     return (
       <div className="content">
         <div className="content" id="TabberAndStringer">
@@ -727,7 +728,7 @@ const ViewReport = () => {
     );
   };
 
-  const TabberAndStringerObservations = ({ reportData, isClick }) => {
+  const TabberAndStringerObservations = ({ reportData, isClick }:any) => {
     return (
       reportData[4].observations.length <= 0 ? "" :
         <div className="content" id="TabberAndStringerObservations">
@@ -786,7 +787,7 @@ const ViewReport = () => {
     );
   };
 
-  const Layup = ({ reportData, isClick }) => {
+  const Layup = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="Layup">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Process – Layup</p>
@@ -830,7 +831,7 @@ const ViewReport = () => {
     );
   };
 
-  const LayupObservations = ({ reportData, isClick }) => {
+  const LayupObservations = ({ reportData, isClick }:any) => {
     return (
       reportData[5].observations.length <= 0 ? "" :
         <div className="content" id="LayupObservations">
@@ -886,7 +887,7 @@ const ViewReport = () => {
     );
   };
 
-  const Lamination = ({ reportData, isClick }) => {
+  const Lamination = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="Lamination">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Process – Lamination</p>
@@ -930,7 +931,7 @@ const ViewReport = () => {
     );
   };
 
-  const LaminationObservations = ({ reportData, isClick }) => {
+  const LaminationObservations = ({ reportData, isClick }:any) => {
     return (
       reportData[6].observations.length <= 0 ? "" :
         <div className="content" id="LaminationObservations">
@@ -986,7 +987,7 @@ const ViewReport = () => {
     );
   };
 
-  const Framing = ({ reportData, isClick }) => {
+  const Framing = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="Framing">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Process – Framing</p>
@@ -1030,7 +1031,7 @@ const ViewReport = () => {
     );
   };
 
-  const FramingObservation = ({ reportData, isClick }) => {
+  const FramingObservation = ({ reportData, isClick }:any) => {
     return (
       reportData[7].observations.length <= 0 ? "" :
         <div className="content" id="FramingObservation">
@@ -1086,7 +1087,7 @@ const ViewReport = () => {
     );
   };
 
-  const FlasherTesting = ({ reportData, isClick }) => {
+  const FlasherTesting = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="FlasherTesting">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Process – Flasher Testing</p>
@@ -1130,7 +1131,7 @@ const ViewReport = () => {
     );
   };
 
-  const FlasherTestingObservations = ({ reportData, isClick }) => {
+  const FlasherTestingObservations = ({ reportData, isClick }:any) => {
     return (
       reportData[8].observations.length <= 0 ? "" :
         <div className="content" id="FlasherTestingObservations">
@@ -1186,7 +1187,7 @@ const ViewReport = () => {
     );
   };
 
-  const RandomSampleCheck = ({ reportData, isClick }) => {
+  const RandomSampleCheck = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="RandomSampleCheck">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Random Sample Check</p>
@@ -1212,7 +1213,7 @@ const ViewReport = () => {
     );
   };
 
-  const RandomSampleCheckObservations = ({ reportData, isClick }) => {
+  const RandomSampleCheckObservations = ({ reportData, isClick }:any) => {
     return (
       reportData[9].observations.length <= 0 ? "" :
         <div className="content" id="RandomSampleCheckObservations">
@@ -1268,7 +1269,7 @@ const ViewReport = () => {
     );
   };
 
-  const BomTableData = ({ reportData, id, value1, value2, isClick }) => {
+  const BomTableData = ({ reportData, id, value1, value2, isClick }:any) => {
     return (
       reportData.length <= 0 ? "" :
         <div className="content" id={id}>
@@ -1314,6 +1315,57 @@ const ViewReport = () => {
     );
   };
 
+  const SignatureSection = ({ signData, isClick }: any) => {
+    return (
+      <>
+        {signData.map((datas: any, findex: any) => (
+          <div className="content" id={"Signature" + (findex + 1)}>
+            {datas.data.length == 0 ? "" :
+              <div key={findex}>
+                <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>
+                  {datas.sign_role} Signature -
+                </p>
+                <Table>
+                  <tbody>
+                    <tr>
+                      {datas.data.map((item: any, index: number) => (
+                        <TableCell key={index} style={{ verticalAlign: 'top', padding: '10px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div>
+                              <p><strong>Name:</strong> {item.sign_username}</p>
+                              <p><strong>Date & Time:</strong> {moment(item.created_at).format("DD/MM/YYYY hh:mm A")}</p>
+                              <p><strong>Signature:</strong></p>
+                              <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
+                                <img
+                                  src={`${imgUrl}${item.sign}`}
+                                  alt="Signature"
+                                  style={{ width: '150px', height: 'auto' }}
+                                />
+                              </div>
+                            </div>
+                            {!isClick && (
+                              <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+                                <img
+                                  src={`${imgUrl}${item.sign_selfie}`}
+                                  alt="Selfie"
+                                  style={{ width: '150px', height: 'auto' }}
+                                />
+                              </div>
+                            )}
+                          </div>
+                        </TableCell>
+                      ))}
+                    </tr>
+                  </tbody>
+                </Table>
+              </div>
+            }
+          </div>
+        ))}
+      </>
+    );
+  };
+
   // Function to fetch sections
   const listsectiondatas = async () => {
 
@@ -1344,9 +1396,40 @@ const ViewReport = () => {
       if (data.Status === 0) {
         setLoaded(false);
       } else if (data.Status === 1) {
-        console.log(data.info);
+        //console.log(data.info);
         setReportdata(data.info || []);
         setLastsection(data.submission[0]);
+        setLoaded(false);
+      }
+    } catch (error) {
+      console.error("Error fetching sections:", error);
+      setLoaded(false);
+    }
+  };
+
+   const getsignatures = async () => {
+
+    const params = new URLSearchParams({
+      submission_id: submissionID
+    });
+
+    try {
+      const response = await fetch(`${GET_SIGNATURES_API}?${params.toString()}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${utoken}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.Status === 0) {
+        setLoaded(false);
+      } else if (data.Status === 1) {
+        //console.log(data.info);
+        setSignData(data.info || []);
         setLoaded(false);
       }
     } catch (error) {
@@ -1402,7 +1485,10 @@ const ViewReport = () => {
       "RandomSampleCheck",
       "RandomSampleCheckObservations",
       "InspectionResults",
-      "report_completed"
+      "report_completed",
+      "Signature1",
+      "Signature2",
+      "Signature3",
     ];
 
     const spans = document.querySelectorAll("table span");
@@ -1616,6 +1702,9 @@ const ViewReport = () => {
                   </tr>
                 </tbody>
               </Table>
+
+              <SignatureSection signData={signData} isClick={isClick} />
+
               <Footer reportData={reportData} isClick={isClick} />
             </Container>
           }
@@ -1644,6 +1733,9 @@ const ViewReport = () => {
                   </tr>
                 </tbody>
               </Table>
+
+              <SignatureSection signData={signData} isClick={isClick} />
+
               <Footer reportData={reportData} isClick={isClick} />
             </Container>
           :
@@ -1702,6 +1794,8 @@ const ViewReport = () => {
                       </tr>
                     </tbody>
                   </Table>
+
+                  <SignatureSection signData={signData} isClick={isClick} />
 
                   <Footer reportData={reportData} isClick={isClick} />
                 </Container>

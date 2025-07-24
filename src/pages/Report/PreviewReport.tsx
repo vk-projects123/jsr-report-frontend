@@ -5,7 +5,7 @@ import html2canvas from "html2canvas";
 import pdflogo from "../../images/pdflogo_transparent.png";
 import { FaDownload } from 'react-icons/fa';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { VIEW_REPORTS_API, SUBMIT_REPORT_API, imgUrl } from "../../Api/api.tsx";
+import { VIEW_REPORTS_API, SUBMIT_REPORT_API, GET_SIGNATURES_API, imgUrl } from "../../Api/api.tsx";
 import moment from 'moment';
 import { toast } from "react-toastify";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, Legend, LineChart, Line, CartesianGrid, ResponsiveContainer } from "recharts";
@@ -177,15 +177,17 @@ const PreviewReport = () => {
     navigate('/reports/running_report/1', { state: { formId: formId, reporttype: reporttype, submissionID: submissionID, selectedSection: selectedSection } });
   };
 
-  var utoken = localStorage.getItem('userToken');
+  var utoken = localStorage.getItem('workspaceuserToken');
   const [isLoaded, setLoaded] = useState<any>(false);
   var [reportData, setReportdata] = useState<any>([]);
   var [lastsection, setLastsection] = useState<any>({});
+  var [signData, setSignData] = useState([]);
 
   useEffect(() => {
     console.log("reportData", reportData);
     setLoaded(true);
     listsectiondatas();
+    getsignatures();
   }, [data]);
 
   const Header = ({ reportData, isClick }) => {
@@ -467,7 +469,7 @@ const PreviewReport = () => {
                               alt="PDF Sub"
                               style={{
                                 padding: 5,
-                                maxHeight:250,
+                                maxHeight: 250,
                                 objectFit: 'contain',
                                 width: rowImages.length % 2 === 0 ? "100%" : "45%",
                               }}
@@ -542,7 +544,7 @@ const PreviewReport = () => {
                                 alt="PDF Sub"
                                 style={{
                                   padding: 5,
-                                  maxHeight:250,
+                                  maxHeight: 250,
                                   width: 300,
                                   display: "block",
                                   margin: "0 auto",
@@ -565,7 +567,7 @@ const PreviewReport = () => {
                               alt="PDF Sub"
                               style={{
                                 padding: 5,
-                                maxHeight:250,
+                                maxHeight: 250,
                                 width: 300,
                                 display: "block",
                                 margin: "0 auto",
@@ -665,10 +667,12 @@ const PreviewReport = () => {
                     <tr key={rowIndex}>
                       {rowImages.map((image: any, imgIdx: number) => (
                         <TableCell key={imgIdx} style={{ textAlign: 'center', width: rowImages.length % 2 === 0 ? "45%" : "93%" }}>
-                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{ padding: 5, 
-                            maxHeight:250, 
-                            objectFit:'contain',
-                            width: rowImages.length % 2 === 0 ? '100%' : "45%" }} />
+                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{
+                            padding: 5,
+                            maxHeight: 250,
+                            objectFit: 'contain',
+                            width: rowImages.length % 2 === 0 ? '100%' : "45%"
+                          }} />
                         </TableCell>
                       ))}
                       {/* Fill empty cell if only one image in row */}
@@ -768,10 +772,12 @@ const PreviewReport = () => {
                           textAlign: 'center',
                           width: rowImages.length % 2 === 0 ? "45%" : "93%"
                         }}>
-                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{ padding: 5, 
-                            maxHeight:250,
+                          <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{
+                            padding: 5,
+                            maxHeight: 250,
                             objectFit: 'contain',
-                             width: rowImages.length % 2 === 0 ? '100%' : "45%" }} />
+                            width: rowImages.length % 2 === 0 ? '100%' : "45%"
+                          }} />
                         </TableCell>
                       ))}
                       {/* Fill empty cell if only one image in row */}
@@ -968,7 +974,7 @@ const PreviewReport = () => {
                         <TableCell key={imgIdx} style={{ textAlign: 'center', width: rowImages.length % 2 === 0 ? "45%" : "90%" }}>
                           <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{
                             padding: 5,
-                            maxHeight:250, 
+                            maxHeight: 250,
                             objectFit: 'contain',
                             width: rowImages.length % 2 === 0 ? '100%' : "45%"
                           }} />
@@ -1168,7 +1174,7 @@ const PreviewReport = () => {
                         <TableCell key={imgIdx} style={{ textAlign: 'center', width: rowImages.length % 2 === 0 ? "45%" : "93%" }}>
                           <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{
                             padding: 5,
-                            maxHeight:250, 
+                            maxHeight: 250,
                             objectFit: 'contain',
                             width: rowImages.length % 2 === 0 ? '100%' : "45%"
                           }} />
@@ -1250,7 +1256,7 @@ const PreviewReport = () => {
                         <TableCell key={imgIdx} style={{ textAlign: 'center', width: rowImages.length % 2 === 0 ? "45%" : "93%" }}>
                           <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{
                             padding: 5,
-                            maxHeight:250, 
+                            maxHeight: 250,
                             objectFit: 'contain',
                             width: rowImages.length % 2 === 0 ? '100%' : "45%"
                           }} />
@@ -1314,6 +1320,57 @@ const PreviewReport = () => {
     );
   };
 
+  const SignatureSection = ({ signData, isClick }: any) => {
+    return (
+      <>
+        {signData.map((datas: any, findex: any) => (
+          <div className="content" id={"Signature" + (findex + 1)}>
+            {datas.data.length == 0 ? "" :
+              <div key={findex}>
+                <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>
+                  {datas.sign_role} Signature -
+                </p>
+                <Table>
+                  <tbody>
+                    <tr>
+                      {datas.data.map((item: any, index: number) => (
+                        <TableCell key={index} style={{ verticalAlign: 'top', padding: '10px' }}>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div>
+                              <p><strong>Name:</strong> {item.sign_username}</p>
+                              <p><strong>Date & Time:</strong> {moment(item.created_at).format("DD/MM/YYYY hh:mm A")}</p>
+                              <p><strong>Signature:</strong></p>
+                              <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
+                                <img
+                                  src={`${imgUrl}${item.sign}`}
+                                  alt="Signature"
+                                  style={{ width: '150px', height: 'auto' }}
+                                />
+                              </div>
+                            </div>
+                            {!isClick && (
+                              <div style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+                                <img
+                                  src={`${imgUrl}${item.sign_selfie}`}
+                                  alt="Selfie"
+                                  style={{ width: '150px', height: 'auto' }}
+                                />
+                              </div>
+                            )}
+                          </div>
+                        </TableCell>
+                      ))}
+                    </tr>
+                  </tbody>
+                </Table>
+              </div>
+            }
+          </div>
+        ))}
+      </>
+    );
+  };
+
   // Function to fetch sections
   const listsectiondatas = async () => {
 
@@ -1344,7 +1401,7 @@ const PreviewReport = () => {
       if (data.Status === 0) {
         setLoaded(false);
       } else if (data.Status === 1) {
-        console.log(data.info);
+        //console.log(data.info);
         setReportdata(data.info || []);
         setLastsection(data.submission[0]);
         setLoaded(false);
@@ -1503,6 +1560,37 @@ const PreviewReport = () => {
     }
 
     setIsclick(false);
+  };
+
+  const getsignatures = async () => {
+
+    const params = new URLSearchParams({
+      submission_id: submissionID
+    });
+
+    try {
+      const response = await fetch(`${GET_SIGNATURES_API}?${params.toString()}`, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${utoken}`,
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.Status === 0) {
+        setLoaded(false);
+      } else if (data.Status === 1) {
+        //console.log(data.info);
+        setSignData(data.info || []);
+        setLoaded(false);
+      }
+    } catch (error) {
+      console.error("Error fetching sections:", error);
+      setLoaded(false);
+    }
   };
 
   const submitReport = async (e: any) => {
@@ -1675,6 +1763,9 @@ const PreviewReport = () => {
                   </tr>
                 </tbody>
               </Table>
+
+              <SignatureSection signData={signData} isClick={isClick} />
+
               <Footer reportData={reportData} isClick={isClick} />
             </Container>
           }
@@ -1703,6 +1794,9 @@ const PreviewReport = () => {
                   </tr>
                 </tbody>
               </Table>
+
+              <SignatureSection signData={signData} isClick={isClick} />
+
               <Footer reportData={reportData} isClick={isClick} />
             </Container>
           :
@@ -1760,6 +1854,9 @@ const PreviewReport = () => {
                       </tr>
                     </tbody>
                   </Table>
+
+                  <SignatureSection signData={signData} isClick={isClick} />
+
                   <Footer reportData={reportData} isClick={isClick} />
                 </Container>
               }

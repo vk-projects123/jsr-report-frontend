@@ -34,7 +34,7 @@ const ECommerce = () => {
 
   const getData = async () => {
     try {
-      var utoken = localStorage.getItem('userToken');
+      var utoken = localStorage.getItem('workspaceuserToken');
       const response = await fetch(GET_DASHBOARD_API, {
         method: "GET",
         headers: {

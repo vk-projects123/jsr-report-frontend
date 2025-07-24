@@ -40,7 +40,11 @@ const DropdownUser = () => {
 
   function logout(e: any) {
     e.preventDefault();
-    localStorage.clear();
+    localStorage.removeItem('workspaceuserToken');
+    localStorage.removeItem('workspaceuser_role');
+    localStorage.removeItem('workspacesub_role');
+    localStorage.removeItem('workspaceuser_name');
+    // localStorage.clear();
     navigate("/auth/signin");
   }
 
@@ -53,12 +57,12 @@ const DropdownUser = () => {
       >
         <span className="hidden text-right lg:block">
           <span className="block text-sm font-medium text-black dark:text-white">
-            {localStorage.getItem('user_name')}
+            {localStorage.getItem('workspaceuser_name')}
           </span>
           <span className="block text-xs">
-            {localStorage.getItem('user_role') === 'subadmin' ?
-              localStorage.getItem('sub_role') :
-              localStorage.getItem('user_role')}
+            {localStorage.getItem('workspaceuser_role') === 'subadmin' ?
+              localStorage.getItem('workspacesub_role') :
+              localStorage.getItem('workspaceuser_role')}
           </span>
         </span>
 

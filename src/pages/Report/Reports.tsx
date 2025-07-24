@@ -20,7 +20,7 @@ const Forms = () => {
   const [historymodal, setHistorymodal] = useState(false);
   const [reportStatus, setReportstatus] = useState('Running');
   const [submissionId, setSubmissionid] = useState(0);
-  var utoken = localStorage.getItem('userToken');
+  var utoken = localStorage.getItem('workspaceuserToken');
 
   const tableHeaders = [
     { label: "Report ID", key: "report_no" },
@@ -100,7 +100,7 @@ const Forms = () => {
   // Search function
   const handleSearch = (e: any) => {
     setSearchQuery(e.target.value);
-    const filteredData = reportData.filter((item:any) =>
+    const filteredData = reportData.filter((item: any) =>
       Object.values(item).some((val) =>
         String(val).toLowerCase().includes(e.target.value.toLowerCase())
       )
@@ -177,7 +177,7 @@ const Forms = () => {
     }
   };
 
-  const resumeReport = async (e: any, formId: any, submissionID: any,reportType:any) => {
+  const resumeReport = async (e: any, formId: any, submissionID: any, reportType: any) => {
     e.preventDefault();
     try {
       const response = await fetch(RESUME_REPORT_API, {
@@ -201,7 +201,7 @@ const Forms = () => {
       } else if (data.Status === 1) {
         toast.success(data.Message);
         navigate('/reports/running_report/1',
-        { state: { reporttype: reportType, formId: formId, submissionID: submissionID }});
+          { state: { reporttype: reportType, formId: formId, submissionID: submissionID } });
         listReports(currentPage);
         setLoaded(false);
       }
@@ -229,12 +229,12 @@ const Forms = () => {
           >
             New Report
           </button> */}
-          <button
+          {localStorage.getItem('workspaceuser_role') === 'subadmin' ? <button
             onClick={() => navigate('/reports/running_report/1', { state: { reporttype: reportType, formId: reportType == "IPQC" ? 1 : reportType == "BOM" ? 3 : reportType == "PDI" ? 4 : 0, submissionID: submissionId } })}
             className="inline-flex items-center justify-center rounded-md bg-primary py-2 mx-2 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
           >
             {reportStatus} Report
-          </button>
+          </button> : ""}
           <div className="relative mx-2">
             <button className="absolute top-1/2 left-0 -translate-y-1/2">
               <svg
@@ -366,7 +366,7 @@ const Forms = () => {
                       <div className="flex items-center gap-3">
                         {reportType == "PDI" ?
                           <div
-                            onClick={(e) => resumeReport(e, item.form_id, item.submission_id,reportType)}
+                            onClick={(e) => resumeReport(e, item.form_id, item.submission_id, reportType)}
                             className="cursor-pointer"
                             title="Edit"
                           >
@@ -381,7 +381,7 @@ const Forms = () => {
                                 formId: item.form_id,
                               },
                             })
-                          }    
+                          }
                           className="cursor-pointer text-gray-600"
                           title="View"
                         >
