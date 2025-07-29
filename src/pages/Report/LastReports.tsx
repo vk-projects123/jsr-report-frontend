@@ -193,7 +193,7 @@ const LastForms = () => {
                       <p className="text-sm text-black dark:text-white">{'-'}</p>
                     </td> */}
                     <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
-                      <p className="text-sm text-black dark:text-white">{moment(item.form_name == "BOM" ? item.bom_date : item.form_name == "IPQC" ? item.ipqc_date : item.last_updated_at).format("DD-MM-YYYY")}</p>
+                      <p className="text-sm text-black dark:text-white">{moment(item.form_name == "BOM" ? item.bom_date : item.form_name == "IPQC" ? item.ipqc_date : item.last_updated_at,"DD-MM-YYYY").format("DD-MM-YYYY")}</p>
                     </td>
                     <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
                       <div onClick={() => navigate("/reports/view_report/1", { state: { submissionID: item.submission_id, reporttype: item.form_name, formId: item.form_id } })}><FaEye className="w-5 h-5" /></div>

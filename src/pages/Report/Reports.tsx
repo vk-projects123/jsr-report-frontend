@@ -354,7 +354,7 @@ const Forms = () => {
                       <p className="text-sm text-black dark:text-white">{item.employee_name}</p>
                     </td>
                     <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
-                      <p className="text-sm text-black dark:text-white">{moment(reportType == "BOM" ? item.bom_date : reportType == "PDI" ? item.created_at : item.ipqc_date).format("DD-MM-YYYY")}</p>
+                      <p className="text-sm text-black dark:text-white">{moment(reportType == "BOM" ? item.bom_date : reportType == "PDI" ? item.created_at : item.ipqc_date,"DD-MM-YYYY").format("DD-MM-YYYY")}</p>
                     </td>
                     {reportType == "BOM" ? <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
                       <div onClick={() => navigate("/reports/view_images", { state: { submissionID: item.submission_id, reporttype: item.form_name, formId: item.form_id } })}><FaEye className="w-5 h-5" /></div>

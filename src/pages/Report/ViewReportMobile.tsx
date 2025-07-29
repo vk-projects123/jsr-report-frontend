@@ -156,20 +156,17 @@ const ViewReport = () => {
   const utoken = queryParams.get('workspaceuserToken');
 
   const [isLoaded, setLoaded] = useState(false);
-  var [reportData, setReportdata] = useState([]);
+  var [reportData, setReportdata] = useState<any>([]);
   var [lastsection, setLastsection] = useState<any>({});
   var [signData, setSignData] = useState([]);
 
   useEffect(() => {
     setLoaded(true);
-    // if(!utoken){
-    // alert("Please Give me a Token");
-    // }
     listsectiondatas();
     getsignatures();
   }, []);
 
-  const Header = ({ reportData, isClick }) => {
+  const Header = ({ reportData, isClick }:any) => {
     console.log("reportData, isClick", reportData, isClick);
     return (
       !reportData ? <></> :
@@ -224,7 +221,7 @@ const ViewReport = () => {
             <div className={isClick ? "pdf-span" : ""}>
               Report Date:{" "}
               {moment(
-                reportData[0].value.find((item) => item.param_name === "Date")?.value
+                reportData[0].value.find((item) => item.param_name === "Date")?.value, "DD-MM-YYYY"
               ).format("DD-MM-YYYY")}
             </div>
             <div>
@@ -237,7 +234,7 @@ const ViewReport = () => {
     );
   };
 
-  const Footer = ({ reportData, isClick }) => {
+  const Footer = ({ reportData, isClick }:any) => {
     return (
       !reportData ? <></> :
         <div id="pdffooter" style={{ width: '100%' }}>
@@ -260,7 +257,7 @@ const ViewReport = () => {
     );
   };
 
-  const ReportDetailsSection = ({ reportData, isClick }) => {
+  const ReportDetailsSection = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="ReportDetailsSection">
         <p className={isClick ? "pdf-span " : ""} style={{ fontWeight: 'bold', fontSize: 16, color: '#000' }}>Report Details –</p>
@@ -287,7 +284,7 @@ const ViewReport = () => {
                           <span>Date / Shift</span>
                         </HeaderCell>
                         <TableCell style={{ width: '25%' }}>
-                          <span>{moment(item.value).format("DD-MM-YYYY")} / {shiftItem ? shiftItem.value : ''}</span>
+                          <span>{moment(item.value, "DD-MM-YYYY").format("DD-MM-YYYY")} / {shiftItem ? shiftItem.value : ''}</span>
                         </TableCell>
                       </>
                     ) : (
@@ -308,7 +305,7 @@ const ViewReport = () => {
                           <span>{reportData[0].value[index + 1].param_name}</span>
                         </HeaderCell>
                         <TableCell style={{ width: '25%' }}>
-                          <span>{reportData[0].value[index + 1].param_name === "Date" ? moment(reportData[0].value[index + 1].value).format("DD-MM-YYYY") + (EnddateItem.details_id != 0 ? " to " : "") + (EnddateItem.details_id != 0 ? moment(EnddateItem.value).format("DD-MM-YYYY") : '') : reportData[0].value[index + 1].value}</span>
+                          <span>{reportData[0].value[index + 1].param_name === "Date" ? moment(reportData[0].value[index + 1].value, "DD-MM-YYYY").format("DD-MM-YYYY") + (EnddateItem.details_id != 0 ? " to " : "") + (EnddateItem.details_id != 0 ? moment(EnddateItem.value, "DD-MM-YYYY").format("DD-MM-YYYY") : '') : reportData[0].value[index + 1].value}</span>
                         </TableCell>
                       </>
                     )}
@@ -324,7 +321,7 @@ const ViewReport = () => {
     );
   };
 
-  const ProductStageWise = ({ reportData, isClick }) => {
+  const ProductStageWise = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="ProductStageWise">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Production Stage Wise -</p>
@@ -342,7 +339,7 @@ const ViewReport = () => {
     );
   };
 
-  const InspectionDetails = ({ reportData, isClick }) => {
+  const InspectionDetails = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="ProductStageWise">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Inspection Details -</p>
@@ -360,7 +357,7 @@ const ViewReport = () => {
     );
   };
 
-  const InspectionResults = ({ reportData, isClick }) => {
+  const InspectionResults = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="InspectionResults">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Inspection Results -</p>
@@ -378,7 +375,7 @@ const ViewReport = () => {
     );
   };
 
-  const Attachment = ({ reportData, isClick }) => {
+  const Attachment = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="Attachment">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Attachment -</p>
@@ -396,7 +393,7 @@ const ViewReport = () => {
     );
   };
 
-  const MajorObservations = ({ reportData, isClick, value1, value2 }) => {
+  const MajorObservations = ({ reportData, isClick, value1, value2 }:any) => {
     return (
       reportData[2].value.slice(value1, value2).length <= 0 ? "" :
         <div className="content" id={"MajorObservations" + value2}>
@@ -469,7 +466,7 @@ const ViewReport = () => {
     );
   };
 
-  const InpectionObservations = ({ reportData, isClick, value1, value2 }) => {
+  const InpectionObservations = ({ reportData, isClick, value1, value2 }:any) => {
     return (
       reportData[2].value.slice(value1, value2).length <= 0 ? "" :
         <div className="content" id={"MajorObservations" + value2}>
@@ -569,7 +566,7 @@ const ViewReport = () => {
     );
   };
 
-  const FilmCutting = ({ reportData, isClick }) => {
+  const FilmCutting = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="FilmCutting">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', fontSize: 18, color: '#000' }}>In Process Inspection Report –</p>
@@ -611,7 +608,7 @@ const ViewReport = () => {
     );
   };
 
-  const FilmCuttingobservations = ({ reportData, isClick }) => {
+  const FilmCuttingobservations = ({ reportData, isClick }:any) => {
     return (
       reportData[3].observations.length <= 0 ? "" :
         <div className="content" id="FilmCuttingobservations">
@@ -667,7 +664,7 @@ const ViewReport = () => {
     );
   };
 
-  const TabberAndStringer = ({ reportData, isClick }) => {
+  const TabberAndStringer = ({ reportData, isClick }:any) => {
     return (
       <div className="content">
         <div className="content" id="TabberAndStringer">
@@ -713,7 +710,7 @@ const ViewReport = () => {
     );
   };
 
-  const TabberAndStringerObservations = ({ reportData, isClick }) => {
+  const TabberAndStringerObservations = ({ reportData, isClick }:any) => {
     return (
       reportData[4].observations.length <= 0 ? "" :
         <div className="content" id="TabberAndStringerObservations">
@@ -772,7 +769,7 @@ const ViewReport = () => {
     );
   };
 
-  const Layup = ({ reportData, isClick }) => {
+  const Layup = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="Layup">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Process – Layup</p>
@@ -816,7 +813,7 @@ const ViewReport = () => {
     );
   };
 
-  const LayupObservations = ({ reportData, isClick }) => {
+  const LayupObservations = ({ reportData, isClick }:any) => {
     return (
       reportData[5].observations.length <= 0 ? "" :
         <div className="content" id="LayupObservations">
@@ -872,7 +869,7 @@ const ViewReport = () => {
     );
   };
 
-  const Lamination = ({ reportData, isClick }) => {
+  const Lamination = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="Lamination">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Process – Lamination</p>
@@ -916,7 +913,7 @@ const ViewReport = () => {
     );
   };
 
-  const LaminationObservations = ({ reportData, isClick }) => {
+  const LaminationObservations = ({ reportData, isClick }:any) => {
     return (
       reportData[6].observations.length <= 0 ? "" :
         <div className="content" id="LaminationObservations">
@@ -972,7 +969,7 @@ const ViewReport = () => {
     );
   };
 
-  const Framing = ({ reportData, isClick }) => {
+  const Framing = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="Framing">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Process – Framing</p>
@@ -1016,7 +1013,7 @@ const ViewReport = () => {
     );
   };
 
-  const FramingObservation = ({ reportData, isClick }) => {
+  const FramingObservation = ({ reportData, isClick }:any) => {
     return (
       reportData[7].observations.length <= 0 ? "" :
         <div className="content" id="FramingObservation">
@@ -1072,7 +1069,7 @@ const ViewReport = () => {
     );
   };
 
-  const FlasherTesting = ({ reportData, isClick }) => {
+  const FlasherTesting = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="FlasherTesting">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Process – Flasher Testing</p>
@@ -1116,7 +1113,7 @@ const ViewReport = () => {
     );
   };
 
-  const FlasherTestingObservations = ({ reportData, isClick }) => {
+  const FlasherTestingObservations = ({ reportData, isClick }:any) => {
     return (
       reportData[8].observations.length <= 0 ? "" :
         <div className="content" id="FlasherTestingObservations">
@@ -1172,7 +1169,7 @@ const ViewReport = () => {
     );
   };
 
-  const RandomSampleCheck = ({ reportData, isClick }) => {
+  const RandomSampleCheck = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="RandomSampleCheck">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Random Sample Check</p>
@@ -1198,7 +1195,7 @@ const ViewReport = () => {
     );
   };
 
-  const RandomSampleCheckObservations = ({ reportData, isClick }) => {
+  const RandomSampleCheckObservations = ({ reportData, isClick }:any) => {
     return (
       reportData[9].observations.length <= 0 ? "" :
         <div className="content" id="RandomSampleCheckObservations">
@@ -1254,7 +1251,7 @@ const ViewReport = () => {
     );
   };
 
-  const BomTableData = ({ reportData, id, value1, value2, isClick }) => {
+  const BomTableData = ({ reportData, id, value1, value2, isClick }:any) => {
     return (
       reportData.length <= 0 ? "" :
         <div className="content" id={id}>
@@ -1351,6 +1348,60 @@ const ViewReport = () => {
     );
   };
 
+  const Observations = ({ value, reportData, index, isClick }: any) => {
+    console.log("get section name ->>", value);
+    return (
+      <div className="content" id={value}>
+        <Table>
+          <tbody className="srno" style={{ margin: 0, padding: 0 }}>
+            <tr style={{ margin: 0, padding: 0 }}>
+              <HeaderCell style={{ textAlign: 'center', width: '5%' }}>
+                <span>Sr No</span>
+              </HeaderCell>
+              <HeaderCell colSpan={2}>
+                <span>Observations / Deficiency Details</span>
+              </HeaderCell>
+            </tr>
+
+            <>
+              {/* Row for Observation Text */}
+              <tr>
+                <TableCell style={{ textAlign: 'center' }} rowSpan={Math.ceil(reportData.images.length / 2) + 1}>
+                  <span>{index + 1}</span>
+                </TableCell>
+                {reportData.observations_text ? <TableCell colSpan={2}>
+                  <span>{reportData.observations_text}</span>
+                </TableCell> : ""}
+              </tr>
+
+              {/* Rows for Images */}
+              {reportData.images.reduce((rows: any[], image: any, idx: number) => {
+                if (idx % 2 === 0) rows.push([]);
+                rows[rows.length - 1].push(image);
+                return rows;
+              }, []).map((rowImages: any[], rowIndex: number) => (
+                <tr key={rowIndex}>
+                  {rowImages.map((image: any, imgIdx: number) => (
+                    <TableCell key={imgIdx} style={{ textAlign: 'center', width: rowImages.length % 2 === 0 ? "45%" : "93%" }}>
+                      <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{
+                        padding: 5,
+                        //  height: 250, 
+                        objectFit: 'contain',
+                        width: rowImages.length % 2 === 0 ? '100%' : "45%"
+                      }} />
+                    </TableCell>
+                  ))}
+                  {/* Fill empty cell if only one image in row */}
+                  {rowImages.length === 1 && ""}
+                </tr>
+              ))}
+            </>
+          </tbody>
+        </Table>
+      </div>
+    );
+  };
+
   // Function to fetch sections
   const listsectiondatas = async () => {
 
@@ -1409,38 +1460,55 @@ const ViewReport = () => {
       return;
     }
 
-    const sections = [
-      "ReportDetailsSection",
-      "bomdetails",
-      "bomdetails1",
-      "ProductStageWise",
-      "MajorObservations",
-      "MajorObservations1",
-      "MajorObservations2",
-      "MajorObservations3",
-      "MajorObservations4",
-      "MajorObservations5",
-      "MajorObservations6",
-      "MajorObservations7",
-      "MajorObservations8",
-      "MajorObservations9",
-      "FilmCutting",
-      "FilmCuttingobservations",
-      "TabberAndStringer",
-      "TabberAndStringerObservations",
-      "Layup",
-      "LayupObservations",
-      "Lamination",
-      "LaminationObservations",
-      "Framing",
-      "FramingObservation",
-      "FlasherTesting",
-      "FlasherTestingObservations",
-      "RandomSampleCheck",
-      "RandomSampleCheckObservations",
-      "InspectionResults",
-      "report_completed"
-    ];
+    const sections: string[] = [];
+
+    sections.push("ReportDetailsSection");
+    sections.push("bomdetails");
+    sections.push("bomdetails1");
+    sections.push("ProductStageWise");
+
+    (reportData[2]?.value || []).forEach((_, ind) =>
+      sections.push("MajorObservations" + ind)
+    );
+
+    sections.push("FilmCutting");
+    (reportData[3]?.observations || []).forEach((_, ind) =>
+      sections.push("FilmCuttingobservations" + ind)
+    );
+
+    sections.push("TabberAndStringer");
+    (reportData[4]?.observations || []).forEach((_, ind) =>
+      sections.push("TabberAndStringerObservations" + ind)
+    );
+
+    sections.push("Layup");
+    (reportData[5]?.observations || []).forEach((_, ind) =>
+      sections.push("LayupObservations" + ind)
+    );
+
+    sections.push("Lamination");
+    (reportData[6]?.observations || []).forEach((_, ind) =>
+      sections.push("LaminationObservations" + ind)
+    );
+
+    sections.push("Framing");
+    (reportData[7]?.observations || []).forEach((_, ind) =>
+      sections.push("FramingObservation" + ind)
+    );
+
+    sections.push("FlasherTesting");
+    (reportData[8]?.observations || []).forEach((_, ind) =>
+      sections.push("FlasherTestingObservations" + ind)
+    );
+
+    sections.push("RandomSampleCheck");
+    (reportData[9]?.observations || []).forEach((_, ind) =>
+      sections.push("RandomSampleCheckObservations" + ind)
+    );
+
+    sections.push("InspectionResults");
+    sections.push("Attachment");
+    sections.push("report_completed");
 
     const spans = document.querySelectorAll("table span");
     spans.forEach((text) => text.classList.add("pdf-span"));
@@ -1449,7 +1517,7 @@ const ViewReport = () => {
       orientation: "p",
       unit: "mm",
       format: "a4",
-      compress: true // Enable PDF compression
+      compress: true,
     });
 
     const pageHeight = 297;
@@ -1457,13 +1525,16 @@ const ViewReport = () => {
     const headerHeight = 20;
     const footerHeight = 10;
     const pageNumberOffset = 10;
+    const usablePageHeight = pageHeight - margin - footerHeight - pageNumberOffset;
+
     let yOffset = margin + headerHeight + 5;
     let pageNumber = 1;
-    let totalPages = 1; // Placeholder for total pages
 
     const convertToImage = async (element) => {
       return html2canvas(element, {
-        scale: 1, useCORS: true, logging: false,
+        scale: 1,
+        useCORS: true,
+        logging: false,
         allowTaint: true,
       })
         .then((canvas) => canvas.toDataURL("image/png", 0.8))
@@ -1483,14 +1554,19 @@ const ViewReport = () => {
 
       const addFooter = (currentPage, totalPages) => {
         const paddingTop = 2;
-        pdf.addImage(footerImage, "PNG", margin, pageHeight - footerHeight - margin - pageNumberOffset, 190, footerHeight + paddingTop);
+        pdf.addImage(
+          footerImage,
+          "PNG",
+          margin,
+          pageHeight - footerHeight - margin - pageNumberOffset,
+          190,
+          footerHeight + paddingTop
+        );
         pdf.setFontSize(10);
         pdf.text(`Page No: ${currentPage} / ${totalPages}`, 160, pageHeight - margin - 5);
       };
 
       pdf.addImage(headerImage, "PNG", margin, margin, 190, headerHeight);
-
-      let pageIndexes = [];
 
       for (const sectionId of sections) {
         const section = document.getElementById(sectionId);
@@ -1509,8 +1585,7 @@ const ViewReport = () => {
           continue;
         }
 
-        if (yOffset + sectionHeight + footerHeight > pageHeight - margin) {
-          pageIndexes.push(pageNumber);
+        if (yOffset + sectionHeight > usablePageHeight) {
           pdf.addPage();
           pageNumber++;
           yOffset = margin;
@@ -1523,9 +1598,7 @@ const ViewReport = () => {
         yOffset += sectionHeight + 5;
       }
 
-      totalPages = pdf.internal.getNumberOfPages(); // Get total pages
-
-      // Update footers with total page count
+      const totalPages = pdf.internal.getNumberOfPages();
       for (let i = 1; i <= totalPages; i++) {
         pdf.setPage(i);
         addFooter(i, totalPages);
@@ -1571,6 +1644,17 @@ const ViewReport = () => {
       setLoaded(false);
     }
   };
+
+  var sections = [
+    "FilmCuttingobservations",
+    "TabberAndStringerObservations",
+    "LayupObservations",
+    "LaminationObservations",
+    "FramingObservation",
+    "FlasherTestingObservations",
+    "RandomSampleCheckObservations"
+  ];
+
 
   return (
     <>
@@ -1631,43 +1715,65 @@ const ViewReport = () => {
               <FilmCutting reportData={reportData} isClick={isClick} />
 
               {/* film cutting observatios */}
-              <FilmCuttingobservations reportData={reportData} isClick={isClick} />
+              {(reportData[3].observations || []).map((item: any, index: any) => (
+                <Observations value={sections[0] + index} reportData={item} index={index} isClick={isClick} />
+              ))}
+              {/* <FilmCuttingobservations reportData={reportData} isClick={isClick} /> */}
 
               {/* Process – Tabber & Stringer */}
               <TabberAndStringer reportData={reportData} isClick={isClick} />
 
               {/* Tabber & Stringer observatios */}
-              <TabberAndStringerObservations reportData={reportData} isClick={isClick} />
+              {(reportData[4].observations || []).map((item: any, index: any) => (
+                <Observations value={sections[1] + index} reportData={item} index={index} isClick={isClick} />
+              ))}
+              {/* <TabberAndStringerObservations reportData={reportData} isClick={isClick} /> */}
 
               {/* Process – Layup */}
               <Layup reportData={reportData} isClick={isClick} />
 
               {/* Layup observatios */}
-              <LayupObservations reportData={reportData} isClick={isClick} />
+              {(reportData[5].observations || []).map((item: any, index: any) => (
+                <Observations value={sections[2] + index} reportData={item} index={index} isClick={isClick} />
+              ))}
+              {/* <LayupObservations reportData={reportData} isClick={isClick} /> */}
 
               {/* Process – Lamination */}
               <Lamination reportData={reportData} isClick={isClick} />
 
               {/* Lamination observatios */}
-              <LaminationObservations reportData={reportData} isClick={isClick} />
+              {(reportData[6].observations || []).map((item: any, index: any) => (
+                <Observations value={sections[3] + index} reportData={item} index={index} isClick={isClick} />
+              ))}
+              {/* <LaminationObservations reportData={reportData} isClick={isClick} /> */}
 
               {/* Process – Framing */}
               <Framing reportData={reportData} isClick={isClick} />
 
+
               {/* Framing observatios */}
-              <FramingObservation reportData={reportData} isClick={isClick} />
+              {(reportData[7].observations || []).map((item: any, index: any) => (
+                <Observations value={sections[4] + index} reportData={item} index={index} isClick={isClick} />
+              ))}
+              {/* <FramingObservation reportData={reportData} isClick={isClick} /> */}
 
               {/* Process – Flasher Testing */}
               <FlasherTesting reportData={reportData} isClick={isClick} />
 
               {/* Flasher Testing observatios */}
-              <FlasherTestingObservations reportData={reportData} isClick={isClick} />
+              {(reportData[8].observations || []).map((item: any, index: any) => (
+                <Observations value={sections[5] + index} reportData={item} index={index} isClick={isClick} />
+              ))}
+              {/* <FlasherTestingObservations reportData={reportData} isClick={isClick} /> */}
 
               {/* Random Sample Check */}
               <RandomSampleCheck reportData={reportData} isClick={isClick} />
 
               {/* Random Sample Check observatios */}
-              <RandomSampleCheckObservations reportData={reportData} isClick={isClick} />
+              {(reportData[9].observations || []).map((item: any, index: any) => (
+                <Observations value={sections[6] + index} reportData={item} index={index} isClick={isClick} />
+              ))}
+              {/* <RandomSampleCheckObservations reportData={reportData} isClick={isClick} /> */}
 
               <Table id="report_completed">
                 <tbody style={{ margin: 0, padding: 0 }}>

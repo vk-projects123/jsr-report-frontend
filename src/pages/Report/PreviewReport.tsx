@@ -172,6 +172,11 @@ const PreviewReport = () => {
     selectedSection = { section: 'Report Details', section_id: 1, section_type: 'inputField' };
   }
 
+  function parseAndFormatDate(dateStr: any) {
+    const [day, month, year] = dateStr.trim().split("-");
+    return moment(`${year}-${month}-${day}`, "YYYY-MM-DD").format("DD-MM-YYYY");
+  }
+
   const handleBackButton = () => {
     console.log("back button pressed!");
     navigate('/reports/running_report/1', { state: { formId: formId, reporttype: reporttype, submissionID: submissionID, selectedSection: selectedSection } });
@@ -190,7 +195,7 @@ const PreviewReport = () => {
     getsignatures();
   }, [data]);
 
-  const Header = ({ reportData, isClick }) => {
+  const Header = ({ reportData, isClick }:any) => {
     console.log("reportData, isClick", reportData, isClick);
     return (
       !reportData ? <></> :
@@ -245,7 +250,7 @@ const PreviewReport = () => {
             <div className={isClick ? "pdf-span" : ""}>
               Report Date:{" "}
               {moment(
-                reportData[0].value.find((item) => item.param_name === "Date")?.value
+                reportData[0].value.find((item) => item.param_name === "Date")?.value, "DD-MM-YYYY"
               ).format("DD-MM-YYYY")}
             </div>
             <div>
@@ -258,7 +263,7 @@ const PreviewReport = () => {
     );
   };
 
-  const Footer = ({ reportData, isClick }) => {
+  const Footer = ({ reportData, isClick }:any) => {
     return (
       !reportData ? <></> :
         <div id="pdffooter" style={{ width: '100%' }}>
@@ -281,7 +286,7 @@ const PreviewReport = () => {
     );
   };
 
-  const ReportDetailsSection = ({ reportData, isClick }) => {
+  const ReportDetailsSection = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="ReportDetailsSection">
         <p className={isClick ? "pdf-span " : ""} style={{ fontWeight: 'bold', fontSize: 16, color: '#000' }}>Report Details –</p>
@@ -307,7 +312,7 @@ const PreviewReport = () => {
                           <span>Date / Shift</span>
                         </HeaderCell>
                         <TableCell style={{ width: '25%' }}>
-                          <span>{moment(item.value).format("DD-MM-YYYY")} / {shiftItem ? shiftItem.value : ''}</span>
+                          <span>{moment(item.value, "DD-MM-YYYY").format("DD-MM-YYYY")} / {shiftItem ? shiftItem.value : ''}</span>
                         </TableCell>
                       </>
                     ) : (
@@ -328,7 +333,7 @@ const PreviewReport = () => {
                           <span>{reportData[0].value[index + 1].param_name}</span>
                         </HeaderCell>
                         <TableCell style={{ width: '25%' }}>
-                          <span>{reportData[0].value[index + 1].param_name === "Date" ? moment(reportData[0].value[index + 1].value).format("DD-MM-YYYY") + (EnddateItem.details_id != 0 ? " to " : "") + (EnddateItem.details_id != 0 ? moment(EnddateItem.value).format("DD-MM-YYYY") : '') : reportData[0].value[index + 1].value}</span>
+                          <span>{reportData[0].value[index + 1].param_name === "Date" ? moment(reportData[0].value[index + 1].value, "DD-MM-YYYY").format("DD-MM-YYYY") + (EnddateItem.details_id != 0 ? " to " : "") + (EnddateItem.details_id != 0 ? moment(EnddateItem.value, "DD-MM-YYYY").format("DD-MM-YYYY") : '') : reportData[0].value[index + 1].value}</span>
                         </TableCell>
                       </>
                     )}
@@ -344,7 +349,7 @@ const PreviewReport = () => {
     );
   };
 
-  const ProductStageWise = ({ reportData, isClick }) => {
+  const ProductStageWise = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="ProductStageWise">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Production Stage Wise -</p>
@@ -362,7 +367,7 @@ const PreviewReport = () => {
     );
   };
 
-  const InspectionDetails = ({ reportData, isClick }) => {
+  const InspectionDetails = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="ProductStageWise">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Inspection Details -</p>
@@ -380,7 +385,7 @@ const PreviewReport = () => {
     );
   };
 
-  const InspectionResults = ({ reportData, isClick }) => {
+  const InspectionResults = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="InspectionResults">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Inspection Results -</p>
@@ -398,7 +403,7 @@ const PreviewReport = () => {
     );
   };
 
-  const Attachment = ({ reportData, isClick }) => {
+  const Attachment = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="Attachment">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Attachment -</p>
@@ -416,7 +421,7 @@ const PreviewReport = () => {
     );
   };
 
-  const MajorObservations = ({ reportData, isClick, value1, value2 }) => {
+  const MajorObservations = ({ reportData, isClick, value1, value2 }:any) => {
     return (
       reportData[2].value.slice(value1, value2).length <= 0 ? "" :
         <div className="content" id={"MajorObservations" + value2}>
@@ -489,7 +494,7 @@ const PreviewReport = () => {
     );
   };
 
-  const InpectionObservations = ({ reportData, isClick, value1, value2 }) => {
+  const InpectionObservations = ({ reportData, isClick, value1, value2 }:any) => {
     return (
       reportData[2].value.slice(value1, value2).length <= 0 ? "" :
         <div className="content" id={"MajorObservations" + value2}>
@@ -589,7 +594,7 @@ const PreviewReport = () => {
     );
   };
 
-  const FilmCutting = ({ reportData, isClick }) => {
+  const FilmCutting = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="FilmCutting">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', fontSize: 18, color: '#000' }}>In Process Inspection Report –</p>
@@ -631,7 +636,7 @@ const PreviewReport = () => {
     );
   };
 
-  const FilmCuttingobservations = ({ reportData, isClick }) => {
+  const FilmCuttingobservations = ({ reportData, isClick }:any) => {
     return (
       reportData[3].observations.length <= 0 ? "" :
         <div className="content" id="FilmCuttingobservations">
@@ -687,7 +692,7 @@ const PreviewReport = () => {
     );
   };
 
-  const TabberAndStringer = ({ reportData, isClick }) => {
+  const TabberAndStringer = ({ reportData, isClick }:any) => {
     return (
       <div className="content">
         <div className="content" id="TabberAndStringer">
@@ -733,7 +738,7 @@ const PreviewReport = () => {
     );
   };
 
-  const TabberAndStringerObservations = ({ reportData, isClick }) => {
+  const TabberAndStringerObservations = ({ reportData, isClick }:any) => {
     return (
       reportData[4].observations.length <= 0 ? "" :
         <div className="content" id="TabberAndStringerObservations">
@@ -792,7 +797,7 @@ const PreviewReport = () => {
     );
   };
 
-  const Layup = ({ reportData, isClick }) => {
+  const Layup = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="Layup">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Process – Layup</p>
@@ -836,7 +841,7 @@ const PreviewReport = () => {
     );
   };
 
-  const LayupObservations = ({ reportData, isClick }) => {
+  const LayupObservations = ({ reportData, isClick }:any) => {
     return (
       reportData[5].observations.length <= 0 ? "" :
         <div className="content" id="LayupObservations">
@@ -892,7 +897,7 @@ const PreviewReport = () => {
     );
   };
 
-  const Lamination = ({ reportData, isClick }) => {
+  const Lamination = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="Lamination">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Process – Lamination</p>
@@ -936,7 +941,7 @@ const PreviewReport = () => {
     );
   };
 
-  const LaminationObservations = ({ reportData, isClick }) => {
+  const LaminationObservations = ({ reportData, isClick }:any) => {
     return (
       reportData[6].observations.length <= 0 ? "" :
         <div className="content" id="LaminationObservations">
@@ -992,7 +997,7 @@ const PreviewReport = () => {
     );
   };
 
-  const Framing = ({ reportData, isClick }) => {
+  const Framing = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="Framing">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Process – Framing</p>
@@ -1036,7 +1041,7 @@ const PreviewReport = () => {
     );
   };
 
-  const FramingObservation = ({ reportData, isClick }) => {
+  const FramingObservation = ({ reportData, isClick }:any) => {
     return (
       reportData[7].observations.length <= 0 ? "" :
         <div className="content" id="FramingObservation">
@@ -1092,7 +1097,61 @@ const PreviewReport = () => {
     );
   };
 
-  const FlasherTesting = ({ reportData, isClick }) => {
+  const Observations = ({ value, reportData, index, isClick }: any) => {
+    console.log("get section name ->>", value);
+    return (
+      <div className="content" id={value}>
+        <Table>
+          <tbody className="srno" style={{ margin: 0, padding: 0 }}>
+            <tr style={{ margin: 0, padding: 0 }}>
+              <HeaderCell style={{ textAlign: 'center', width: '5%' }}>
+                <span>Sr No</span>
+              </HeaderCell>
+              <HeaderCell colSpan={2}>
+                <span>Observations / Deficiency Details</span>
+              </HeaderCell>
+            </tr>
+
+            <>
+              {/* Row for Observation Text */}
+              <tr>
+                <TableCell style={{ textAlign: 'center' }} rowSpan={Math.ceil(reportData.images.length / 2) + 1}>
+                  <span>{index + 1}</span>
+                </TableCell>
+                {reportData.observations_text ? <TableCell colSpan={2}>
+                  <span>{reportData.observations_text}</span>
+                </TableCell> : ""}
+              </tr>
+
+              {/* Rows for Images */}
+              {reportData.images.reduce((rows: any[], image: any, idx: number) => {
+                if (idx % 2 === 0) rows.push([]);
+                rows[rows.length - 1].push(image);
+                return rows;
+              }, []).map((rowImages: any[], rowIndex: number) => (
+                <tr key={rowIndex}>
+                  {rowImages.map((image: any, imgIdx: number) => (
+                    <TableCell key={imgIdx} style={{ textAlign: 'center', width: rowImages.length % 2 === 0 ? "45%" : "93%" }}>
+                      <img src={`${imgUrl}${image.image}`} alt="PDF Sub" style={{
+                        padding: 5,
+                        //  height: 250, 
+                        objectFit: 'contain',
+                        width: rowImages.length % 2 === 0 ? '100%' : "45%"
+                      }} />
+                    </TableCell>
+                  ))}
+                  {/* Fill empty cell if only one image in row */}
+                  {rowImages.length === 1 && ""}
+                </tr>
+              ))}
+            </>
+          </tbody>
+        </Table>
+      </div>
+    );
+  };
+
+  const FlasherTesting = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="FlasherTesting">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Process – Flasher Testing</p>
@@ -1136,7 +1195,7 @@ const PreviewReport = () => {
     );
   };
 
-  const FlasherTestingObservations = ({ reportData, isClick }) => {
+  const FlasherTestingObservations = ({ reportData, isClick }:any) => {
     return (
       reportData[8].observations.length <= 0 ? "" :
         <div className="content" id="FlasherTestingObservations">
@@ -1192,7 +1251,7 @@ const PreviewReport = () => {
     );
   };
 
-  const RandomSampleCheck = ({ reportData, isClick }) => {
+  const RandomSampleCheck = ({ reportData, isClick }:any) => {
     return (
       <div className="content" id="RandomSampleCheck">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Random Sample Check</p>
@@ -1218,7 +1277,7 @@ const PreviewReport = () => {
     );
   };
 
-  const RandomSampleCheckObservations = ({ reportData, isClick }) => {
+  const RandomSampleCheckObservations = ({ reportData, isClick }:any) => {
     return (
       reportData[9].observations.length <= 0 ? "" :
         <div className="content" id="RandomSampleCheckObservations">
@@ -1274,7 +1333,7 @@ const PreviewReport = () => {
     );
   };
 
-  const BomTableData = ({ reportData, id, value1, value2, isClick }) => {
+  const BomTableData = ({ reportData, id, value1, value2, isClick }:any) => {
     return (
       reportData.length <= 0 ? "" :
         <div className="content" id={id}>
@@ -1414,6 +1473,173 @@ const PreviewReport = () => {
 
   const [isClick, setIsclick] = useState(false);
 
+  // const generatePDF = async () => {
+  //   setIsclick(true);
+
+  //   await new Promise((resolve) => setTimeout(resolve, 1000)); // Allow DOM updates
+
+  //   const input = document.getElementById("report");
+  //   const header = document.getElementById("pdfheader");
+  //   const footer = document.getElementById("pdffooter");
+
+  //   if (!input || !header || !footer) {
+  //     console.error("Missing required sections for PDF generation.");
+  //     setIsclick(false);
+  //     return;
+  //   }
+
+  //   const sections: string[] = [];
+
+  //   sections.push("ReportDetailsSection");
+  //   sections.push("bomdetails");
+  //   sections.push("bomdetails1");
+  //   sections.push("ProductStageWise");
+  //   console.log("reportData[2]:", reportData[2]);
+  //   // Safely add MajorObservations
+  //   (reportData[2]?.value || []).forEach((_, ind) =>
+  //     sections.push("MajorObservations" + ind)
+  //   );
+
+  //   sections.push("FilmCutting");
+  //   (reportData[3]?.observations || []).forEach((_, ind) =>
+  //     sections.push("FilmCuttingobservations" + ind)
+  //   );
+
+  //   sections.push("TabberAndStringer");
+  //   (reportData[4]?.observations || []).forEach((_, ind) =>
+  //     sections.push("TabberAndStringerObservations" + ind)
+  //   );
+
+  //   sections.push("Layup");
+  //   (reportData[5]?.observations || []).forEach((_, ind) =>
+  //     sections.push("LayupObservations" + ind)
+  //   );
+
+  //   sections.push("Lamination");
+  //   (reportData[6]?.observations || []).forEach((_, ind) =>
+  //     sections.push("LaminationObservations" + ind)
+  //   );
+
+  //   sections.push("Framing");
+  //   (reportData[7]?.observations || []).forEach((_, ind) =>
+  //     sections.push("FramingObservation" + ind)
+  //   );
+
+  //   sections.push("FlasherTesting");
+  //   (reportData[8]?.observations || []).forEach((_, ind) =>
+  //     sections.push("FlasherTestingObservations" + ind)
+  //   );
+
+  //   sections.push("RandomSampleCheck");
+  //   (reportData[9]?.observations || []).forEach((_, ind) =>
+  //     sections.push("RandomSampleCheckObservations" + ind)
+  //   );
+
+  //   sections.push("InspectionResults");
+  //   sections.push("Attachment");
+  //   sections.push("report_completed");
+
+
+  //   console.log("sections", sections);
+  //   const spans = document.querySelectorAll("table span");
+  //   spans.forEach((text) => text.classList.add("pdf-span"));
+
+  //   const pdf = new jsPDF({
+  //     orientation: "p",
+  //     unit: "mm",
+  //     format: "a4",
+  //     compress: true // Enable PDF compression
+  //   });
+
+  //   const pageHeight = 297;
+  //   const margin = 10;
+  //   const headerHeight = 20;
+  //   const footerHeight = 10;
+  //   const pageNumberOffset = 10;
+  //   let yOffset = margin + headerHeight + 5;
+  //   let pageNumber = 1;
+  //   let totalPages = 1; // Placeholder for total pages
+
+  //   const convertToImage = async (element) => {
+  //     return html2canvas(element, {
+  //       scale: 1, useCORS: true, logging: false,
+  //       allowTaint: true,
+  //     })
+  //       .then((canvas) => canvas.toDataURL("image/png", 0.8))
+  //       .catch((error) => {
+  //         console.error("Error capturing element:", element.id, error);
+  //         return null;
+  //       });
+  //   };
+
+  //   try {
+  //     const headerImage = await convertToImage(header);
+  //     const footerImage = await convertToImage(footer);
+
+  //     if (!headerImage || !footerImage) {
+  //       throw new Error("Header/Footer image conversion failed.");
+  //     }
+
+  //     const addFooter = (currentPage, totalPages) => {
+  //       const paddingTop = 2;
+  //       pdf.addImage(footerImage, "PNG", margin, pageHeight - footerHeight - margin - pageNumberOffset, 190, footerHeight + paddingTop);
+  //       pdf.setFontSize(10);
+  //       pdf.text(`Page No: ${currentPage} / ${totalPages}`, 160, pageHeight - margin - 5);
+  //     };
+
+  //     pdf.addImage(headerImage, "PNG", margin, margin, 190, headerHeight);
+
+  //     let pageIndexes = [];
+
+  //     for (const sectionId of sections) {
+  //       const section = document.getElementById(sectionId);
+  //       if (!section) {
+  //         console.warn(`Skipping missing section: ${sectionId}`);
+  //         continue;
+  //       }
+
+  //       await new Promise((resolve) => setTimeout(resolve, 500));
+
+  //       const sectionImage = await convertToImage(section);
+  //       const sectionHeight = (section.clientHeight * 210) / input.clientWidth;
+
+  //       if (!sectionImage) {
+  //         console.warn(`Skipping section due to rendering error: ${sectionId}`);
+  //         continue;
+  //       }
+
+  //       if (yOffset + sectionHeight + footerHeight > pageHeight - margin) {
+  //         pageIndexes.push(pageNumber);
+  //         pdf.addPage();
+  //         pageNumber++;
+  //         yOffset = margin;
+
+  //         pdf.addImage(headerImage, "PNG", margin, margin, 190, headerHeight);
+  //         yOffset = margin + headerHeight + 5;
+  //       }
+
+  //       pdf.addImage(sectionImage, "PNG", margin, yOffset, 190, sectionHeight);
+  //       yOffset += sectionHeight + 5;
+  //     }
+
+  //     totalPages = pdf.internal.getNumberOfPages(); // Get total pages
+
+  //     // Update footers with total page count
+  //     for (let i = 1; i <= totalPages; i++) {
+  //       pdf.setPage(i);
+  //       addFooter(i, totalPages);
+  //     }
+
+  //     pdf.save("inspection_report.pdf");
+  //     spans.forEach((text) => text.classList.remove("pdf-span"));
+  //   } catch (error) {
+  //     console.error("PDF generation failed:", error);
+  //     spans.forEach((text) => text.classList.remove("pdf-span"));
+  //   }
+
+  //   setIsclick(false);
+  // };
+
   const generatePDF = async () => {
     setIsclick(true);
 
@@ -1429,39 +1655,55 @@ const PreviewReport = () => {
       return;
     }
 
-    const sections = [
-      "ReportDetailsSection",
-      "bomdetails",
-      "bomdetails1",
-      "ProductStageWise",
-      "MajorObservations",
-      "MajorObservations1",
-      "MajorObservations2",
-      "MajorObservations3",
-      "MajorObservations4",
-      "MajorObservations5",
-      "MajorObservations6",
-      "MajorObservations7",
-      "MajorObservations8",
-      "MajorObservations9",
-      "FilmCutting",
-      "FilmCuttingobservations",
-      "TabberAndStringer",
-      "TabberAndStringerObservations",
-      "Layup",
-      "LayupObservations",
-      "Lamination",
-      "LaminationObservations",
-      "Framing",
-      "FramingObservation",
-      "FlasherTesting",
-      "FlasherTestingObservations",
-      "RandomSampleCheck",
-      "RandomSampleCheckObservations",
-      "InspectionResults",
-      "Attachment",
-      "report_completed"
-    ];
+    const sections: string[] = [];
+
+    sections.push("ReportDetailsSection");
+    sections.push("bomdetails");
+    sections.push("bomdetails1");
+    sections.push("ProductStageWise");
+
+    (reportData[2]?.value || []).forEach((_, ind) =>
+      sections.push("MajorObservations" + ind)
+    );
+
+    sections.push("FilmCutting");
+    (reportData[3]?.observations || []).forEach((_, ind) =>
+      sections.push("FilmCuttingobservations" + ind)
+    );
+
+    sections.push("TabberAndStringer");
+    (reportData[4]?.observations || []).forEach((_, ind) =>
+      sections.push("TabberAndStringerObservations" + ind)
+    );
+
+    sections.push("Layup");
+    (reportData[5]?.observations || []).forEach((_, ind) =>
+      sections.push("LayupObservations" + ind)
+    );
+
+    sections.push("Lamination");
+    (reportData[6]?.observations || []).forEach((_, ind) =>
+      sections.push("LaminationObservations" + ind)
+    );
+
+    sections.push("Framing");
+    (reportData[7]?.observations || []).forEach((_, ind) =>
+      sections.push("FramingObservation" + ind)
+    );
+
+    sections.push("FlasherTesting");
+    (reportData[8]?.observations || []).forEach((_, ind) =>
+      sections.push("FlasherTestingObservations" + ind)
+    );
+
+    sections.push("RandomSampleCheck");
+    (reportData[9]?.observations || []).forEach((_, ind) =>
+      sections.push("RandomSampleCheckObservations" + ind)
+    );
+
+    sections.push("InspectionResults");
+    sections.push("Attachment");
+    sections.push("report_completed");
 
     const spans = document.querySelectorAll("table span");
     spans.forEach((text) => text.classList.add("pdf-span"));
@@ -1470,24 +1712,27 @@ const PreviewReport = () => {
       orientation: "p",
       unit: "mm",
       format: "a4",
-      compress: true
+      compress: true,
     });
 
     const pageHeight = 297;
     const margin = 10;
-    const headerHeight = 15;
+    const headerHeight = 20;
     const footerHeight = 10;
     const pageNumberOffset = 10;
+    const usablePageHeight = pageHeight - margin - footerHeight - pageNumberOffset;
+
     let yOffset = margin + headerHeight + 5;
     let pageNumber = 1;
-    let totalPages = 1; // Placeholder for total pages
 
     const convertToImage = async (element) => {
       return html2canvas(element, {
-        scale: 2.5, useCORS: true, logging: false,
+        scale: 1,
+        useCORS: true,
+        logging: false,
         allowTaint: true,
       })
-        .then((canvas) => canvas.toDataURL("image/png", 1))
+        .then((canvas) => canvas.toDataURL("image/png", 0.8))
         .catch((error) => {
           console.error("Error capturing element:", element.id, error);
           return null;
@@ -1504,14 +1749,19 @@ const PreviewReport = () => {
 
       const addFooter = (currentPage, totalPages) => {
         const paddingTop = 2;
-        pdf.addImage(footerImage, "PNG", margin, pageHeight - footerHeight - margin - pageNumberOffset, 190, footerHeight + paddingTop);
+        pdf.addImage(
+          footerImage,
+          "PNG",
+          margin,
+          pageHeight - footerHeight - margin - pageNumberOffset,
+          190,
+          footerHeight + paddingTop
+        );
         pdf.setFontSize(10);
         pdf.text(`Page No: ${currentPage} / ${totalPages}`, 160, pageHeight - margin - 5);
       };
 
       pdf.addImage(headerImage, "PNG", margin, margin, 190, headerHeight);
-
-      let pageIndexes = [];
 
       for (const sectionId of sections) {
         const section = document.getElementById(sectionId);
@@ -1530,8 +1780,7 @@ const PreviewReport = () => {
           continue;
         }
 
-        if (yOffset + sectionHeight + footerHeight > pageHeight - margin) {
-          pageIndexes.push(pageNumber);
+        if (yOffset + sectionHeight > usablePageHeight) {
           pdf.addPage();
           pageNumber++;
           yOffset = margin;
@@ -1544,9 +1793,7 @@ const PreviewReport = () => {
         yOffset += sectionHeight + 5;
       }
 
-      totalPages = pdf.internal.getNumberOfPages(); // Get total pages
-
-      // Update footers with total page count
+      const totalPages = pdf.internal.getNumberOfPages();
       for (let i = 1; i <= totalPages; i++) {
         pdf.setPage(i);
         addFooter(i, totalPages);
@@ -1635,6 +1882,15 @@ const PreviewReport = () => {
     { date: "12/28/2024", dayProduction: 133, nightProduction: 145, totalRejection: 51 },
   ];
 
+  var sections = [
+    "FilmCuttingobservations",
+    "TabberAndStringerObservations",
+    "LayupObservations",
+    "LaminationObservations",
+    "FramingObservation",
+    "FlasherTestingObservations",
+    "RandomSampleCheckObservations"
+  ];
 
   return (
     <>
@@ -1713,43 +1969,65 @@ const PreviewReport = () => {
               <FilmCutting reportData={reportData} isClick={isClick} />
 
               {/* film cutting observatios */}
-              <FilmCuttingobservations reportData={reportData} isClick={isClick} />
+              {(reportData[3].observations || []).map((item: any, index: any) => (
+                <Observations value={sections[0] + index} reportData={item} index={index} isClick={isClick} />
+              ))}  
+              {/* <FilmCuttingobservations reportData={reportData} isClick={isClick} /> */}
 
               {/* Process – Tabber & Stringer */}
               <TabberAndStringer reportData={reportData} isClick={isClick} />
 
               {/* Tabber & Stringer observatios */}
-              <TabberAndStringerObservations reportData={reportData} isClick={isClick} />
+              {(reportData[4].observations || []).map((item: any, index: any) => (
+                <Observations value={sections[1] + index} reportData={item} index={index} isClick={isClick} />
+              ))}
+              {/* <TabberAndStringerObservations reportData={reportData} isClick={isClick} /> */}
 
               {/* Process – Layup */}
               <Layup reportData={reportData} isClick={isClick} />
 
               {/* Layup observatios */}
-              <LayupObservations reportData={reportData} isClick={isClick} />
+              {(reportData[5].observations || []).map((item: any, index: any) => (
+                <Observations value={sections[2] + index} reportData={item} index={index} isClick={isClick} />
+              ))}
+              {/* <LayupObservations reportData={reportData} isClick={isClick} /> */}
 
               {/* Process – Lamination */}
               <Lamination reportData={reportData} isClick={isClick} />
 
               {/* Lamination observatios */}
-              <LaminationObservations reportData={reportData} isClick={isClick} />
+              {(reportData[6].observations || []).map((item: any, index: any) => (
+                <Observations value={sections[3] + index} reportData={item} index={index} isClick={isClick} />
+              ))}
+              {/* <LaminationObservations reportData={reportData} isClick={isClick} /> */}
 
               {/* Process – Framing */}
               <Framing reportData={reportData} isClick={isClick} />
 
+
               {/* Framing observatios */}
-              <FramingObservation reportData={reportData} isClick={isClick} />
+              {(reportData[7].observations || []).map((item: any, index: any) => (
+                <Observations value={sections[4] + index} reportData={item} index={index} isClick={isClick} />
+              ))}
+              {/* <FramingObservation reportData={reportData} isClick={isClick} /> */}
 
               {/* Process – Flasher Testing */}
               <FlasherTesting reportData={reportData} isClick={isClick} />
 
               {/* Flasher Testing observatios */}
-              <FlasherTestingObservations reportData={reportData} isClick={isClick} />
+              {(reportData[8].observations || []).map((item: any, index: any) => (
+                <Observations value={sections[5] + index} reportData={item} index={index} isClick={isClick} />
+              ))}
+              {/* <FlasherTestingObservations reportData={reportData} isClick={isClick} /> */}
 
               {/* Random Sample Check */}
               <RandomSampleCheck reportData={reportData} isClick={isClick} />
 
               {/* Random Sample Check observatios */}
-              <RandomSampleCheckObservations reportData={reportData} isClick={isClick} />
+              {(reportData[9].observations || []).map((item: any, index: any) => (
+                <Observations value={sections[6] + index} reportData={item} index={index} isClick={isClick} />
+              ))}
+              {/* <RandomSampleCheckObservations reportData={reportData} isClick={isClick} /> */}
 
               <Table id="report_completed">
                 <tbody style={{ margin: 0, padding: 0 }}>

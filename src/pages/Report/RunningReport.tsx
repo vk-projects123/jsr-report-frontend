@@ -894,7 +894,7 @@ const RunningReport = () => {
                               <input
                                 type={item.inputType}
                                 placeholder={item.param_name}
-                                value={item.value}
+                                value={item.inputType == 'date' ? moment(item.value, "DD-MM-YYYY") : item.value}
                                 name={item.param_name}
                                 onChange={handleChange}
                                 className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
@@ -1057,7 +1057,7 @@ const RunningReport = () => {
                                       type={item.inputType}
                                       placeholder={item.param_name}
                                       className="input-field"
-                                      value={item.value ? item.value[round] : ""}
+                                      value={item.value ? (item.inputType == 'date' ? moment(item.value[round], "DD-MM-YYYY") : item.value[round]) : ""}
                                       onChange={(e) => handleNestedChange(e, item.param_id, round)}
                                     />
                                   )}
@@ -1358,7 +1358,11 @@ const RunningReport = () => {
                               <input
                                 type={item.inputType}
                                 placeholder={item.param_name}
-                                value={item.value}
+                                value={
+                                  item.inputType === 'date'
+                                    ? moment(item.value, "DD-MM-YYYY").format("YYYY-MM-DD")
+                                    : item.value
+                                }
                                 name={item.param_name}
                                 onChange={handleChange}
                                 className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
@@ -1577,7 +1581,11 @@ const RunningReport = () => {
                                 <input
                                   type={item.inputType}
                                   placeholder={item.param_name}
-                                  value={item.value}
+                                  value={
+                                    item.inputType === 'date'
+                                      ? moment(item.value, "DD-MM-YYYY").format("YYYY-MM-DD")
+                                      : item.value
+                                  }
                                   name={item.param_name}
                                   onChange={handleChange}
                                   className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
