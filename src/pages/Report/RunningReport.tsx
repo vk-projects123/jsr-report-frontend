@@ -787,6 +787,28 @@ const RunningReport = () => {
     { date: "12/28/2024", dayProduction: 133, nightProduction: 145, totalRejection: 51 },
   ];
 
+  function formatDateSafely(inputDate: string): string {
+    if (!inputDate || inputDate.trim() === "") {
+      return "Not filled date";
+    }
+
+    // Try to parse with ISO first
+    let date = moment(inputDate, moment.ISO_8601, true);
+
+    // If invalid, try assuming it was mistakenly parsed as DD-MM-YYYY
+    if (!date.isValid()) {
+      // Try DD-MM-YYYY format just in case
+      date = moment(inputDate, "DD-MM-YYYY", true);
+    }
+
+    // If still invalid, return fallback message
+    if (!date.isValid()) {
+      return "Not filled date";
+    }
+
+    return date.format("YYYY-MM-DD");
+  }
+
   return (
     <div className="container">
       {/* Left Container (80%) for Form */}
@@ -894,7 +916,7 @@ const RunningReport = () => {
                               <input
                                 type={item.inputType}
                                 placeholder={item.param_name}
-                                value={item.inputType == 'date' ? moment(item.value, "DD-MM-YYYY") : item.value}
+                                value={item.inputType == 'date' ? formatDateSafely(item.value) : item.value}
                                 name={item.param_name}
                                 onChange={handleChange}
                                 className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
@@ -1057,7 +1079,7 @@ const RunningReport = () => {
                                       type={item.inputType}
                                       placeholder={item.param_name}
                                       className="input-field"
-                                      value={item.value ? (item.inputType == 'date' ? moment(item.value[round], "DD-MM-YYYY") : item.value[round]) : ""}
+                                      value={item.value ? (item.inputType == 'date' ? formatDateSafely(item.value[round]) : item.value[round]) : ""}
                                       onChange={(e) => handleNestedChange(e, item.param_id, round)}
                                     />
                                   )}
@@ -1360,7 +1382,7 @@ const RunningReport = () => {
                                 placeholder={item.param_name}
                                 value={
                                   item.inputType === 'date'
-                                    ? moment(item.value, "DD-MM-YYYY").format("YYYY-MM-DD")
+                                    ? formatDateSafely(item.value)
                                     : item.value
                                 }
                                 name={item.param_name}
@@ -1583,7 +1605,7 @@ const RunningReport = () => {
                                   placeholder={item.param_name}
                                   value={
                                     item.inputType === 'date'
-                                      ? moment(item.value, "DD-MM-YYYY").format("YYYY-MM-DD")
+                                      ? formatDateSafely(item.value)
                                       : item.value
                                   }
                                   name={item.param_name}

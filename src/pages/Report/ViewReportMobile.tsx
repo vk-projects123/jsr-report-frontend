@@ -220,9 +220,9 @@ const ViewReport = () => {
           >
             <div className={isClick ? "pdf-span" : ""}>
               Report Date:{" "}
-              {moment(
-                reportData[0].value.find((item) => item.param_name === "Date")?.value, "DD-MM-YYYY"
-              ).format("DD-MM-YYYY")}
+              {formatDateSafely(
+                reportData[0].value.find((item) => item.param_name === "Date")?.value
+              )}
             </div>
             <div>
               Report No:{" "}
@@ -284,7 +284,7 @@ const ViewReport = () => {
                           <span>Date / Shift</span>
                         </HeaderCell>
                         <TableCell style={{ width: '25%' }}>
-                          <span>{moment(item.value, "DD-MM-YYYY").format("DD-MM-YYYY")} / {shiftItem ? shiftItem.value : ''}</span>
+                          <span>{formatDateSafely(item.value)} / {shiftItem ? shiftItem.value : ''}</span>
                         </TableCell>
                       </>
                     ) : (
@@ -899,7 +899,7 @@ const ViewReport = () => {
                   if (row.value[round] !== "") {
                     return (
                       <td key={index} style={{ border: '1px solid black', padding: '5px' }}>
-                        <span>{row.value[round]}</span>
+                        <span>{row.inputType == 'date' ? formatDateSafely(row.value[round]) : row.value[round]}</span>
                       </td>
                     );
                   }
@@ -1654,6 +1654,28 @@ const ViewReport = () => {
     "FlasherTestingObservations",
     "RandomSampleCheckObservations"
   ];
+
+  function formatDateSafely(inputDate: string): string {
+    if (!inputDate || inputDate.trim() === "") {
+      return "Not filled date";
+    }
+
+    // Try to parse with ISO first
+    let date = moment(inputDate, moment.ISO_8601, true);
+
+    // If invalid, try assuming it was mistakenly parsed as DD-MM-YYYY
+    if (!date.isValid()) {
+      // Try DD-MM-YYYY format just in case
+      date = moment(inputDate, "DD-MM-YYYY", true);
+    }
+
+    // If still invalid, return fallback message
+    if (!date.isValid()) {
+      return "Not filled date";
+    }
+
+    return date.format("DD-MM-YYYY");
+  }
 
 
   return (

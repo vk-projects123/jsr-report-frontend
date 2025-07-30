@@ -195,7 +195,7 @@ const PreviewReport = () => {
     getsignatures();
   }, [data]);
 
-  const Header = ({ reportData, isClick }:any) => {
+  const Header = ({ reportData, isClick }: any) => {
     console.log("reportData, isClick", reportData, isClick);
     return (
       !reportData ? <></> :
@@ -249,9 +249,9 @@ const PreviewReport = () => {
           >
             <div className={isClick ? "pdf-span" : ""}>
               Report Date:{" "}
-              {moment(
-                reportData[0].value.find((item) => item.param_name === "Date")?.value, "DD-MM-YYYY"
-              ).format("DD-MM-YYYY")}
+              {formatDateSafely(
+                reportData[0].value.find((item) => item.param_name === "Date")?.value
+              )}
             </div>
             <div>
               Report No:{" "}
@@ -263,7 +263,7 @@ const PreviewReport = () => {
     );
   };
 
-  const Footer = ({ reportData, isClick }:any) => {
+  const Footer = ({ reportData, isClick }: any) => {
     return (
       !reportData ? <></> :
         <div id="pdffooter" style={{ width: '100%' }}>
@@ -286,7 +286,7 @@ const PreviewReport = () => {
     );
   };
 
-  const ReportDetailsSection = ({ reportData, isClick }:any) => {
+  const ReportDetailsSection = ({ reportData, isClick }: any) => {
     return (
       <div className="content" id="ReportDetailsSection">
         <p className={isClick ? "pdf-span " : ""} style={{ fontWeight: 'bold', fontSize: 16, color: '#000' }}>Report Details –</p>
@@ -312,7 +312,7 @@ const PreviewReport = () => {
                           <span>Date / Shift</span>
                         </HeaderCell>
                         <TableCell style={{ width: '25%' }}>
-                          <span>{moment(item.value, "DD-MM-YYYY").format("DD-MM-YYYY")} / {shiftItem ? shiftItem.value : ''}</span>
+                          <span>{formatDateSafely(item.value)} / {shiftItem ? shiftItem.value : ''}</span>
                         </TableCell>
                       </>
                     ) : (
@@ -349,7 +349,7 @@ const PreviewReport = () => {
     );
   };
 
-  const ProductStageWise = ({ reportData, isClick }:any) => {
+  const ProductStageWise = ({ reportData, isClick }: any) => {
     return (
       <div className="content" id="ProductStageWise">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Production Stage Wise -</p>
@@ -367,7 +367,7 @@ const PreviewReport = () => {
     );
   };
 
-  const InspectionDetails = ({ reportData, isClick }:any) => {
+  const InspectionDetails = ({ reportData, isClick }: any) => {
     return (
       <div className="content" id="ProductStageWise">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Inspection Details -</p>
@@ -385,7 +385,7 @@ const PreviewReport = () => {
     );
   };
 
-  const InspectionResults = ({ reportData, isClick }:any) => {
+  const InspectionResults = ({ reportData, isClick }: any) => {
     return (
       <div className="content" id="InspectionResults">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Inspection Results -</p>
@@ -403,7 +403,7 @@ const PreviewReport = () => {
     );
   };
 
-  const Attachment = ({ reportData, isClick }:any) => {
+  const Attachment = ({ reportData, isClick }: any) => {
     return (
       <div className="content" id="Attachment">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Attachment -</p>
@@ -421,7 +421,7 @@ const PreviewReport = () => {
     );
   };
 
-  const MajorObservations = ({ reportData, isClick, value1, value2 }:any) => {
+  const MajorObservations = ({ reportData, isClick, value1, value2 }: any) => {
     return (
       reportData[2].value.slice(value1, value2).length <= 0 ? "" :
         <div className="content" id={"MajorObservations" + value2}>
@@ -494,7 +494,7 @@ const PreviewReport = () => {
     );
   };
 
-  const InpectionObservations = ({ reportData, isClick, value1, value2 }:any) => {
+  const InpectionObservations = ({ reportData, isClick, value1, value2 }: any) => {
     return (
       reportData[2].value.slice(value1, value2).length <= 0 ? "" :
         <div className="content" id={"MajorObservations" + value2}>
@@ -594,7 +594,7 @@ const PreviewReport = () => {
     );
   };
 
-  const FilmCutting = ({ reportData, isClick }:any) => {
+  const FilmCutting = ({ reportData, isClick }: any) => {
     return (
       <div className="content" id="FilmCutting">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', fontSize: 18, color: '#000' }}>In Process Inspection Report –</p>
@@ -636,7 +636,7 @@ const PreviewReport = () => {
     );
   };
 
-  const FilmCuttingobservations = ({ reportData, isClick }:any) => {
+  const FilmCuttingobservations = ({ reportData, isClick }: any) => {
     return (
       reportData[3].observations.length <= 0 ? "" :
         <div className="content" id="FilmCuttingobservations">
@@ -692,7 +692,7 @@ const PreviewReport = () => {
     );
   };
 
-  const TabberAndStringer = ({ reportData, isClick }:any) => {
+  const TabberAndStringer = ({ reportData, isClick }: any) => {
     return (
       <div className="content">
         <div className="content" id="TabberAndStringer">
@@ -738,7 +738,7 @@ const PreviewReport = () => {
     );
   };
 
-  const TabberAndStringerObservations = ({ reportData, isClick }:any) => {
+  const TabberAndStringerObservations = ({ reportData, isClick }: any) => {
     return (
       reportData[4].observations.length <= 0 ? "" :
         <div className="content" id="TabberAndStringerObservations">
@@ -797,7 +797,7 @@ const PreviewReport = () => {
     );
   };
 
-  const Layup = ({ reportData, isClick }:any) => {
+  const Layup = ({ reportData, isClick }: any) => {
     return (
       <div className="content" id="Layup">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Process – Layup</p>
@@ -841,7 +841,7 @@ const PreviewReport = () => {
     );
   };
 
-  const LayupObservations = ({ reportData, isClick }:any) => {
+  const LayupObservations = ({ reportData, isClick }: any) => {
     return (
       reportData[5].observations.length <= 0 ? "" :
         <div className="content" id="LayupObservations">
@@ -897,7 +897,7 @@ const PreviewReport = () => {
     );
   };
 
-  const Lamination = ({ reportData, isClick }:any) => {
+  const Lamination = ({ reportData, isClick }: any) => {
     return (
       <div className="content" id="Lamination">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Process – Lamination</p>
@@ -927,7 +927,7 @@ const PreviewReport = () => {
                   if (row.value[round] !== "") {
                     return (
                       <td key={index} style={{ border: '1px solid black', padding: '5px' }}>
-                        <span>{row.value[round]}</span>
+                        <span>{row.inputType == 'date' ? formatDateSafely(row.value[round]) : row.value[round]}</span>
                       </td>
                     );
                   }
@@ -941,7 +941,7 @@ const PreviewReport = () => {
     );
   };
 
-  const LaminationObservations = ({ reportData, isClick }:any) => {
+  const LaminationObservations = ({ reportData, isClick }: any) => {
     return (
       reportData[6].observations.length <= 0 ? "" :
         <div className="content" id="LaminationObservations">
@@ -997,7 +997,7 @@ const PreviewReport = () => {
     );
   };
 
-  const Framing = ({ reportData, isClick }:any) => {
+  const Framing = ({ reportData, isClick }: any) => {
     return (
       <div className="content" id="Framing">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Process – Framing</p>
@@ -1041,7 +1041,7 @@ const PreviewReport = () => {
     );
   };
 
-  const FramingObservation = ({ reportData, isClick }:any) => {
+  const FramingObservation = ({ reportData, isClick }: any) => {
     return (
       reportData[7].observations.length <= 0 ? "" :
         <div className="content" id="FramingObservation">
@@ -1151,7 +1151,7 @@ const PreviewReport = () => {
     );
   };
 
-  const FlasherTesting = ({ reportData, isClick }:any) => {
+  const FlasherTesting = ({ reportData, isClick }: any) => {
     return (
       <div className="content" id="FlasherTesting">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Process – Flasher Testing</p>
@@ -1195,7 +1195,7 @@ const PreviewReport = () => {
     );
   };
 
-  const FlasherTestingObservations = ({ reportData, isClick }:any) => {
+  const FlasherTestingObservations = ({ reportData, isClick }: any) => {
     return (
       reportData[8].observations.length <= 0 ? "" :
         <div className="content" id="FlasherTestingObservations">
@@ -1251,7 +1251,7 @@ const PreviewReport = () => {
     );
   };
 
-  const RandomSampleCheck = ({ reportData, isClick }:any) => {
+  const RandomSampleCheck = ({ reportData, isClick }: any) => {
     return (
       <div className="content" id="RandomSampleCheck">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Random Sample Check</p>
@@ -1277,7 +1277,7 @@ const PreviewReport = () => {
     );
   };
 
-  const RandomSampleCheckObservations = ({ reportData, isClick }:any) => {
+  const RandomSampleCheckObservations = ({ reportData, isClick }: any) => {
     return (
       reportData[9].observations.length <= 0 ? "" :
         <div className="content" id="RandomSampleCheckObservations">
@@ -1333,7 +1333,7 @@ const PreviewReport = () => {
     );
   };
 
-  const BomTableData = ({ reportData, id, value1, value2, isClick }:any) => {
+  const BomTableData = ({ reportData, id, value1, value2, isClick }: any) => {
     return (
       reportData.length <= 0 ? "" :
         <div className="content" id={id}>
@@ -1892,6 +1892,28 @@ const PreviewReport = () => {
     "RandomSampleCheckObservations"
   ];
 
+  function formatDateSafely(inputDate: string): string {
+    if (!inputDate || inputDate.trim() === "") {
+      return "Not filled date";
+    }
+
+    // Try to parse with ISO first
+    let date = moment(inputDate, moment.ISO_8601, true);
+
+    // If invalid, try assuming it was mistakenly parsed as DD-MM-YYYY
+    if (!date.isValid()) {
+      // Try DD-MM-YYYY format just in case
+      date = moment(inputDate, "DD-MM-YYYY", true);
+    }
+
+    // If still invalid, return fallback message
+    if (!date.isValid()) {
+      return "Not filled date";
+    }
+
+    return date.format("DD-MM-YYYY");
+  }
+
   return (
     <>
       <div style={{ height: 40 }}></div>
@@ -1971,7 +1993,7 @@ const PreviewReport = () => {
               {/* film cutting observatios */}
               {(reportData[3].observations || []).map((item: any, index: any) => (
                 <Observations value={sections[0] + index} reportData={item} index={index} isClick={isClick} />
-              ))}  
+              ))}
               {/* <FilmCuttingobservations reportData={reportData} isClick={isClick} /> */}
 
               {/* Process – Tabber & Stringer */}

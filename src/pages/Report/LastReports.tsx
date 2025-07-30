@@ -108,6 +108,28 @@ const LastForms = () => {
     }
   };
 
+  function formatDateSafely(inputDate: string): string {
+    if (!inputDate || inputDate.trim() === "") {
+      return "Not filled date";
+    }
+
+    // Try to parse with ISO first
+    let date = moment(inputDate, moment.ISO_8601, true);
+
+    // If invalid, try assuming it was mistakenly parsed as DD-MM-YYYY
+    if (!date.isValid()) {
+      // Try DD-MM-YYYY format just in case
+      date = moment(inputDate, "DD-MM-YYYY", true);
+    }
+
+    // If still invalid, return fallback message
+    if (!date.isValid()) {
+      return "Not filled date";
+    }
+
+    return date.format("DD-MM-YYYY");
+  }
+
   return (
     <>
       <Breadcrumb pageName={localStorage.getItem('workspaceuser_role') === 'admin' ? "Reports" : localStorage.getItem('workspaceuser_role') === 'subadmin' ? "Last Reports" : "My Reports"} />
@@ -193,7 +215,7 @@ const LastForms = () => {
                       <p className="text-sm text-black dark:text-white">{'-'}</p>
                     </td> */}
                     <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
-                      <p className="text-sm text-black dark:text-white">{moment(item.form_name == "BOM" ? item.bom_date : item.form_name == "IPQC" ? item.ipqc_date : item.last_updated_at,"DD-MM-YYYY").format("DD-MM-YYYY")}</p>
+                      <p className="text-sm text-black dark:text-white">{formatDateSafely(item.form_name == "BOM" ? item.bom_date : item.form_name == "IPQC" ? item.ipqc_date : item.last_updated_at)}</p>
                     </td>
                     <td className="border-b border-[#eee] py-1 px-4 dark:border-strokedark">
                       <div onClick={() => navigate("/reports/view_report/1", { state: { submissionID: item.submission_id, reporttype: item.form_name, formId: item.form_id } })}><FaEye className="w-5 h-5" /></div>
