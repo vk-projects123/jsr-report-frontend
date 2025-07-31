@@ -297,6 +297,7 @@ const PreviewReport = () => {
               if (item.param_name === "Shift") return null;
               if (item.param_name === "End Date") return null;
 
+
               // Find the "Shift" value
               const shiftItem = reportData[0].value.find((i: any) => i.param_name === "Shift");
               const EnddateItem = reportData[0].value.find((i: any) => i.param_name === "End Date");
@@ -333,7 +334,7 @@ const PreviewReport = () => {
                           <span>{reportData[0].value[index + 1].param_name}</span>
                         </HeaderCell>
                         <TableCell style={{ width: '25%' }}>
-                          <span>{reportData[0].value[index + 1].param_name === "Date" ? moment(reportData[0].value[index + 1].value, "DD-MM-YYYY").format("DD-MM-YYYY") + (EnddateItem.details_id != 0 ? " to " : "") + (EnddateItem.details_id != 0 ? moment(EnddateItem.value, "DD-MM-YYYY").format("DD-MM-YYYY") : '') : reportData[0].value[index + 1].value}</span>
+                          <span>{reportData[0].value[index + 1].param_name === "Date" ? formatDateSafely(reportData[0].value[index + 1].value) + (EnddateItem.details_id != 0 ? " to " : "") + (EnddateItem.details_id != 0 ? formatDateSafely(EnddateItem.value) : '') : reportData[0].value[index + 1].value}</span>
                         </TableCell>
                       </>
                     )}

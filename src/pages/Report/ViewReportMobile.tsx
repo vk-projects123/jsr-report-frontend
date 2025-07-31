@@ -166,7 +166,7 @@ const ViewReport = () => {
     getsignatures();
   }, []);
 
-  const Header = ({ reportData, isClick }:any) => {
+  const Header = ({ reportData, isClick }: any) => {
     console.log("reportData, isClick", reportData, isClick);
     return (
       !reportData ? <></> :
@@ -234,7 +234,7 @@ const ViewReport = () => {
     );
   };
 
-  const Footer = ({ reportData, isClick }:any) => {
+  const Footer = ({ reportData, isClick }: any) => {
     return (
       !reportData ? <></> :
         <div id="pdffooter" style={{ width: '100%' }}>
@@ -257,7 +257,7 @@ const ViewReport = () => {
     );
   };
 
-  const ReportDetailsSection = ({ reportData, isClick }:any) => {
+  const ReportDetailsSection = ({ reportData, isClick }: any) => {
     return (
       <div className="content" id="ReportDetailsSection">
         <p className={isClick ? "pdf-span " : ""} style={{ fontWeight: 'bold', fontSize: 16, color: '#000' }}>Report Details –</p>
@@ -305,7 +305,7 @@ const ViewReport = () => {
                           <span>{reportData[0].value[index + 1].param_name}</span>
                         </HeaderCell>
                         <TableCell style={{ width: '25%' }}>
-                          <span>{reportData[0].value[index + 1].param_name === "Date" ? moment(reportData[0].value[index + 1].value, "DD-MM-YYYY").format("DD-MM-YYYY") + (EnddateItem.details_id != 0 ? " to " : "") + (EnddateItem.details_id != 0 ? moment(EnddateItem.value, "DD-MM-YYYY").format("DD-MM-YYYY") : '') : reportData[0].value[index + 1].value}</span>
+                          <span>{reportData[0].value[index + 1].param_name === "Date" ? formatDateSafely(reportData[0].value[index + 1].value) + (EnddateItem.details_id != 0 ? " to " : "") + (EnddateItem.details_id != 0 ? formatDateSafely(EnddateItem.value) : '') : reportData[0].value[index + 1].value}</span>
                         </TableCell>
                       </>
                     )}
@@ -321,7 +321,7 @@ const ViewReport = () => {
     );
   };
 
-  const ProductStageWise = ({ reportData, isClick }:any) => {
+  const ProductStageWise = ({ reportData, isClick }: any) => {
     return (
       <div className="content" id="ProductStageWise">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Production Stage Wise -</p>
@@ -339,7 +339,7 @@ const ViewReport = () => {
     );
   };
 
-  const InspectionDetails = ({ reportData, isClick }:any) => {
+  const InspectionDetails = ({ reportData, isClick }: any) => {
     return (
       <div className="content" id="ProductStageWise">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Inspection Details -</p>
@@ -357,7 +357,7 @@ const ViewReport = () => {
     );
   };
 
-  const InspectionResults = ({ reportData, isClick }:any) => {
+  const InspectionResults = ({ reportData, isClick }: any) => {
     return (
       <div className="content" id="InspectionResults">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Inspection Results -</p>
@@ -375,7 +375,7 @@ const ViewReport = () => {
     );
   };
 
-  const Attachment = ({ reportData, isClick }:any) => {
+  const Attachment = ({ reportData, isClick }: any) => {
     return (
       <div className="content" id="Attachment">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Attachment -</p>
@@ -393,7 +393,7 @@ const ViewReport = () => {
     );
   };
 
-  const MajorObservations = ({ reportData, isClick, value1, value2 }:any) => {
+  const MajorObservations = ({ reportData, isClick, value1, value2 }: any) => {
     return (
       reportData[2].value.slice(value1, value2).length <= 0 ? "" :
         <div className="content" id={"MajorObservations" + value2}>
@@ -466,7 +466,7 @@ const ViewReport = () => {
     );
   };
 
-  const InpectionObservations = ({ reportData, isClick, value1, value2 }:any) => {
+  const InpectionObservations = ({ reportData, isClick, value1, value2 }: any) => {
     return (
       reportData[2].value.slice(value1, value2).length <= 0 ? "" :
         <div className="content" id={"MajorObservations" + value2}>
@@ -566,7 +566,7 @@ const ViewReport = () => {
     );
   };
 
-  const FilmCutting = ({ reportData, isClick }:any) => {
+  const FilmCutting = ({ reportData, isClick }: any) => {
     return (
       <div className="content" id="FilmCutting">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', fontSize: 18, color: '#000' }}>In Process Inspection Report –</p>
@@ -608,7 +608,7 @@ const ViewReport = () => {
     );
   };
 
-  const FilmCuttingobservations = ({ reportData, isClick }:any) => {
+  const FilmCuttingobservations = ({ reportData, isClick }: any) => {
     return (
       reportData[3].observations.length <= 0 ? "" :
         <div className="content" id="FilmCuttingobservations">
@@ -664,7 +664,7 @@ const ViewReport = () => {
     );
   };
 
-  const TabberAndStringer = ({ reportData, isClick }:any) => {
+  const TabberAndStringer = ({ reportData, isClick }: any) => {
     return (
       <div className="content">
         <div className="content" id="TabberAndStringer">
@@ -710,7 +710,7 @@ const ViewReport = () => {
     );
   };
 
-  const TabberAndStringerObservations = ({ reportData, isClick }:any) => {
+  const TabberAndStringerObservations = ({ reportData, isClick }: any) => {
     return (
       reportData[4].observations.length <= 0 ? "" :
         <div className="content" id="TabberAndStringerObservations">
@@ -769,7 +769,7 @@ const ViewReport = () => {
     );
   };
 
-  const Layup = ({ reportData, isClick }:any) => {
+  const Layup = ({ reportData, isClick }: any) => {
     return (
       <div className="content" id="Layup">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Process – Layup</p>
@@ -813,7 +813,7 @@ const ViewReport = () => {
     );
   };
 
-  const LayupObservations = ({ reportData, isClick }:any) => {
+  const LayupObservations = ({ reportData, isClick }: any) => {
     return (
       reportData[5].observations.length <= 0 ? "" :
         <div className="content" id="LayupObservations">
@@ -869,7 +869,7 @@ const ViewReport = () => {
     );
   };
 
-  const Lamination = ({ reportData, isClick }:any) => {
+  const Lamination = ({ reportData, isClick }: any) => {
     return (
       <div className="content" id="Lamination">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Process – Lamination</p>
@@ -913,7 +913,7 @@ const ViewReport = () => {
     );
   };
 
-  const LaminationObservations = ({ reportData, isClick }:any) => {
+  const LaminationObservations = ({ reportData, isClick }: any) => {
     return (
       reportData[6].observations.length <= 0 ? "" :
         <div className="content" id="LaminationObservations">
@@ -969,7 +969,7 @@ const ViewReport = () => {
     );
   };
 
-  const Framing = ({ reportData, isClick }:any) => {
+  const Framing = ({ reportData, isClick }: any) => {
     return (
       <div className="content" id="Framing">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Process – Framing</p>
@@ -1013,7 +1013,7 @@ const ViewReport = () => {
     );
   };
 
-  const FramingObservation = ({ reportData, isClick }:any) => {
+  const FramingObservation = ({ reportData, isClick }: any) => {
     return (
       reportData[7].observations.length <= 0 ? "" :
         <div className="content" id="FramingObservation">
@@ -1069,7 +1069,7 @@ const ViewReport = () => {
     );
   };
 
-  const FlasherTesting = ({ reportData, isClick }:any) => {
+  const FlasherTesting = ({ reportData, isClick }: any) => {
     return (
       <div className="content" id="FlasherTesting">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Process – Flasher Testing</p>
@@ -1113,7 +1113,7 @@ const ViewReport = () => {
     );
   };
 
-  const FlasherTestingObservations = ({ reportData, isClick }:any) => {
+  const FlasherTestingObservations = ({ reportData, isClick }: any) => {
     return (
       reportData[8].observations.length <= 0 ? "" :
         <div className="content" id="FlasherTestingObservations">
@@ -1169,7 +1169,7 @@ const ViewReport = () => {
     );
   };
 
-  const RandomSampleCheck = ({ reportData, isClick }:any) => {
+  const RandomSampleCheck = ({ reportData, isClick }: any) => {
     return (
       <div className="content" id="RandomSampleCheck">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Random Sample Check</p>
@@ -1195,7 +1195,7 @@ const ViewReport = () => {
     );
   };
 
-  const RandomSampleCheckObservations = ({ reportData, isClick }:any) => {
+  const RandomSampleCheckObservations = ({ reportData, isClick }: any) => {
     return (
       reportData[9].observations.length <= 0 ? "" :
         <div className="content" id="RandomSampleCheckObservations">
@@ -1251,7 +1251,7 @@ const ViewReport = () => {
     );
   };
 
-  const BomTableData = ({ reportData, id, value1, value2, isClick }:any) => {
+  const BomTableData = ({ reportData, id, value1, value2, isClick }: any) => {
     return (
       reportData.length <= 0 ? "" :
         <div className="content" id={id}>

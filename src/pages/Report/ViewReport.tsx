@@ -323,7 +323,7 @@ const ViewReport = () => {
                           <span>{reportData[0].value[index + 1].param_name}</span>
                         </HeaderCell>
                         <TableCell style={{ width: '25%' }}>
-                          <span>{reportData[0].value[index + 1].param_name === "Date" ? moment(reportData[0].value[index + 1].value, "DD-MM-YYYY").format("DD-MM-YYYY") + (EnddateItem.details_id != 0 ? " to " : "") + (EnddateItem.details_id != 0 ? moment(EnddateItem.value, "DD-MM-YYYY").format("DD-MM-YYYY") : '') : reportData[0].value[index + 1].value}</span>
+                          <span>{reportData[0].value[index + 1].param_name === "Date" ? formatDateSafely(reportData[0].value[index + 1].value) + (EnddateItem.details_id != 0 ? " to " : "") + (EnddateItem.details_id != 0 ? formatDateSafely(EnddateItem.value) : '') : reportData[0].value[index + 1].value}</span>
                         </TableCell>
                       </>
                     )}
@@ -887,7 +887,7 @@ const ViewReport = () => {
     );
   };
 
-  const Lamination = ({ reportData, isClick }:any) => {
+  const Lamination = ({ reportData, isClick }: any) => {
     return (
       <div className="content" id="Lamination">
         <p className={isClick ? "pdf-span" : ""} style={{ fontWeight: 'bold', color: '#000' }}>Process – Lamination</p>
@@ -1694,7 +1694,6 @@ const ViewReport = () => {
 
     return date.format("DD-MM-YYYY");
   }
-
 
   return (
     <>
