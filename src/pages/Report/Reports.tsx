@@ -252,7 +252,7 @@ const Forms = () => {
             New Report
           </button> */}
           {localStorage.getItem('workspaceuser_role') === 'subadmin' ? <button
-            onClick={() => navigate('/reports/running_report/1', { state: { reporttype: reportType, formId: reportType == "IPQC" ? 1 : reportType == "BOM" ? 3 : reportType == "PDI" ? 4 : 0, submissionID: submissionId } })}
+            onClick={() => navigate('/reports/running_report/1', { state: { reporttype: reportType, formId: reportType == "IPQC" ? 1 : reportType == "BOM" ? 3 : reportType == "PDI" ? 4 : reportType == "EL" ? 6 : 0, submissionID: submissionId } })}
             className="inline-flex items-center justify-center rounded-md bg-primary py-2 mx-2 text-center font-medium text-white hover:bg-opacity-90 lg:px-8 xl:px-10"
           >
             {reportStatus} Report

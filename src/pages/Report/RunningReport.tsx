@@ -24,7 +24,7 @@ const RunningReport = () => {
   if (!data) {
     data = { reporttype: "IPQC", formId: 1, submissionID: 0, selectedSection: { section: 'Report Details', section_id: 1, section_type: 'inputField' } };
   }
-  const [selectedSection, setSelectedSection] = useState<any>({ section: 'Report Details', section_id: data.reporttype === "IPQC" ? 1 : data.reporttype === "BOM" ? 22 : 51, section_type: 'inputField' });
+  const [selectedSection, setSelectedSection] = useState<any>({ section: 'Report Details', section_id: data.reporttype === "IPQC" ? 1 : data.reporttype === "BOM" ? 22 : data.reporttype == "PDI" ? 51 : data.reporttype == "EL" ? 56 : 0, section_type: 'inputField' });
   const [customer, setCustomer] = useState([]);
   const [InspectionObservations, setInspectionObservations] = useState([]);
   const [isLoaded, setLoaded] = useState(false);
@@ -49,6 +49,7 @@ const RunningReport = () => {
   const [checkingtogether, setCheckingtogether] = useState<any>("");
   const [sections, setSections] = useState<any>([]);
   const [observations, setObservations] = useState<any>([]);
+  const [module_details, setModuleDetails] = useState<any>([]);
   const [attechments, setAttechments] = useState<any>([]);
   const [submissionID, setsubmissionID] = useState<any>(0);
   const [imageuploading, setimageuploading] = useState<any>(false);
@@ -76,7 +77,7 @@ const RunningReport = () => {
     console.log(" data.formId", data.formId);
     const params = new URLSearchParams({
       form_id: data.formId,
-      format_id: data.reporttype == "IPQC" ? "1" : data.reporttype == "BOM" ? "2" : "3"
+      format_id: data.reporttype == "IPQC" ? "1" : data.reporttype == "BOM" ? "2" : data.reporttype == "PDI" ? "3" : data.reporttype == "EL" ? "4" : data.reporttype == "IV" ? "5" : "0"
     });
 
     try {
@@ -107,7 +108,7 @@ const RunningReport = () => {
   const listSectionParams = async (e: any) => {
     const params = new URLSearchParams({
       form_id: data.formId,
-      format_id: data.reporttype == "IPQC" ? "1" : data.reporttype == "BOM" ? "2" : "3",
+      format_id: data.reporttype == "IPQC" ? "1" : data.reporttype == "BOM" ? "2" : data.reporttype == "PDI" ? "3" : data.reporttype == "EL" ? "4" : data.reporttype == "IV" ? "5" : "0",
       section_id: e
     });
 
@@ -634,6 +635,17 @@ const RunningReport = () => {
     );
   };
 
+  const updatemoduledetails = (index: number, module_make: string, module_modal_and_rating: string) => {
+    setModuleDetails((prevObservations: any) =>
+      prevObservations.map((obs: any, i: number) =>
+        i === index
+          ? { ...obs, module_make, module_modal_and_rating }
+          : obs
+      )
+    );
+  };
+
+
   const updateAtttechmentDescription = (index: number, attechmentTitle: string, Attechment: any) => {
     setAttechments((prevObservations: any) =>
       prevObservations.map((obs: any, i: any) =>
@@ -699,6 +711,35 @@ const RunningReport = () => {
       };
 
       setObservations([...observations, newObservation]);
+    }
+
+    if (observations.length >= 1) {
+      var lastobservation = observations.length - 1;
+      if (observations[lastobservation]["observations_text"] == "") {
+        alert("please enter last observations");
+      } else {
+        addData();
+      }
+    } else {
+      addData();
+    }
+
+  };
+
+  const addModuledetails = () => {
+
+    const addData = () => {
+      const newObservation = {
+        site_details_id: 0,
+        submission_id: submissionID,
+        form_id: data.formId,
+        format_id: 4,
+        section_id: selectedSection.section_id,
+        module_make: "",
+        module_modal_and_rating: ""
+      };
+
+      setModuleDetails([...module_details, newObservation]);
     }
 
     if (observations.length >= 1) {
@@ -2045,6 +2086,657 @@ const RunningReport = () => {
 
                         </div>
                         : ""
+              }
+            </div>
+          ) : data.reporttype === "EL" && selectedSection ? (
+            <div className="border border-stroke bg-white shadow-default">
+              <div className="flex justify-between items-center border-b border-stroke mt-5 px-6.5 dark:border-strokedark">
+                <h3 className="font-medium text-black dark:text-white">
+                  {selectedSection.section}
+                  {selectedSection.subsection && ` - ${selectedSection.subsection}`}
+                </h3>
+                <div>
+                  {(selectedSection.section === "Major Observations" || selectedSection.section === "Observations") && (
+                    <button className="add-btn" onClick={addObservation}>
+                      + Add Observation
+                    </button>
+                  )}
+                  {selectedSection.section === "Attechment" && (
+                    <button className="add-btn" onClick={addAttechemnt}>
+                      + Add Attechment
+                    </button>
+                  )}
+                  {submissionID == 0 ? "" : <button className="add-btn mx-2" onClick={() => navigate('/reports/preview_report', {
+                    state: {
+                      formId: data.formId, reporttype: data.reporttype, submissionID: submissionID, selectedSection: selectedSection
+                    }
+                  })}>
+                    Preview
+                  </button>}
+                  {((submissionID == 0 && selectedSection.section_id == 1) || (submissionID == 0 && selectedSection.section_id == 56) || submissionID != 0 || (submissionID == 0 && selectedSection.section_id == 51)) ?
+                    <button className="add-btn mx-2" disabled={isLoading} onClick={submitSection}>
+                      {isLoading ? (
+                        <svg
+                          className="w-5 h-5 animate-spin text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          ></circle>
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8v8H4z"
+                          ></path>
+                        </svg>
+                      ) : (
+                        'Save'
+                      )}
+                    </button> : ""}
+                </div>
+              </div>
+
+              {selectedSection.section_type === "inputField" ?
+                <form action="#">
+                  <div className="p-6.5">
+                    {sectionparams
+                      .reduce((rows: any, item: any, index: any) => {
+                        if (index % 2 === 0) {
+                          rows.push([item]);
+                        } else {
+                          rows[rows.length - 1].push(item);
+                        }
+                        return rows;
+                      }, [])
+                      .map((row: any, rowIndex: any) => (
+                        <div key={rowIndex} className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                          {row.map((item: any, colIndex: any) => (
+                            // item.param_name == "OA No" ? "" :
+                            <div key={colIndex} className="w-full xl:w-1/2">
+                              <label className="mb-2.5 block text-black dark:text-white">
+                                {item.param_name}
+                              </label>
+                              {item.inputType === "selection" ? (
+                                <div className="relative z-20 bg-transparent dark:bg-form-input">
+                                  <select
+                                    name={item.param_name}
+                                    value={item.value}
+                                    onChange={handleChange}
+                                    className="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-1.5 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                  >
+                                    <option value="">Select Option</option>
+                                    {item.param_name === "Customer Name"
+                                      ? customer.map((custItem: any, idx: any) => (
+                                        <option key={idx} value={custItem.user_name}>
+                                          {custItem.user_name}
+                                        </option>
+                                      ))
+                                      :
+                                      [
+                                        <option key="day" value="Day">
+                                          Day
+                                        </option>,
+                                        <option key="night" value="Night">
+                                          Night
+                                        </option>,
+                                      ]
+                                    }
+                                  </select>
+                                  <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2">
+                                    <FaChevronDown className="text-gray-500 dark:text-gray-400" />
+                                  </span>
+                                </div>
+                              ) : (
+                                <input
+                                  type={item.inputType}
+                                  placeholder={item.param_name}
+                                  value={
+                                    item.inputType === 'date'
+                                      ? formatDateSafely(item.value)
+                                      : item.value
+                                  }
+                                  name={item.param_name}
+                                  onChange={handleChange}
+                                  className="w-full rounded border-[1.5px] border-stroke bg-transparent py-1.5 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                  style={{ margin: 0 }}
+                                />
+                              )}
+                            </div>
+                          ))}
+                          {/* Ensure each row has exactly two columns */}
+                          {row.length === 1 && <div className="w-full xl:w-1/2"></div>}
+                        </div>
+                      ))}
+                  </div>
+                </form>
+                : selectedSection.section_type === "table" ?
+                  <div className="table-container">
+                    <table className="production-table">
+                      <tbody>
+                        {sectionparams.map((item: any, index: any) =>
+                          <tr key={index}>
+                            <td style={{ width: '50%' }}>{item.param_name}</td>
+                            <td>
+                              {item.param_name == "Attachments if any" ?
+                                <>
+                                  <input
+                                    type="file"
+                                    name={item.param_name}
+                                    onChange={(e: any) => handleattechmentFileUpload(e)}
+                                  />
+                                  {item.value && (
+                                    <div style={{ marginTop: '10px' }}>
+                                      <a style={{ color: 'blue' }} href={imgUrl + item.value} target="_blank" rel="noopener noreferrer">
+                                        View PDF
+                                      </a>
+                                    </div>
+                                  )}
+                                </>
+                                : item.inputType == "textarea" ?
+                                  <textarea
+                                    className="input-field"
+                                    name={item.param_name}
+                                    placeholder={item.param_name}
+                                    value={item.value}
+                                    onChange={handleChange}
+                                  />
+                                  :
+                                  <input
+                                    type={item.inputType}
+                                    name={item.param_name}
+                                    placeholder={item.param_name}
+                                    value={item.value}
+                                    onChange={handleChange}
+                                    className="input-field"
+                                  />
+                              }
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                    {selectedSection.section == "Inspection Results" ?
+                      <table className="mt-10 production-table">
+                        <thead>
+                          <tr>
+                            <th>Inspection done by</th>
+                            <th>Checking together with (Customer/Manufacturer representative)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td style={{ width: '50%' }}>
+                              <input
+                                type="text"
+                                name="inspection_done_by"
+                                placeholder="Inspection done by"
+                                className="input-field"
+                                value={submitsectionby}
+                                onChange={(e) => setSubmitsectionby(e.target.value)}
+                              />
+                            </td>
+                            <td>
+                              <input
+                                type="text"
+                                name="checking_together"
+                                placeholder="Checking together with"
+                                className="input-field"
+                                value={checkingtogether}
+                                onChange={(e) => setCheckingtogether(e.target.value)}
+                              />
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table> : ""}
+                  </div>
+                  : selectedSection.section_type === "imageDescription" ?
+                    <div className="observation-container">
+                      <table className="observation-table">
+                        <thead>
+                          <tr>
+                            <th>Sr No</th>
+                            {selectedSection.section == "Attechment" ? <th>Attechment Title</th> : <th>Inspection</th>}
+                            <th> {selectedSection.section == "Attechment" ? "Attechment" : "Observations / Deficiency Details"}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {(selectedSection.section == "Attechment" ? attechments : observations).map((observation: any, index: number) => (
+                            <tr key={selectedSection.section == "Attechment" ? observation.attechment_id : observation.observations_id}>
+                              <td>{index + 1}</td>
+                              <td>
+                                {selectedSection.section == "Attechment" ?
+                                  <textarea
+                                    className="input-field"
+                                    value={observation.attechment_title}
+                                    onChange={(e) => updateAtttechmentDescription(index, e.target.value, observation.attechemnt)}
+                                    placeholder="Enter description"
+                                  />
+                                  :
+                                  <div className="relative z-20 bg-transparent dark:bg-form-input">
+                                    <select
+                                      name={"Inspection"}
+                                      value={observation.Inspection}
+                                      onChange={(e) => updateDescription(index, observation.observations_text, e.target.value)}
+                                      className="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-1.5 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                    >
+                                      <option value="">Select Option</option>
+                                      {InspectionObservations.map((custItem: any, idx: any) => (
+                                        <option key={idx} value={custItem.inspection}>
+                                          {custItem.inspection}
+                                        </option>
+                                      ))
+                                      }
+                                    </select>
+                                    <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2">
+                                      <FaChevronDown className="text-gray-500 dark:text-gray-400" />
+                                    </span>
+                                  </div>}
+                              </td>
+                              <td>
+                                {selectedSection.section == "Attechment" ? <>
+                                  <input
+                                    type="file"
+                                    name={observation.attechment_title}
+                                    onChange={(e: any) => handleattechmentFileUpload(e, index)}
+                                  />
+                                  {observation.attechment && (
+                                    <div style={{ marginTop: '10px' }}>
+                                      <a style={{ color: 'blue' }} href={imgUrl + observation.attechment} target="_blank" rel="noopener noreferrer">
+                                        View PDF
+                                      </a>
+                                    </div>
+                                  )}
+                                </> :
+                                  <div className="observation-detail">
+                                    {/* Editable Description */}
+                                    <textarea
+                                      className="input-field"
+                                      value={observation.observations_text}
+                                      onChange={(e) => updateDescription(index, e.target.value, observation.Inspection)}
+                                      placeholder="Enter description"
+                                    />
+
+                                    {/* Display Images with Delete Icon */}
+                                    <div className="image-row">
+                                      {observation.images.map((image: any, imgIdx: number) => (
+                                        <div key={imgIdx} className="image-container">
+                                          {/* Observation Image */}
+                                          <img
+                                            className="observation-close-image"
+                                            src={imgUrl + image.image}
+                                            alt={`Observation ${index + 1} - Image ${imgIdx + 1}`}
+                                          />
+
+                                          {/* Delete Icon in Top-Right Corner */}
+                                          <FaTimes
+                                            className="delete-icon"
+                                            onClick={() => handleDeleteImage(index, imgIdx, image.image_id, image.image)}
+                                          />
+                                        </div>
+                                      ))}
+                                    </div>
+
+                                    {/* File Upload */}
+                                    <input
+                                      type="file"
+                                      accept="image/*"
+                                      multiple
+                                      onChange={(e: any) => handleFileUpload(e, index, observation.images.length)}
+                                    />
+                                  </div>}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    : selectedSection.section_type === "roundsTable" ?
+                      <div className="table-container">
+                        <table className="production-table" style={{ width: "100%", borderCollapse: "collapse", border: "1px solid #ddd" }}>
+                          <thead>
+                            <tr>
+                              <th>Parameters</th>
+                              <th>Round 1</th>
+                              <th>Round 2</th>
+                              <th>Round 3</th>
+                              <th>Round 4</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {sectionparams.map((item: any, index: number) => (
+                              <tr key={index}>
+                                <td>{item.param_name}</td>
+                                {["round1", "round2", "round3", "round4"].map((round) => (
+                                  <td key={round}>
+                                    {item.inputType === "selection" ? (
+                                      <div className="relative z-20 bg-transparent dark:bg-form-input">
+                                        <select
+                                          name={item.param_name}
+                                          value={item.value ? item.value[round] : ""}
+                                          onChange={(e) => handleNestedChange(e, item.param_id, round)}
+                                          className="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-1.5 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
+                                        >
+                                          <option value="">-Select-</option>
+                                          {
+                                            [
+                                              <option key="Spring fit" value="Spring fit">
+                                                Spring fit
+                                              </option>,
+                                              <option key="Soldering" value="Soldering">
+                                                Soldering
+                                              </option>,
+                                            ]
+                                          }
+                                        </select>
+                                        <span className="absolute top-1/2 right-4 z-30 -translate-y-1/2">
+                                          <FaChevronDown className="text-gray-500 dark:text-gray-400" />
+                                        </span>
+                                      </div>
+                                    ) : (
+                                      <input
+                                        type={item.inputType}
+                                        placeholder={item.param_name}
+                                        className="input-field"
+                                        value={item.value ? item.value[round] : ""}
+                                        onChange={(e) => handleNestedChange(e, item.param_id, round)}
+                                      />
+                                    )}
+                                  </td>
+                                ))}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                        <div className="observation-container" style={{ width: '100%' }}>
+                          <button className="add-btn" onClick={addObservation} style={{ justifyContent: 'end' }}>
+                            + Add Extra Details
+                          </button>
+                          <table className="observation-table">
+                            <thead>
+                              <tr>
+                                <th style={{ width: "100px" }}>Sr No</th>
+                                <th>Other Details</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {observations.map((observation: any, index: any) => (
+                                <tr key={observation.observations_id}>
+                                  <td>{index + 1}</td>
+                                  <td>
+                                    <div className="observation-detail">
+                                      {/* Editable Description */}
+                                      <textarea
+                                        className="input-field"
+                                        value={observation.observations_text}
+                                        onChange={(e) =>
+                                          updateDescription(index, e.target.value)
+                                        }
+                                        placeholder="Enter description"
+                                      />
+
+                                      {/* Display Images with Delete Icon */}
+                                      <div className="image-row">
+                                        {observation.images.map((image: any, imgIdx: number) => (
+                                          <div key={imgIdx} className="image-container">
+                                            {/* Observation Image */}
+                                            <img
+                                              className="observation-close-image"
+                                              src={imgUrl + image.image}
+                                              alt={`Observation ${index + 1} - Image ${imgIdx + 1}`}
+                                            />
+
+                                            {/* Delete Icon in Top-Right Corner */}
+                                            <FaTimes
+                                              className="delete-icon"
+                                              onClick={() => handleDeleteImage(index, imgIdx, image.image_id, image.image)}
+                                            />
+                                          </div>
+                                        ))}
+                                      </div>
+
+                                      {/* File Upload */}
+                                      <input
+                                        type="file"
+                                        accept="image/*"
+                                        multiple
+                                        onChange={(e: any) => handleFileUpload(e, index, observation.images.length)}
+                                      />
+                                    </div>
+                                  </td>
+                                </tr>
+                              ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                      :
+                      selectedSection.section_type === "tableObservations" ?
+                        <div className="table-container">
+                          <table className="production-table">
+                            <tbody>
+                              {sectionparams.map((item: any, index: any) =>
+                                <tr key={index}>
+                                  <td style={{ width: '50%' }}>{item.param_name}</td>
+                                  <td>
+                                    {item.param_name == "Attachments if any" ?
+                                      <>
+                                        <input
+                                          type="file"
+                                          name={item.param_name}
+                                          onChange={(e: any) => handleattechmentFileUpload(e)}
+                                        />
+                                        {item.value && (
+                                          <div style={{ marginTop: '10px' }}>
+                                            <a style={{ color: 'blue' }} href={imgUrl + item.value} target="_blank" rel="noopener noreferrer">
+                                              View PDF
+                                            </a>
+                                          </div>
+                                        )}
+                                      </>
+                                      : item.inputType == "textarea" ?
+                                        <textarea
+                                          className="input-field"
+                                          name={item.param_name}
+                                          placeholder={item.param_name}
+                                          value={item.value}
+                                          onChange={handleChange}
+                                        />
+                                        :
+                                        <input
+                                          type={item.inputType}
+                                          name={item.param_name}
+                                          placeholder={item.param_name}
+                                          value={item.value}
+                                          onChange={handleChange}
+                                          className="input-field"
+                                        />
+                                    }
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
+                          <div className="observation-container" style={{ width: '100%' }}>
+                            <button className="add-btn" onClick={addModuledetails} style={{ justifyContent: 'end' }}>
+                              + Add Module Details
+                            </button>
+                            <table className="observation-table">
+                              <thead>
+                                <tr>
+                                  <th style={{ width: "100px" }}>Sr No</th>
+                                  <th>Module Make</th>
+                                  <th>Module Model &Rating (Wp)</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {module_details.map((observation: any, index: number) => (
+                                  <tr key={observation.observations_id || index}>
+                                    <td>{index + 1}</td>
+
+                                    <td>
+                                      <div className="observation-detail">
+                                        <textarea
+                                          className="input-field"
+                                          value={observation.module_make}
+                                          onChange={(e) =>
+                                            updatemoduledetails(index, e.target.value, observation.module_modal_and_rating)
+                                          }
+                                          placeholder="Module Make"
+                                        />
+                                      </div>
+                                    </td>
+
+                                    <td>
+                                      <div className="observation-detail">
+                                        <textarea
+                                          className="input-field"
+                                          value={observation.module_modal_and_rating}
+                                          onChange={(e) =>
+                                            updatemoduledetails(index, observation.module_make, e.target.value)
+                                          }
+                                          placeholder="Module Model & Rating (Wp)"
+                                        />
+                                      </div>
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+
+                            </table>
+                          </div>
+                        </div>
+                        :
+                        selectedSection.section_type === "tableInputs" ?
+                          <div className="table-container">
+                            <table className="production-table">
+                              <thead>
+                                <tr>
+                                  <th>Test</th>
+                                  <th>Module Sr. No.</th>
+                                  <th>Result</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {sectionparams.map((test: any, index: any) => (
+                                  <tr key={index}>
+                                    <td>{test.test}</td>
+                                    <td>
+                                      <input
+                                        type={test.inputType}
+                                        placeholder="Module Sr. No."
+                                        className="input-field"
+                                        value={test.module_sr_no}
+                                        onChange={(e) => handleArrayChange(e, index, "module_sr_no")}
+                                      />
+                                    </td>
+                                    <td>
+                                      <input
+                                        type={test.inputType}
+                                        placeholder="Result"
+                                        className="input-field"
+                                        value={test.result}
+                                        onChange={(e) => handleArrayChange(e, index, "result")}
+                                      />
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                            <br />
+                            <div className="observation-container" style={{ width: '100%' }}>
+                              <button className="add-btn" onClick={addObservation} style={{ justifyContent: 'end' }}>
+                                + Add Extra Details
+                              </button>
+                              <table className="observation-table">
+                                <thead>
+                                  <tr>
+                                    <th style={{ width: "100px" }}>Sr No</th>
+                                    <th>Other Details</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {observations.map((observation: any, index: any) => (
+                                    <tr key={observation.observations_id}>
+                                      <td>{index + 1}</td>
+                                      <td>
+                                        <div className="observation-detail">
+                                          {/* Editable Description */}
+                                          <textarea
+                                            className="input-field"
+                                            value={observation.observations_text}
+                                            onChange={(e) =>
+                                              updateDescription(index, e.target.value)
+                                            }
+                                            placeholder="Enter description"
+                                          />
+
+                                          {/* Display Images */}
+                                          <div className="image-row">
+                                            {observation.images.map((image: any, idx: any) => (
+                                              <img
+                                                key={idx}
+                                                src={imgUrl + image.image}
+                                                alt={`Observation ${index + 1} - Image ${idx + 1}`}
+                                              />
+                                            ))}
+                                          </div>
+
+                                          {/* File Upload */}
+                                          <input
+                                            type="file"
+                                            accept="image/*"
+                                            multiple
+                                            onChange={(e: any) => handleFileUpload(e, index, observation.images.length)}
+                                          />
+                                        </div>
+                                      </td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            </div>
+                            <table className="production-table">
+                              <thead>
+                                <tr>
+                                  <th>Inspection done by</th>
+                                  <th>Checking together with (Customer/Manufacturer representative)</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr>
+                                  <td style={{ width: '50%' }}>
+                                    <input
+                                      type="text"
+                                      name="inspection_done_by"
+                                      placeholder="Inspection done by"
+                                      className="input-field"
+                                      value={submitsectionby}
+                                      onChange={(e) => setSubmitsectionby(e.target.value)}
+                                    />
+                                  </td>
+                                  <td>
+                                    <input
+                                      type="text"
+                                      name="checking_together"
+                                      placeholder="Checking together with"
+                                      className="input-field"
+                                      value={checkingtogether}
+                                      onChange={(e) => setCheckingtogether(e.target.value)}
+                                    />
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+
+                          </div>
+                          : ""
               }
             </div>
           ) :
