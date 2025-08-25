@@ -615,7 +615,7 @@ const RunningReport = () => {
   const handleArrayChange = (
     e: React.ChangeEvent<HTMLInputElement>,
     index: number,
-    field: "module_sr_no" | "result"
+    field: "Instrument_Make" | "Instrument_Type_and_Model" | "Instrument_serial_number" | "Next_Calibration_due_date"
   ) => {
     //console.log("data ->>", e, index, field);
     const newValue = e.target.value;
@@ -2618,9 +2618,11 @@ const RunningReport = () => {
                             <table className="production-table">
                               <thead>
                                 <tr>
-                                  <th>Test</th>
-                                  <th>Module Sr. No.</th>
-                                  <th>Result</th>
+                                  <th>Sr. No.</th>
+                                  <th>Instrument Make</th>
+                                  <th>Instrument Type & Model</th>
+                                  <th>Instrument Serial Number</th>
+                                  <th>Next Calibration Due date</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -2629,20 +2631,42 @@ const RunningReport = () => {
                                     <td>{test.test}</td>
                                     <td>
                                       <input
-                                        type={test.inputType}
-                                        placeholder="Module Sr. No."
+                                        type={'text'}
+                                        placeholder="Instrument Make"
                                         className="input-field"
+                                        name="Instrument_Make"
                                         value={test.module_sr_no}
-                                        onChange={(e) => handleArrayChange(e, index, "module_sr_no")}
+                                        onChange={(e) => handleArrayChange(e, index, "Instrument_Make")}
                                       />
                                     </td>
                                     <td>
                                       <input
-                                        type={test.inputType}
-                                        placeholder="Result"
+                                        type={'text'}
+                                        placeholder="Instrument Type and Model"
                                         className="input-field"
-                                        value={test.result}
-                                        onChange={(e) => handleArrayChange(e, index, "result")}
+                                        name="Instrument_Type_and_Model"
+                                        value={test.Instrument_Type_and_Model}
+                                        onChange={(e) => handleArrayChange(e, index, "Instrument_Type_and_Model")}
+                                      />
+                                    </td>
+                                    <td>
+                                      <input
+                                        type={'text'}
+                                        placeholder="Instrument serial number"
+                                        className="input-field"
+                                        name="Instrument_serial_number"
+                                        value={test.Instrument_serial_number}
+                                        onChange={(e) => handleArrayChange(e, index, "Instrument_serial_number")}
+                                      />
+                                    </td>
+                                    <td>
+                                      <input
+                                        type={'date'}
+                                        placeholder="Next Calibration due date"
+                                        className="input-field"
+                                        name="Next_Calibration_due_date"
+                                        value={test.Next_Calibration_due_date}
+                                        onChange={(e) => handleArrayChange(e, index, "Next_Calibration_due_date")}
                                       />
                                     </td>
                                   </tr>
